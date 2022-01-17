@@ -1,0 +1,10 @@
+DROP TABLE TBL_LONG
+/
+CREATE TABLE TBL_LONG
+(
+    SEQ                            NUMBER NOT NULL,
+    ITEM_LONG                      LONG,
+    CONSTRAINT TBL_LONG_PK PRIMARY KEY (SEQ) USING INDEX
+        ENABLE
+)
+/

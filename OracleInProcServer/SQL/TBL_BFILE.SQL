@@ -1,0 +1,10 @@
+DROP TABLE TBL_BFILE
+/
+CREATE TABLE TBL_BFILE
+(
+    SEQ                            NUMBER NOT NULL,
+    ITEM_BFILE                     BFILE,
+    CONSTRAINT TBL_BFILE_PKEY PRIMARY KEY (SEQ) USING INDEX
+        ENABLE
+)
+/

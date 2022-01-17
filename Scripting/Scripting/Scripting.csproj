@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{049808D2-8F4A-4FF7-AF3D-645439DA4F1A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Scripting</RootNamespace>
+    <AssemblyName>Scripting</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Lib\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\Lib\Debug\Scripting.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Lib\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\Lib\Release\Scripting.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="classes\ABSClass.cs" />
+    <Compile Include="classes\ABSCollcetion.cs" />
+    <Compile Include="classes\ABSEnumurator.cs" />
+    <Compile Include="classes\Encoder.cs" />
+    <Compile Include="classes\TextStream.cs" />
+    <Compile Include="classes\TextStreamClass.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="constants\CompareMethod.cs" />
+    <Compile Include="classes\Dictionary.cs" />
+    <Compile Include="classes\Drive.cs" />
+    <Compile Include="classes\Drives.cs" />
+    <Compile Include="constants\DriveTypeConst.cs" />
+    <Compile Include="classes\File.cs" />
+    <Compile Include="constants\FileAttribute.cs" />
+    <Compile Include="classes\Files.cs" />
+    <Compile Include="classes\FileSystemObject.cs" />
+    <Compile Include="classes\Folder.cs" />
+    <Compile Include="classes\Folders.cs" />
+    <Compile Include="constants\IOMode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="core\FileNameClass.cs" />
+    <Compile Include="core\NativeMethods.cs" />
+    <Compile Include="core\NativeWrapper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="core\StringBuilderCache.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="constants\SpecialFolderConst.cs" />
+    <Compile Include="constants\StandardStreamTypes.cs" />
+    <Compile Include="constants\Tristate.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
