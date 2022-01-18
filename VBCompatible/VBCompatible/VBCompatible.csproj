@@ -61,8 +61,8 @@
     <Compile Include="ControlArray\VBCheckBoxArray.cs" />
     <Compile Include="ControlArray\VBComboBoxArray.cs" />
     <Compile Include="ControlArray\VBCommandButtonArray.cs" />
+    <Compile Include="ControlArray\BaseControlArray.cs" />
     <Compile Include="ControlArray\VBControlArray.cs" />
-    <Compile Include="ControlArray\VBControlArrayT.cs" />
     <Compile Include="ControlArray\VBFrameArray.cs" />
     <Compile Include="ControlArray\VBLabelArray.cs" />
     <Compile Include="ControlArray\VBListBoxArray.cs" />

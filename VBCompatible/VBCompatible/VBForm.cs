@@ -290,7 +290,7 @@ namespace VBCompatible
             get {
                 for (int i = 0; i < m_TabIndexList.Count; i++) {
                     Control con = m_TabIndexList[i];
-                    if (con.IsSelectable() &&  con.ContainsFocus) {
+                    if (con.ContainsFocus && con.IsSelectable()) {
                         return con;
                     }
                 }
@@ -299,16 +299,26 @@ namespace VBCompatible
         }
 
         public IEnumerator<Control> GetEnumerator() {
-            return m_TabIndexList.GetEnumerator();
+            return GetControls(this).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
-            return m_TabIndexList.GetEnumerator();
+            return GetControls(this).GetEnumerator();
+        }
+
+        private List<Control> GetControls(Control baseControl) {
+            List<Control> result = new List<Control>();
+            foreach (Control con in baseControl.Controls) {
+                result.Add(con);
+                if (!(con is UserControl))
+                    result.AddRange(GetControls(con));
+            }
+            return result;
         }
 
         public Control this[int index] {
             get {
-                return m_TabIndexList[index];
+                return GetControls(this)[index];
             }
         }
 
@@ -356,15 +366,30 @@ namespace VBCompatible
         }
 
         protected override void WndProc(ref Message m) {
-            if (VBUtils.IsCtlColor(ref m)) {
-                Control con = Control.FromHandle(m.LParam);
-                if (con != null) {
-                    VBUtils.SetCtlColor(con, ref m);
-                    return;
-                }
-                base.DefWndProc(ref m);
-            } else {
-                base.WndProc(ref m);
+            switch (m.Msg) {
+                case NativeMethods.WM_SHOWWINDOW:
+                    base.WndProc(ref m);
+                    // 表示されるとき ActiveControl が未設定なら VB6 モードで初期フォーカス位置を設定する
+                    // Load イベントが終了し、コントロールの Enter イベントが発生する前に行う必要がある
+                    if (m.WParam != IntPtr.Zero) {
+                        if (this.ActiveControl == null && !this.DesignMode && TabIndexMode == TabIndexMode.VB6) {
+                            this.ActiveControl = GetNextTabIndexFocus(null, true, true);
+                        }
+                    }
+                    break;
+                default:
+                    if (VBUtils.IsCtlColor(ref m)) {
+                        Control con = Control.FromHandle(m.LParam);
+                        if (con != null) {
+                            VBUtils.SetCtlColor(con, ref m);
+                            return;
+                        }
+                        base.DefWndProc(ref m);
+                    } else {
+
+                        base.WndProc(ref m);
+                    }
+                    break;
             }
         }
 

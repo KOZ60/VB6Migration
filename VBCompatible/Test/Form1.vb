@@ -42,7 +42,6 @@ Public Class Form1
         VbCommandButton1.Value = True
     End Sub
 
-
     Private Sub VbCommandButton1_Click(sender As Object, e As EventArgs) Handles VbCommandButton1.Click
         With VbListView1
             .View = View.Details
@@ -79,7 +78,12 @@ Public Class Form1
     End Sub
 
     Private Sub VbCommandButton2_Click(sender As Object, e As EventArgs) Handles VbCommandButton2.Click
-        Dim f As New VBCompatible.ControlArray.EventEnumForm
+        Dim f As New Form2()
+        f.Show()
+    End Sub
+
+    Private Sub EventEnumFormToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles EventEnumFormToolStripMenuItem.Click
+        Dim f As New VBCompatible.ControlArray.EventEnumForm()
         f.Show()
     End Sub
 
