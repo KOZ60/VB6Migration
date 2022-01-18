@@ -78,5 +78,10 @@ Public Class Form1
         End With
     End Sub
 
+    Private Sub VbCommandButton2_Click(sender As Object, e As EventArgs) Handles VbCommandButton2.Click
+        Dim f As New VBCompatible.ControlArray.EventEnumForm
+        f.Show()
+    End Sub
+
 End Class
 

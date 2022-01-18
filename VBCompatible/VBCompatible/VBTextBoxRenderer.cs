@@ -92,11 +92,7 @@ namespace VBCompatible
         }
 
         private void Draw() {
-            using (var brush = new SolidBrush(BackColor)) {
-                Graphics.SetClip(Clip);
-                Graphics.FillRectangle(brush, Clip);
-            }
-
+            Graphics.Clear(BackColor);
             using (var g = new VBGraphics(Graphics, Clip)) {
                 g.SetFontHandle(FontHandle);
                 DrawText(g, Clip, Text);

@@ -83,8 +83,10 @@ namespace VBCompatible.ControlArray
             this.txtEvents.Location = new System.Drawing.Point(9, 78);
             this.txtEvents.Multiline = true;
             this.txtEvents.Name = "txtEvents";
+            this.txtEvents.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtEvents.Size = new System.Drawing.Size(465, 205);
             this.txtEvents.TabIndex = 4;
+            this.txtEvents.WordWrap = false;
             // 
             // EventEnumForm
             // 

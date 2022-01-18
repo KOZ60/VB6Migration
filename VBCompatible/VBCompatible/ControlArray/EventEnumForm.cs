@@ -42,7 +42,8 @@ namespace VBCompatible.ControlArray
             if (assembly != null) {
                 var lst = new List<Type>();
                 foreach (Type type in assembly.GetTypes()) {
-                    if (type.IsSubclassOf(typeof(Control)) && !type.IsSubclassOf(typeof(Form))) {
+                    if (type == typeof(Control) || 
+                        ( type.IsSubclassOf(typeof(Control)) && !type.IsSubclassOf(typeof(Form)))) {
                         lst.Add(type);
                     }
                 }
@@ -54,9 +55,11 @@ namespace VBCompatible.ControlArray
             Type type = cboControl.SelectedItem as Type;
             if (type != null) {
                 var sb = new StringBuilder();
-                foreach (EventInfo info in type.GetEvents()) {
+                List<EventInfo> lst = new List<EventInfo>();
+                lst.AddRange(type.GetEvents().OrderBy(i => i.Name).ToArray());
+                foreach (EventInfo info in lst) {
                     var item = new Tuple<string, string>(info.EventHandlerType.ToString(), info.Name);
-                    if (!ControlEvents.Contains(item)) {
+                    if (type == typeof(Control) || !ControlEvents.Contains(item)) {
                         sb.Append(info.EventHandlerType.ToString());
                         sb.Append('\t');
                         sb.AppendLine(info.Name);

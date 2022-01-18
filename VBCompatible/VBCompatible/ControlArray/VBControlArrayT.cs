@@ -52,7 +52,11 @@ namespace VBCompatible.ControlArray
             if (ControlAdded != null) target.ControlAdded += ControlAdded;
             if (ControlRemoved != null) target.ControlRemoved += ControlRemoved;
             if (CursorChanged != null) target.CursorChanged += CursorChanged;
+            if (Disposed != null) target.Disposed += Disposed;
             if (DockChanged != null) target.DockChanged += DockChanged;
+            if (DoubleClick != null) target.DoubleClick += DoubleClick;
+            //if (DpiChangedAfterParent != null) target.DpiChangedAfterParent += DpiChangedAfterParent;
+            //if (DpiChangedBeforeParent != null) target.DpiChangedBeforeParent += DpiChangedBeforeParent;
             if (DragDrop != null) target.DragDrop += DragDrop;
             if (DragEnter != null) target.DragEnter += DragEnter;
             if (DragLeave != null) target.DragLeave += DragLeave;
@@ -62,26 +66,35 @@ namespace VBCompatible.ControlArray
             if (FontChanged != null) target.FontChanged += FontChanged;
             if (ForeColorChanged != null) target.ForeColorChanged += ForeColorChanged;
             if (GiveFeedback != null) target.GiveFeedback += GiveFeedback;
+            if (GotFocus != null) target.GotFocus += GotFocus;
+            if (HandleCreated != null) target.HandleCreated += HandleCreated;
+            if (HandleDestroyed != null) target.HandleDestroyed += HandleDestroyed;
             if (HelpRequested != null) target.HelpRequested += HelpRequested;
+            if (ImeModeChanged != null) target.ImeModeChanged += ImeModeChanged;
+            if (Invalidated != null) target.Invalidated += Invalidated;
             if (KeyDown != null) target.KeyDown += KeyDown;
             if (KeyPress != null) target.KeyPress += KeyPress;
             if (KeyUp != null) target.KeyUp += KeyUp;
             if (Layout != null) target.Layout += Layout;
             if (Leave != null) target.Leave += Leave;
             if (LocationChanged != null) target.LocationChanged += LocationChanged;
+            if (LostFocus != null) target.LostFocus += LostFocus;
             if (MarginChanged != null) target.MarginChanged += MarginChanged;
             if (MouseCaptureChanged != null) target.MouseCaptureChanged += MouseCaptureChanged;
             if (MouseClick != null) target.MouseClick += MouseClick;
+            if (MouseDoubleClick != null) target.MouseDoubleClick += MouseDoubleClick;
             if (MouseDown != null) target.MouseDown += MouseDown;
             if (MouseEnter != null) target.MouseEnter += MouseEnter;
             if (MouseHover != null) target.MouseHover += MouseHover;
             if (MouseLeave != null) target.MouseLeave += MouseLeave;
             if (MouseMove != null) target.MouseMove += MouseMove;
             if (MouseUp != null) target.MouseUp += MouseUp;
+            if (MouseWheel != null) target.MouseWheel += MouseWheel;
             if (Move != null) target.Move += Move;
             if (PaddingChanged != null) target.PaddingChanged += PaddingChanged;
             if (Paint != null) target.Paint += Paint;
             if (ParentChanged != null) target.ParentChanged += ParentChanged;
+            if (PreviewKeyDown != null) target.PreviewKeyDown += PreviewKeyDown;
             if (QueryAccessibilityHelp != null) target.QueryAccessibilityHelp += QueryAccessibilityHelp;
             if (QueryContinueDrag != null) target.QueryContinueDrag += QueryContinueDrag;
             if (RegionChanged != null) target.RegionChanged += RegionChanged;
@@ -117,120 +130,76 @@ namespace VBCompatible.ControlArray
             return base.BaseShouldSerializeIndex(o);
         }
 
-        public event EventHandler AutoSizeChanged;
-
-        public event EventHandler BackColorChanged;
-
-        public event EventHandler BackgroundImageChanged;
-
-        public event EventHandler BackgroundImageLayoutChanged;
-
-        public event EventHandler BindingContextChanged;
-
-        public event EventHandler CausesValidationChanged;
-
-        public event UICuesEventHandler ChangeUICues;
-
-        public event EventHandler Click;
-
-        public event EventHandler ClientSizeChanged;
-
-        public event EventHandler ContextMenuChanged;
-
-        public event EventHandler ContextMenuStripChanged;
-
-        public event ControlEventHandler ControlAdded;
-
-        public event ControlEventHandler ControlRemoved;
-
-        public event EventHandler CursorChanged;
-
-        public event EventHandler DockChanged;
-
-        public event DragEventHandler DragDrop;
-
-        public event DragEventHandler DragEnter;
-
-        public event EventHandler DragLeave;
-
-        public event DragEventHandler DragOver;
-
-        public event EventHandler EnabledChanged;
-
-        public event EventHandler Enter;
-
-        public event EventHandler FontChanged;
-
-        public event EventHandler ForeColorChanged;
-
-        public event GiveFeedbackEventHandler GiveFeedback;
-
-        public event HelpEventHandler HelpRequested;
-
-        public event KeyEventHandler KeyDown;
-
-        public event KeyPressEventHandler KeyPress;
-
-        public event KeyEventHandler KeyUp;
-
-        public event LayoutEventHandler Layout;
-
-        public event EventHandler Leave;
-
-        public event EventHandler LocationChanged;
-
-        public event EventHandler MarginChanged;
-
-        public event EventHandler MouseCaptureChanged;
-
-        public event MouseEventHandler MouseClick;
-
-        public event MouseEventHandler MouseDown;
-
-        public event EventHandler MouseEnter;
-
-        public event EventHandler MouseHover;
-
-        public event EventHandler MouseLeave;
-
-        public event MouseEventHandler MouseMove;
-
-        public event MouseEventHandler MouseUp;
-
-        public event EventHandler Move;
-
-        public event EventHandler PaddingChanged;
-
-        public event PaintEventHandler Paint;
-
-        public event EventHandler ParentChanged;
-
-        public event QueryAccessibilityHelpEventHandler QueryAccessibilityHelp;
-
-        public event QueryContinueDragEventHandler QueryContinueDrag;
-
-        public event EventHandler RegionChanged;
-
-        public event EventHandler Resize;
-
-        public event EventHandler RightToLeftChanged;
-
-        public event EventHandler SizeChanged;
-
-        public event EventHandler StyleChanged;
-
-        public event EventHandler SystemColorsChanged;
-
-        public event EventHandler TabIndexChanged;
-
-        public event EventHandler TabStopChanged;
-
-        public event EventHandler TextChanged;
-
-        public event EventHandler Validated;
-
-        public event CancelEventHandler Validating;
-
-        public event EventHandler VisibleChanged;
+        public EventHandler AutoSizeChanged;
+        public EventHandler BackColorChanged;
+        public EventHandler BackgroundImageChanged;
+        public EventHandler BackgroundImageLayoutChanged;
+        public EventHandler BindingContextChanged;
+        public EventHandler CausesValidationChanged;
+        public UICuesEventHandler ChangeUICues;
+        public EventHandler Click;
+        public EventHandler ClientSizeChanged;
+        public EventHandler ContextMenuChanged;
+        public EventHandler ContextMenuStripChanged;
+        public ControlEventHandler ControlAdded;
+        public ControlEventHandler ControlRemoved;
+        public EventHandler CursorChanged;
+        public new EventHandler Disposed;
+        public EventHandler DockChanged;
+        public EventHandler DoubleClick;
+        //public EventHandler DpiChangedAfterParent;
+        //public EventHandler DpiChangedBeforeParent;
+        public DragEventHandler DragDrop;
+        public DragEventHandler DragEnter;
+        public EventHandler DragLeave;
+        public DragEventHandler DragOver;
+        public EventHandler EnabledChanged;
+        public EventHandler Enter;
+        public EventHandler FontChanged;
+        public EventHandler ForeColorChanged;
+        public GiveFeedbackEventHandler GiveFeedback;
+        public EventHandler GotFocus;
+        public EventHandler HandleCreated;
+        public EventHandler HandleDestroyed;
+        public HelpEventHandler HelpRequested;
+        public EventHandler ImeModeChanged;
+        public InvalidateEventHandler Invalidated;
+        public KeyEventHandler KeyDown;
+        public KeyPressEventHandler KeyPress;
+        public KeyEventHandler KeyUp;
+        public LayoutEventHandler Layout;
+        public EventHandler Leave;
+        public EventHandler LocationChanged;
+        public EventHandler LostFocus;
+        public EventHandler MarginChanged;
+        public EventHandler MouseCaptureChanged;
+        public MouseEventHandler MouseClick;
+        public MouseEventHandler MouseDoubleClick;
+        public MouseEventHandler MouseDown;
+        public EventHandler MouseEnter;
+        public EventHandler MouseHover;
+        public EventHandler MouseLeave;
+        public MouseEventHandler MouseMove;
+        public MouseEventHandler MouseUp;
+        public MouseEventHandler MouseWheel;
+        public EventHandler Move;
+        public EventHandler PaddingChanged;
+        public PaintEventHandler Paint;
+        public EventHandler ParentChanged;
+        public PreviewKeyDownEventHandler PreviewKeyDown;
+        public QueryAccessibilityHelpEventHandler QueryAccessibilityHelp;
+        public QueryContinueDragEventHandler QueryContinueDrag;
+        public EventHandler RegionChanged;
+        public EventHandler Resize;
+        public EventHandler RightToLeftChanged;
+        public EventHandler SizeChanged;
+        public EventHandler StyleChanged;
+        public EventHandler SystemColorsChanged;
+        public EventHandler TabIndexChanged;
+        public EventHandler TabStopChanged;
+        public EventHandler TextChanged;
+        public EventHandler Validated;
+        public CancelEventHandler Validating;
+        public EventHandler VisibleChanged;
     }
 }

@@ -55,6 +55,12 @@ namespace VBCompatible
                 case NativeMethods.WM_ERASEBKGND:
                     break;
 
+                case NativeMethods.WM_VSCROLL:
+                case NativeMethods.WM_HSCROLL:
+                    base.WndProc(ref m);
+                    Owner.Invalidate();
+                    break;
+
                 default:
                     base.WndProc(ref m);
                     break;

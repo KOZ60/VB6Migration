@@ -6,14 +6,13 @@ namespace VBCompatible
 {
     public class VBTextBox : TextBox
     {
-
         private readonly VBOnwerDraw ownerDraw;
 
         public VBTextBox() {
             ResetFont();
             ResetForeColor();
             ResetBackColor();
-            ownerDraw = new VBOnwerDraw(this, true, true);
+            ownerDraw = new VBOnwerDraw(this, false, true);
         }
 
         #region Font/ForeColor/BackColor
@@ -108,25 +107,11 @@ namespace VBCompatible
 
         #endregion
 
-        protected override void OnPaint(PaintEventArgs e) {
-            VBTextBoxRenderer.DrawTextBox(e.Graphics, this, e.ClipRectangle);
-            base.OnPaint(e);
-        }
-
         protected override void OnReadOnlyChanged(EventArgs e) {
             base.OnReadOnlyChanged(e);
             if (IsHandleCreated && ReadOnly) {
                 ClearUndo();
             }
         }
-
-        protected override CreateParams CreateParams {
-            get {
-                var cp =  base.CreateParams;
-                int style = cp.Style;
-                return cp;
-            }
-        }
-
     }
 }
