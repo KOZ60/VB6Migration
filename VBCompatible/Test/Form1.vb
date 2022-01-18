@@ -39,7 +39,11 @@ Public Class Form1
     End Class
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        VbCommandButton1.Value = True
+    End Sub
 
+
+    Private Sub VbCommandButton1_Click(sender As Object, e As EventArgs) Handles VbCommandButton1.Click
         With VbListView1
             .View = View.Details
             .FullRowSelect = True
@@ -49,11 +53,9 @@ Public Class Form1
                 .Columns.Add(" 住　所 ", 150, HorizontalAlignment.Left)
             End If
 
-            'クリックの都度アイテムが追加されるように設定(テスト用なので)
             Dim i As Integer = .Items.Count
-            'アイテムを追加
+
             .Items.Add("草名木　強", i)
-            'サブアイテムを追加
             .Items(i).SubItems.Add("123-4567")
             .Items(i).SubItems.Add("東京都 新宿区")
 

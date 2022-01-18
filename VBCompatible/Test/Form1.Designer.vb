@@ -83,8 +83,8 @@ Partial Class Form1
         Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
         Me.mnuFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuExit = New System.Windows.Forms.ToolStripMenuItem()
-        Me.Button1 = New System.Windows.Forms.Button()
         Me.BindingSource1 = New System.Windows.Forms.BindingSource(Me.components)
+        Me.VbCommandButton1 = New VBCompatible.VBCommandButton()
         Me.VbPanel1.SuspendLayout()
         CType(Me.VbPictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.MenuStrip1.SuspendLayout()
@@ -337,21 +337,21 @@ Partial Class Form1
         Me.mnuExit.Size = New System.Drawing.Size(98, 22)
         Me.mnuExit.Text = "終了"
         '
-        'Button1
+        'VbCommandButton1
         '
-        Me.Button1.Location = New System.Drawing.Point(337, 37)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(123, 34)
-        Me.Button1.TabIndex = 13
-        Me.Button1.Text = "Button1"
-        Me.Button1.UseVisualStyleBackColor = True
+        Me.VbCommandButton1.Location = New System.Drawing.Point(330, 33)
+        Me.VbCommandButton1.Name = "VbCommandButton1"
+        Me.VbCommandButton1.Size = New System.Drawing.Size(175, 38)
+        Me.VbCommandButton1.TabIndex = 13
+        Me.VbCommandButton1.Text = "VbCommandButton1"
+        Me.VbCommandButton1.UseVisualStyleBackColor = True
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(944, 473)
-        Me.Controls.Add(Me.Button1)
+        Me.Controls.Add(Me.VbCommandButton1)
         Me.Controls.Add(Me.CheckBox3)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.CheckBox2)
@@ -379,7 +379,6 @@ Partial Class Form1
     Friend WithEvents MenuStrip1 As MenuStrip
     Friend WithEvents mnuFile As ToolStripMenuItem
     Friend WithEvents mnuExit As ToolStripMenuItem
-    Friend WithEvents Button1 As Button
     Friend WithEvents BindingSource1 As BindingSource
     Friend WithEvents VbListView1 As VBCompatible.VBListView
     Friend WithEvents VbTextBox2 As VBCompatible.VBTextBox
@@ -389,4 +388,5 @@ Partial Class Form1
     Friend WithEvents VbComboBox1 As VBCompatible.VBComboBox
     Friend WithEvents VbTreeView1 As VBCompatible.VBTreeView
     Friend WithEvents VbCheckBox1 As VBCompatible.VBCheckBox
+    Friend WithEvents VbCommandButton1 As VBCompatible.VBCommandButton
 End Class

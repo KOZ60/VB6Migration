@@ -39,6 +39,7 @@
     <Reference Include="Microsoft.VisualBasic.Compatibility.Data" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Windows.Forms" />
@@ -50,6 +51,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ControlArray\EventEnumForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlArray\EventEnumForm.Designer.cs">
+      <DependentUpon>EventEnumForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlArray\VB6Errors.cs" />
+    <Compile Include="ControlArray\VBCheckBoxArray.cs" />
+    <Compile Include="ControlArray\VBComboBoxArray.cs" />
+    <Compile Include="ControlArray\VBCommandButtonArray.cs" />
+    <Compile Include="ControlArray\VBControlArray.cs" />
+    <Compile Include="ControlArray\VBControlArrayT.cs" />
+    <Compile Include="ControlArray\VBFrameArray.cs" />
+    <Compile Include="ControlArray\VBLabelArray.cs" />
+    <Compile Include="ControlArray\VBListBoxArray.cs" />
+    <Compile Include="ControlArray\VBListViewArray.cs" />
+    <Compile Include="ControlArray\VBOptionButtonArray.cs" />
+    <Compile Include="ControlArray\VBPanelArray.cs" />
+    <Compile Include="ControlArray\VBPictureBoxArray.cs" />
+    <Compile Include="ControlArray\VBTextBoxArray.cs" />
+    <Compile Include="ControlArray\VBTreeViewArray.cs" />
+    <Compile Include="VBLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="VBSafeGlobalMemory.cs" />
     <Compile Include="OLE_COLOR.cs" />
     <Compile Include="VBCache.cs" />
@@ -92,6 +117,7 @@
     <Compile Include="VBSSTab.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ControlArray\VBSSTabArray.cs" />
     <Compile Include="VBTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -119,6 +145,11 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="VBTextBoxRenderer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ControlArray\EventEnumForm.resx">
+      <DependentUpon>EventEnumForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
