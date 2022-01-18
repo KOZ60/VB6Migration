@@ -9,10 +9,13 @@ namespace VBCompatible
     {
         private static object EventScroll = new object();
 
+        private VBOnwerDraw ownerDraw;
+
         public VBListBox() {
             ResetFont();
             ResetForeColor();
             ResetBackColor();
+            ownerDraw = new VBOnwerDraw(this, false, false);
         }
 
         #region Font/ForeColor/BackColor

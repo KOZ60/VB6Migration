@@ -29,22 +29,22 @@ namespace VBCompatible
             }
         }
 
-        private VBTabPageCollection m_TabPages;
-        private TabVisibleClass m_TabVisibleClass;
+        private VBTabPageCollection m_TabPageCollection;
+        private TabVisibleCollection m_TabVisibleCollection;
         private bool m_EventSkip = false;
+        private VBOnwerDraw onwerDraw;
 
         /// <summary>
         /// VBSSTab のインスタンスを作成します。
         /// </summary>
         public VBSSTab() {
             ResetFont();
-            m_TabPages = new VBTabPageCollection(this);
-            m_TabVisibleClass = new TabVisibleClass(m_TabPages);
-            base.Appearance = TabAppearance.Normal;
+            m_TabPageCollection = new VBTabPageCollection(this);
+            m_TabVisibleCollection = new TabVisibleCollection(m_TabPageCollection);
             base.ResizeRedraw = true;
             base.DrawMode = TabDrawMode.OwnerDrawFixed;
+            onwerDraw = new VBOnwerDraw(this, true, false);
         }
-
 
         #region Font
 
@@ -81,6 +81,321 @@ namespace VBCompatible
 
         #endregion
 
+
+        #region 描画
+
+        // DrawMode プロパティを隠す
+        /// <summary>
+        /// コントロールのタブを描画する方法を取得または設定します。
+        /// </summary>
+        [Browsable(false)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new TabDrawMode DrawMode { 
+            get { return base.DrawMode; }
+            set { }
+        }
+
+        /// <summary>
+        /// DrawItem イベントを発生させます。
+        /// </summary>
+        /// <param name="e">イベント データを格納した DrawItemEventArgs</param>
+        protected override void OnDrawItem(DrawItemEventArgs e) {
+            // TabItem を描画する
+            // base.OnDrawItem(e);
+            DrawItemBackGround(e);
+            switch (this.Alignment) {
+                case TabAlignment.Left:
+                case TabAlignment.Right:
+                    DrawItemRotate(e);
+                    break;
+                default:
+                    DrawItemText(e.Graphics, e.Bounds, e);
+                    break;
+            }
+        }
+
+        // TabItem の背景を描画
+        private void DrawItemBackGround(DrawItemEventArgs e) {
+            Rectangle rectBackGround = e.Bounds;
+            switch (this.Alignment) {
+                case TabAlignment.Bottom:
+                    rectBackGround.Y -= this.Padding.Y;
+                    rectBackGround.Height += this.Padding.Y;
+                    break;
+                case TabAlignment.Left:
+                    rectBackGround.Width += this.Padding.X;
+                    break;
+                case TabAlignment.Right:
+                    rectBackGround.X -= this.Padding.X;
+                    rectBackGround.Width += this.Padding.X;
+                    break;
+                default:
+                    rectBackGround.Height += this.Padding.Y;
+                    break;
+            }
+            using (Brush b = new SolidBrush(BackColor)) {
+                e.Graphics.FillRectangle(b, rectBackGround);
+            }
+        }
+
+        // タブが横にあるとき、画像を回転して描画する
+        private void DrawItemRotate(DrawItemEventArgs e) {
+            string tabItemText = base.TabPages[e.Index].Text;
+            Font font = base.Font;
+            Color textColor = base.ForeColor;
+            TextFormatFlags flags = CreateTextFormatFlags(e);
+            TabItemState state = (TabItemState)((int)e.State & 0xF);
+            Rectangle contentBounds = e.Bounds;
+
+            //タブの画像を作成する(縦横を反転)
+            using (Bitmap bmp = new Bitmap(contentBounds.Height, contentBounds.Width)) {
+                // bmp に文字を描画
+                using (Graphics g = Graphics.FromImage(bmp)) {
+                    DrawItemText(g, new Rectangle(0, 0, bmp.Width, bmp.Height), e);
+                }
+
+                //画像を回転する
+                switch (this.Alignment) {
+                    case TabAlignment.Left:
+                        bmp.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                        break;
+                    case TabAlignment.Right:
+                        bmp.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                        break;
+                }
+
+                // bmp を描画
+                e.Graphics.DrawImage(bmp, contentBounds);
+            }
+        }
+
+        private TextFormatFlags CreateTextFormatFlags(DrawItemEventArgs e) {
+            TextFormatFlags flags = TextFormatFlags.HorizontalCenter | TextFormatFlags.SingleLine;
+
+            // 選択されているときの縦は中央
+            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected) {
+                flags |= TextFormatFlags.VerticalCenter;
+            } else {
+                // 選択されていないときは内に寄せる
+                switch (this.Alignment) {
+                    case TabAlignment.Top:
+                        flags |= TextFormatFlags.Bottom;
+                        break;
+
+                    case TabAlignment.Bottom:
+                        flags |= TextFormatFlags.Top;
+                        break;
+
+                    default:
+                        flags |= TextFormatFlags.Bottom;
+                        break;
+                }
+            }
+            // & を処理するかどうか
+            if (!UseMnemonic) {
+                flags = flags | TextFormatFlags.NoPrefix;
+            }
+            return flags;
+        }
+
+
+        // タブのテキストを描画する
+        private void DrawItemText(Graphics g, Rectangle bounds, DrawItemEventArgs e) {
+            string tabItemText = base.TabPages[e.Index].Text;
+            TextFormatFlags flags = CreateTextFormatFlags(e);
+            Color textColor = this.IsEnabled() ? base.ForeColor : SystemColors.ControlDark;
+            TextRenderer.DrawText(g,
+                            tabItemText,
+                            base.Font,
+                            bounds,
+                            textColor,
+                            flags);
+        }
+
+        /// <summary>
+        /// Paint イベントを発生させます。
+        /// </summary>
+        /// <param name="e">イベント データを格納している System.Windows.Forms.PaintEventArgs。</param>
+        protected override void OnPaint(PaintEventArgs e) {
+            base.OnPaint(e);
+            if (Application.RenderWithVisualStyles) {
+                Renderer.SetParameters(VisualStyleElement.Tab.Pane.Normal);
+                Renderer.DrawParentBackground(e.Graphics, this.ClientRectangle, this);
+                if (base.TabCount > 0) {
+                    var tabArea = this.DisplayRectangle;
+                    tabArea.Y += 1;
+                    tabArea.Width += 1;
+                    int nDelta = SystemInformation.Border3DSize.Width;
+                    tabArea.Inflate(nDelta, nDelta);
+                    Renderer.DrawBackground(e.Graphics, tabArea);
+                    for (int i = 0; i < base.TabCount; i++) {
+                        DrawTabPage(e.Graphics, i);
+                    }
+                }
+            } else {
+                // OwnerDrawFixed なので
+                // base.WndProc(ref m) を呼び出すと OnDrawItem が呼ばれる
+                IntPtr hdc = e.Graphics.GetHdc();
+                try {
+                    Message m = Message.Create(Handle, NativeMethods.WM_PAINT, hdc, IntPtr.Zero);
+                    base.WndProc(ref m);
+                } finally {
+                    e.Graphics.ReleaseHdc();
+                }
+            }
+        }
+
+        private void DrawTabPage(Graphics g, int nIndex) {
+            bool selected = base.SelectedIndex == nIndex;
+            // タブ位置を微調整
+            Rectangle tabBounds = base.GetTabRect(nIndex);
+            Rectangle textFace = tabBounds;
+            switch (base.Alignment) {
+                case TabAlignment.Top:
+                    tabBounds.Width += 1;
+                    if (selected) {
+                        tabBounds.Height += 2;
+                    } else {
+                        tabBounds.Y += 1;
+                        textFace.Y -= 2;
+                    }
+                    break;
+
+                case TabAlignment.Left:
+                    tabBounds.Y += 1;
+                    tabBounds.Height += 1;
+                    if (selected) {
+                        tabBounds.Width += 1;
+                    } else {
+                        tabBounds.X += 1;
+                        tabBounds.Width -= 1;
+                    }
+                    break;
+
+                case TabAlignment.Bottom:
+                    tabBounds.Width += 1;
+                    if (selected) {
+                        tabBounds.Height += 1;
+                        tabBounds.Y -= 1;
+                    } else {
+                        tabBounds.Height -= 1;
+                        textFace.Y += 2;
+                    }
+                    break;
+
+                case TabAlignment.Right:
+                    tabBounds.Y += 1;
+                    tabBounds.Height += 1;
+                    if (selected) {
+                        tabBounds.X -= 4;
+                        tabBounds.Width += 4;
+                    } else {
+                        tabBounds.X -= 1;
+                        tabBounds.Width -= 1;
+                    }
+                    break;
+
+            }
+            int bmpWidth;
+            int bmpHeight;
+            switch (base.Alignment) {
+                case TabAlignment.Left:
+                case TabAlignment.Right:
+                    bmpWidth = tabBounds.Height;
+                    bmpHeight = tabBounds.Width;
+                    break;
+                default:
+                    bmpWidth = tabBounds.Width;
+                    bmpHeight = tabBounds.Height;
+                    break;
+            }
+
+            // bmp へ書き出す
+            using (Bitmap bmp = new Bitmap(bmpWidth, bmpHeight)) {
+                using (Graphics bmpGraphics = Graphics.FromImage(bmp)) {
+                    if (selected) {
+                        // Pressed の bmp は下１ドットが空白になるので削る
+                        Renderer.SetParameters(VisualStyleElement.Tab.TabItem.Pressed);
+                        Renderer.DrawBackground(bmpGraphics, new Rectangle(0, 0, bmpWidth, bmpHeight + 1), new Rectangle(0, 0, bmpWidth, bmpHeight));
+                    } else {
+                        Renderer.SetParameters(VisualStyleElement.Tab.TabItem.Normal);
+                        Renderer.DrawBackground(bmpGraphics, new Rectangle(0, 0, bmpWidth, bmpHeight));
+                    }
+                }
+                // Alignment にあわせて回転
+                switch (base.Alignment) {
+                    case TabAlignment.Bottom:
+                        bmp.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                        break;
+                    case TabAlignment.Left:
+                        bmp.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                        break;
+                    case TabAlignment.Right:
+                        bmp.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                        break;
+                }
+                g.DrawImage(bmp, tabBounds);
+                DrawItemEventArgs e = new DrawItemEventArgs(g, base.Font, base.GetTabRect(nIndex), nIndex, selected ? DrawItemState.Selected : DrawItemState.None);
+                switch (base.Alignment) {
+                    case TabAlignment.Top:
+                    case TabAlignment.Bottom:
+                        DrawItemText(g, textFace, e);
+                        break;
+                    default:
+                        DrawItemRotate(e);
+                        break;
+                }
+            }
+
+        }
+
+        protected override void OnPaintBackground(PaintEventArgs pevent) {
+            base.OnPaintBackground(pevent);
+            if (Application.RenderWithVisualStyles) {
+                Renderer.DrawParentBackground(pevent.Graphics, ClientRectangle, this);
+            } else {
+
+                // VisualStyle が Off のときは、TabItem の背景色を親の背景色で塗りつぶす
+
+                Rectangle rect = this.ClientRectangle;
+
+                // TabItem の表示領域を計算
+                Size itemDisplaySize = this.ItemSize;
+
+                // 高さと幅のいずれかがゼロなら描画しない
+                if (this.ClientRectangle.Height <= 0) return;
+                if (this.ClientRectangle.Width <= 0) return;
+
+                // TabItem の段数を計算
+                int stageY = itemDisplaySize.Height * base.TabPages.Count / this.ClientRectangle.Height + 1;
+                int stageX = itemDisplaySize.Width * base.TabPages.Count / this.ClientRectangle.Width + 1;
+
+                switch (this.Alignment) {
+                    case TabAlignment.Bottom:
+                        rect.Y = this.ClientRectangle.Bottom - itemDisplaySize.Height * stageX - this.Padding.Y;
+                        rect.Height = this.Height - rect.Y;
+                        break;
+                    case TabAlignment.Left:
+                        rect.Width = itemDisplaySize.Width * stageY + this.ClientRectangle.Left;
+                        break;
+                    case TabAlignment.Right:
+                        rect.X = rect.Right - itemDisplaySize.Width * stageY;
+                        rect.Width = itemDisplaySize.Width * stageY;
+                        break;
+                    default:
+                        rect.Height = itemDisplaySize.Height * stageX + this.ClientRectangle.Top + this.Padding.Y;
+                        break;
+                }
+                using (Brush b = new SolidBrush(this.Parent.BackColor)) {
+                    pevent.Graphics.FillRectangle(b, rect);
+                }
+            }
+        }
+
+        #endregion
+
+
         #region VB6 互換プロパティ
 
         // VB6 互換プロパティ
@@ -90,8 +405,8 @@ namespace VBCompatible
         /// </summary>
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public TabVisibleClass TabVisible {
-            get { return m_TabVisibleClass; }
+        public TabVisibleCollection TabVisible {
+            get { return m_TabVisibleCollection; }
         }
 
         /// <summary>
@@ -109,8 +424,8 @@ namespace VBCompatible
         /// <returns>VBSSTab の Index 値</returns>
         private int ToSSTabIndex(int value) {
             int tabControlIndex = 0;
-            for (int i = 0; i < m_TabPages.Count; i++) {
-                if (m_TabPages.get_Visible(i)) {
+            for (int i = 0; i < m_TabPageCollection.Count; i++) {
+                if (m_TabPageCollection.get_Visible(i)) {
                     if (tabControlIndex == value)
                         return i;
                     tabControlIndex++;
@@ -125,10 +440,10 @@ namespace VBCompatible
         /// <param name="value">TabControl の Index 値</param>
         /// <returns>VBSSTab の Index 値</returns>
         private int FromSSTabIndex(int value) {
-            if (m_TabPages.get_Visible(value)) {
+            if (m_TabPageCollection.get_Visible(value)) {
                 int tabControlIndex = 0;
                 for (int i = 0; i < value; i++) {
-                    if (m_TabPages.get_Visible(i)) {
+                    if (m_TabPageCollection.get_Visible(i)) {
                         tabControlIndex++;
                     }
                 }
@@ -201,7 +516,7 @@ namespace VBCompatible
         /// </summary>
         [Browsable(false)]
         public new VBTabPageCollection Controls {
-            get { return m_TabPages; }
+            get { return m_TabPageCollection; }
         }
 
         /// <summary>
@@ -210,7 +525,7 @@ namespace VBCompatible
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new VBTabPageCollection TabPages {
-            get { return m_TabPages; }
+            get { return m_TabPageCollection; }
         }
 
         // TabPage の表示/非表示を保持するクラス
@@ -377,7 +692,7 @@ namespace VBCompatible
                 if (m_Owner.DesignMode)
                     TabPages.RemoveAt(index);
                 else
-                    Recreate();
+                    m_Owner.CreateVisibleTabs();
             }
 
             IEnumerator IEnumerable.GetEnumerator() {
@@ -393,37 +708,7 @@ namespace VBCompatible
             /// <param name="e">イベント データを格納した EventArgs</param>
             protected void OnTabVisibleChanged(object sender, EventArgs e) {
                 if (m_Owner.DesignMode) return;     // デザインモードでは何もしない
-                Recreate();
-            }
-
-            private void Recreate() {
-                m_Owner.m_EventSkip = true;
-
-                NativeMethods.SendMessage(m_Owner.Handle, NativeMethods.WM_SETREDRAW, IntPtr.Zero, IntPtr.Zero);
-                int selectedIndex = ((TabControl)m_Owner).SelectedIndex;
-
-                TabPages.Clear();
-
-                for (int i = 0; i < this.Count; i++) {
-                    m_List[i].Page.UseVisualStyleBackColor = false;
-                    if (m_List[i].Visible) TabPages.Add(m_List[i].Page);
-                }
-                if (selectedIndex == -1) {
-                    if (TabPages.Count == 0)
-                        ((TabControl)m_Owner).SelectedIndex = -1;
-                    else
-                        ((TabControl)m_Owner).SelectedIndex = 0;
-                } else if (selectedIndex < TabPages.Count)
-                    ((TabControl)m_Owner).SelectedIndex = selectedIndex;
-                else if (TabPages.Count != 0)
-                    ((TabControl)m_Owner).SelectedIndex = 0;
-                else
-                    ((TabControl)m_Owner).SelectedIndex = -1;
-
-                m_Owner.Refresh();
-
-                m_Owner.m_EventSkip = false;
-                m_Owner.OnSelectedIndexChanged(EventArgs.Empty);
+                m_Owner.CreateVisibleTabs();
             }
 
             /// <summary>
@@ -435,12 +720,89 @@ namespace VBCompatible
         }
 
         /// <summary>
+        /// 表示用タブを作成
+        /// </summary>
+        protected void CreateVisibleTabs() {
+
+            BeginUpdate();
+            m_EventSkip = true;
+
+            try {
+                int selectedIndex = base.SelectedIndex;
+                base.TabPages.Clear();
+
+                for (int i = 1; i <= TabPages.Count; i++) {
+                    TabPage page = TabPages[i];
+                    if (TabVisible[i - 1]) {
+                        page.Visible = true;
+                        base.TabPages.Add(page);
+                    }
+                }
+
+                if (base.TabPages.Count == 0) {
+                    base.SelectedIndex = -1;
+                } else {
+                    if (selectedIndex == -1) {
+                        base.SelectedIndex = 0;
+                    } else if (selectedIndex < base.TabPages.Count) {
+                        base.SelectedIndex = selectedIndex;
+                    } else {
+                        base.SelectedIndex = -1;
+                    }
+                }
+
+            } finally {
+                m_EventSkip = false;
+                EndUpdate();
+            }
+            OnSelectedIndexChanged(EventArgs.Empty);
+        }
+
+        int updateCount = 0;
+
+        public void BeginUpdate() {
+            if (updateCount == 0) {
+                if (IsHandleCreated) {
+                    NativeMethods.SendMessage(Handle,
+                                NativeMethods.WM_SETREDRAW, IntPtr.Zero, IntPtr.Zero);
+                }
+            }
+            updateCount++;
+        }
+
+        public void EndUpdate() {
+            if (updateCount > 0) {
+                updateCount--;
+                if (updateCount == 0) {
+                    ForceEndUpdate();
+                }
+            } else {
+                ForceEndUpdate();
+            }
+        }
+
+        protected void ForceEndUpdate() {
+            if (IsHandleCreated) {
+                NativeMethods.SendMessage(Handle,
+                            NativeMethods.WM_SETREDRAW, (IntPtr)1, IntPtr.Zero);
+                Refresh();
+            }
+            updateCount = 0;
+        }
+
+        protected override bool CanRaiseEvents {
+            get {
+                return !m_EventSkip;
+            }
+        }
+
+        /// <summary>
         /// TabPage の表示/非表示を設定、取得します。
         /// </summary>
-        public class TabVisibleClass
+        public class TabVisibleCollection
         {
             private VBTabPageCollection m_Owner;
-            internal TabVisibleClass(VBTabPageCollection owner) {
+            internal TabVisibleCollection(VBTabPageCollection owner) {
                 m_Owner = owner;
             }
             /// <summary>

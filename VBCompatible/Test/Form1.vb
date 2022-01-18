@@ -33,16 +33,7 @@ Public Class Form1
         End If
     End Sub
 
-    Class HOGE
-        Public Property A As String
-        Public Property B As String
-    End Class
-
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        VbCommandButton1.Value = True
-    End Sub
-
-    Private Sub VbCommandButton1_Click(sender As Object, e As EventArgs) Handles VbCommandButton1.Click
         With VbListView1
             .View = View.Details
             .FullRowSelect = True
@@ -77,14 +68,25 @@ Public Class Form1
         End With
     End Sub
 
-    Private Sub VbCommandButton2_Click(sender As Object, e As EventArgs) Handles VbCommandButton2.Click
-        Dim f As New Form2()
-        f.Show()
-    End Sub
-
     Private Sub EventEnumFormToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles EventEnumFormToolStripMenuItem.Click
         Dim f As New VBCompatible.ControlArray.EventEnumForm()
         f.Show()
+    End Sub
+
+    Private Sub ToolStripMenuItem2_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem2.Click
+        VBSSTab1.TabVisible(0) = ToolStripMenuItem2.Checked
+    End Sub
+
+    Private Sub ToolStripMenuItem3_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem3.Click
+        VBSSTab1.TabVisible(1) = ToolStripMenuItem3.Checked
+    End Sub
+
+    Private Sub ToolStripMenuItem4_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem4.Click
+        VBSSTab1.TabVisible(2) = ToolStripMenuItem4.Checked
+    End Sub
+
+    Private Sub ToolStripMenuItem5_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem5.Click
+        VBSSTab1.TabVisible(3) = ToolStripMenuItem5.Checked
     End Sub
 
 End Class

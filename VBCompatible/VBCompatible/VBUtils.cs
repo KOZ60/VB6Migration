@@ -120,8 +120,8 @@ namespace VBCompatible
         /// <param name="con">選択可能かどうかを取得するコントロール</param>
         /// <returns>選択可能なら true、そうでなければ false が返ります。</returns>
         public static bool IsSelectable(this Control con) {
-            // Form は 選択可能だが便宜上選択不可として扱う
-            if (con is Form) {
+            // Form や TabControl 等のコンテナは 選択可能だが便宜上選択不可として扱う
+            if (con is Form || con is TabControl || con is Panel) {
                 return false;
             }
             return GetStyle(con, ControlStyles.Selectable);
