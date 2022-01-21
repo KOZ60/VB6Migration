@@ -1,0 +1,17 @@
+DROP TABLE TBL_MASTER
+/
+CREATE TABLE TBL_MASTER
+(
+    SEQ                            NUMBER NOT NULL,
+    CODE                           VARCHAR2(10),
+    NAME                           VARCHAR2(40),
+    KINGAKU                        NUMBER(10,3),
+    HIDUKE                         VARCHAR2(8),
+    HIDUKE2                        VARCHAR2(8),
+    FLG1                           VARCHAR2(1),
+    CONSTRAINT TBL_MASTER_PK PRIMARY KEY (SEQ) USING INDEX
+        STORAGE(INITIAL 64K NEXT 1M MINEXTENTS 1 MAXEXTENTS 2147483645 BUFFER_POOL DEFAULT)
+        ENABLE
+)
+STORAGE(INITIAL 64K NEXT 1M MINEXTENTS 1 MAXEXTENTS 2147483645 BUFFER_POOL DEFAULT)
+/
