@@ -7,9 +7,8 @@ namespace VBCompatible
     /// キャッシュを作成するための基本クラスを提供します。
     /// </summary>
     /// <typeparam name="TKey">要素に対するキーの型を指定します。</typeparam>
-    /// <typeparam name="TValue">要素の型を指定します。要素は IDisposable インターフェイスを実装する必要があります。</typeparam>
-    public abstract class VBCache<TKey, TValue> : IDisposable
-        where TValue : IDisposable
+    /// <typeparam name="TValue">要素の型を指定します。</typeparam>
+    public abstract class VBCache<TKey, TValue> 
     {
         const int InitialCapacity = 256;
 
@@ -84,7 +83,6 @@ namespace VBCompatible
                         TKey deleteKey = m_RemoveList[0];
                         m_RemoveList.RemoveAt(0);
                         TValue tmp = m_Items[deleteKey];
-                        tmp.Dispose();
                         m_Items.Remove(deleteKey);
                     }
 
@@ -108,35 +106,5 @@ namespace VBCompatible
         /// </remarks>
         protected abstract TValue CreateItem(TKey key);
 
-        public bool IsDisposed { get; private set; }
-
-        protected virtual void Dispose(bool disposing) {
-            if (!IsDisposed) {
-                IsDisposed = true;
-                if (disposing) {
-                    if (m_RemoveList == null) {
-                        m_RemoveList.Clear();
-                        m_RemoveList = null;
-                    }
-                }
-
-                if (m_Items != null) {
-                    foreach (TValue item in m_Items.Values) {
-                        item.Dispose();
-                    }
-                    m_Items.Clear();
-                    m_Items = null;
-                }
-            }
-        }
-
-        ~VBCache() {
-            Dispose(false);
-        }
-
-        public void Dispose() {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
     }
 }

@@ -43,7 +43,7 @@ namespace VBCompatible
             m_TabVisibleCollection = new TabVisibleCollection(m_TabPageCollection);
             base.ResizeRedraw = true;
             base.DrawMode = TabDrawMode.OwnerDrawFixed;
-            onwerDraw = new VBOnwerDraw(this, true, false);
+            onwerDraw = new VBOnwerDraw(this, true, NativeDrawMode.WmPaint);
         }
 
         #region Font
@@ -134,9 +134,8 @@ namespace VBCompatible
                     rectBackGround.Height += this.Padding.Y;
                     break;
             }
-            using (Brush b = new SolidBrush(BackColor)) {
-                e.Graphics.FillRectangle(b, rectBackGround);
-            }
+            var brush = VBGraphicsCache.GetSolidBrush(BackColor);
+            e.Graphics.FillRectangle(brush, rectBackGround);
         }
 
         // タブが横にあるとき、画像を回転して描画する
@@ -387,9 +386,8 @@ namespace VBCompatible
                         rect.Height = itemDisplaySize.Height * stageX + this.ClientRectangle.Top + this.Padding.Y;
                         break;
                 }
-                using (Brush b = new SolidBrush(this.Parent.BackColor)) {
-                    pevent.Graphics.FillRectangle(b, rect);
-                }
+                var brush = VBGraphicsCache.GetSolidBrush(Parent.BackColor);
+                pevent.Graphics.FillRectangle(brush, rect);
             }
         }
 

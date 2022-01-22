@@ -1780,12 +1780,12 @@ namespace VBCompatible
 
 
         [StructLayout(LayoutKind.Sequential)]
-        public class NMTVCUSTOMDRAW
+        public struct NMTVCUSTOMDRAW
         {
             public NMCUSTOMDRAW nmcd;
             public int clrText;
             public int clrTextBk;
-            public int iLevel = 0;
+            public int iLevel;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -3809,6 +3809,34 @@ namespace VBCompatible
                 return result;
             }
         }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct TEXTMETRICW
+        {
+            public int tmHeight;
+            public int tmAscent;
+            public int tmDescent;
+            public int tmInternalLeading;
+            public int tmExternalLeading;
+            public int tmAveCharWidth;
+            public int tmMaxCharWidth;
+            public int tmWeight;
+            public int tmOverhang;
+            public int tmDigitizedAspectX;
+            public int tmDigitizedAspectY;
+            public ushort tmFirstChar;
+            public ushort tmLastChar;
+            public ushort tmDefaultChar;
+            public ushort tmBreakChar;
+            public byte tmItalic;
+            public byte tmUnderlined;
+            public byte tmStruckOut;
+            public byte tmPitchAndFamily;
+            public byte tmCharSet;
+        }
+
+        [DllImport(ExternDll.Gdi32)]
+        public static extern bool GetTextMetricsW(IntPtr hdc, out TEXTMETRICW lptm);
 
         [DllImport(ExternDll.User32)]
         public static extern bool CreateCaret(IntPtr hwnd, SafeHandle hbitmap, int width, int height);

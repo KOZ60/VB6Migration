@@ -20,7 +20,7 @@ namespace VBCompatible
         private readonly OnPaintBackgroundDelegate OnPaintBackground;
 
         private bool CallOnPeint;
-        private bool PrintMessage;
+        private NativeDrawMode DrawMode;
 
         /// <summary>
         /// コントロールのオーナードローを補佐します。
@@ -30,11 +30,11 @@ namespace VBCompatible
         /// コントロールに描画を任せるときは False。</param>
         /// <param name="printMessage">コントロールに描画を任せるときに WM_PRINTCLIENT を送るときは Ture。
         /// WM_PAINT を送るときは False。</param>
-        public VBOnwerDraw(Control owner, bool callOnPaint, bool printMessage)
+        public VBOnwerDraw(Control owner, bool callOnPaint, NativeDrawMode drawMode)
             : base(owner) {
 
             CallOnPeint = callOnPaint;
-            PrintMessage = printMessage;
+            DrawMode = drawMode;
 
             if (callOnPaint) {
                 OnPaint = OnPaintMethodInfo.CreateDelegate<OnPaintDelegate>(owner);
@@ -124,10 +124,13 @@ namespace VBCompatible
             }
         }
 
+        public void DrawNative(PaintEventArgs pe) {
+            DrawNative(pe.Graphics, pe.ClipRectangle);
+        }
+
         public virtual void DrawNative(Graphics g, Rectangle clip) {
-            using (var brush = new SolidBrush(Owner.BackColor)) {
-                g.FillRectangle(brush, clip);
-            }
+            var brush = VBGraphicsCache.GetSolidBrush(Owner.BackColor);
+            g.FillRectangle(brush, clip);
             IntPtr hdc = g.GetHdc();
             try {
                 Message m;
@@ -135,8 +138,8 @@ namespace VBCompatible
                 m = Message.Create(Handle, NativeMethods.WM_ERASEBKGND, hdc, IntPtr.Zero);
                 DefWndProc(ref m);
 
-                if (PrintMessage) {
-                    int flags = NativeMethods.PRF_ERASEBKGND | NativeMethods.PRF_CLIENT;
+                if (DrawMode == NativeDrawMode.WmPrint) {
+                    int flags = NativeMethods.PRF_CLIENT;
                     if (Owner.IsSelectable()) {
                         flags |= NativeMethods.PRF_CHILDREN;
                     }

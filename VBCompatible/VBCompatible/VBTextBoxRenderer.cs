@@ -99,7 +99,7 @@ namespace VBCompatible
             }
 
             if (DrawBorder) {
-                Rectangle borderRect = ClientRectangle.DeflateRect(new Padding(1));
+                Rectangle borderRect = VBControlPaint.DeflateRect(ClientRectangle, new Padding(1));
                 Graphics.DrawRectangle(SystemPens.WindowFrame, borderRect);
             }
         }
@@ -119,7 +119,8 @@ namespace VBCompatible
                 }
                 // 行の最初の文字の座標を取得
                 Point? pt = GetPositionFromCharIndex(lineStart);
-                if (!pt.HasValue || pt.Value.Y > bottom) {
+                if (!pt.HasValue || pt.Value.Y > bottom || 
+                    pt.Value.Y + g.FontAverageSize.Height > ClientRectangle.Bottom) {
                     break;
                 }
 
@@ -136,7 +137,6 @@ namespace VBCompatible
             for (int i = 0; i < lst.Count; i++) {
                 DrawLine(g, lst[i], text);
             }
-
         }
 
         private enum TextDrawMode

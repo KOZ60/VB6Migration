@@ -265,13 +265,13 @@ namespace VBCompatible
                         break;
 
                     default:
-                        if (m_Owner.ReadOnly && IsIgnoreMessage(m)) break;
+                        if (m_Owner.ReadOnly && IsIgnoreMessage(ref m)) break;
                         base.WndProc(ref m);
                         break;
                 }
             }
 
-            private bool IsIgnoreMessage(Message m) {
+            private bool IsIgnoreMessage(ref Message m) {
                 // F4 押下メッセージ以外は無視
                 if (m.Msg >= NativeMethods.WM_KEYFIRST && m.Msg <= NativeMethods.WM_KEYLAST) {
                     if (m.Msg == NativeMethods.WM_KEYDOWN && (Keys)m.WParam == Keys.F4) return false;
@@ -299,7 +299,9 @@ namespace VBCompatible
         [SR.VB60]
         [DefaultValue(false)]
         public virtual bool ReadOnly {
-            get { return _ReadOnly; }
+            get {
+                return _ReadOnly; 
+            }
             set {
                 if (_ReadOnly != value) {
                     _ReadOnly = value;
@@ -351,6 +353,10 @@ namespace VBCompatible
             }
         }
 
+        private IntPtr SendMessageEditBox(int msg) {
+            return NativeMethods.SendMessage(EditBoxHandle, msg, IntPtr.Zero, IntPtr.Zero);
+        }
+
         /// <summary>
         /// テキスト ボックス コントロールでユーザーが直前の操作を元に戻すことができるかどうかを示す値を取得します。
         /// </summary>
@@ -359,7 +365,7 @@ namespace VBCompatible
         [SR.VBCustom]
         public virtual bool CanUndo {
             get {
-                IntPtr result = NativeMethods.SendMessage(EditBoxHandle, NativeMethods.EM_CANUNDO, IntPtr.Zero, IntPtr.Zero);
+                IntPtr result = SendMessageEditBox(NativeMethods.EM_CANUNDO);
                 return (result != IntPtr.Zero);
             }
         }
@@ -368,35 +374,35 @@ namespace VBCompatible
         /// テキスト ボックスのアンドゥ バッファーから直前に実行された操作に関する情報を削除します。
         /// </summary>
         public virtual void ClearUndo() {
-            NativeMethods.SendMessage(EditBoxHandle, NativeMethods.EM_EMPTYUNDOBUFFER, IntPtr.Zero, IntPtr.Zero);
+            SendMessageEditBox(NativeMethods.EM_EMPTYUNDOBUFFER);
         }
 
         /// <summary>
         /// テキスト ボックスの現在の選択項目をクリップボードに移動します。
         /// </summary>
         public void Cut() {
-            NativeMethods.SendMessage(EditBoxHandle, NativeMethods.WM_CUT, IntPtr.Zero, IntPtr.Zero);
+            SendMessageEditBox(NativeMethods.WM_CUT);
         }
 
         /// <summary>
         /// テキスト ボックスの現在の選択項目をクリップボードにコピーします。
         /// </summary>
         public void Copy() {
-            NativeMethods.SendMessage(EditBoxHandle, NativeMethods.WM_COPY, IntPtr.Zero, IntPtr.Zero);
+            SendMessageEditBox(NativeMethods.WM_COPY);
         }
 
         /// <summary>
         /// テキスト ボックスの現在の選択項目をクリップボードの内容と置き換えます。
         /// </summary>
         public void Paste() {
-            NativeMethods.SendMessage(EditBoxHandle, NativeMethods.WM_PASTE, IntPtr.Zero, IntPtr.Zero);
+            SendMessageEditBox(NativeMethods.WM_PASTE);
         }
 
         /// <summary>
         /// テキスト ボックスで直前に実行された編集操作を元に戻します。
         /// </summary>
         public void Undo() {
-            NativeMethods.SendMessage(EditBoxHandle, NativeMethods.WM_UNDO, IntPtr.Zero, IntPtr.Zero);
+            SendMessageEditBox(NativeMethods.WM_UNDO);
         }
 
         /// <summary>

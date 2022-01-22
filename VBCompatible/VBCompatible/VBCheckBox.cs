@@ -10,7 +10,7 @@ namespace VBCompatible
         public VBCheckBox() {
             ResetFont();
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-            ownerDraw = new VBOnwerDraw(this, false, false);
+            ownerDraw = new VBOnwerDraw(this, false, NativeDrawMode.WmPaint);
         }
 
         #region Font

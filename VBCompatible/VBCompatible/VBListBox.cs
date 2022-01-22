@@ -15,7 +15,7 @@ namespace VBCompatible
             ResetFont();
             ResetForeColor();
             ResetBackColor();
-            ownerDraw = new VBOnwerDraw(this, false, false);
+            ownerDraw = new VBOnwerDraw(this, false, NativeDrawMode.WmPaint);
         }
 
         #region Font/ForeColor/BackColor

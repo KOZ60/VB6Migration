@@ -12,7 +12,7 @@ namespace VBCompatible
             ResetFont();
             ResetForeColor();
             ResetBackColor();
-            ownerDraw = new VBOnwerDraw(this, false, true);
+            ownerDraw = new VBOnwerDraw(this, true, NativeDrawMode.WmPaint);
         }
 
         #region Font/ForeColor/BackColor
@@ -112,6 +112,11 @@ namespace VBCompatible
             if (IsHandleCreated && ReadOnly) {
                 ClearUndo();
             }
+        }
+
+        protected override void OnPaint(PaintEventArgs e) {
+            VBTextBoxRenderer.DrawTextBox(e.Graphics, this, e.ClipRectangle);
+            base.OnPaint(e);
         }
     }
 }

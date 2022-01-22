@@ -200,14 +200,6 @@ namespace VBCompatible
             return (T)result;
         }
 
-        public static Rectangle DeflateRect(this Rectangle rect, Padding padding) {
-            rect.X += padding.Left;
-            rect.Y += padding.Top;
-            rect.Width -= padding.Horizontal;
-            rect.Height -= padding.Vertical;
-            return rect;
-        }
-
         public static void GetSelect(this TextBox box, out int start, out int end) {
             GetSelect(box.Handle, out start, out end);
         }
@@ -261,7 +253,7 @@ namespace VBCompatible
                 NativeMethods.SetTextColor(hDC, intForeColor);
                 NativeMethods.SetBkColor(hDC, intBackColor);
 
-                m.Result = VBNativeBrushCache.GetNativeBrush(backColor);
+                m.Result = VBGraphicsCache.GetNativeBrush(backColor);
             } else {
                 m.Result = NativeMethods.GetStockObject(NativeMethods.StockObjects.HOLLOW_BRUSH);
             }

@@ -9,6 +9,7 @@ namespace VBCompatible
         readonly IntPtr hdc;
         IntPtr? oldFont;
         readonly Graphics graphics;
+        private Size fontAverageSize;
         public readonly Rectangle Clip;
 
         public VBGraphics(Graphics g, Rectangle clip) {
@@ -22,6 +23,14 @@ namespace VBCompatible
             IntPtr old = NativeMethods.SelectObject(hdc, fontHandle);
             if (!oldFont.HasValue) {
                 oldFont = old;
+            }
+            NativeMethods.GetTextMetricsW(hdc, out NativeMethods.TEXTMETRICW tmNative);
+            fontAverageSize = new Size(tmNative.tmAveCharWidth, tmNative.tmHeight);
+        }
+
+        public Size FontAverageSize {
+            get {
+                return fontAverageSize;
             }
         }
 

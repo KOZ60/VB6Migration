@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\Lib\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\Lib\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -72,9 +72,13 @@
     <Compile Include="ControlArray\VBPictureBoxArray.cs" />
     <Compile Include="ControlArray\VBTextBoxArray.cs" />
     <Compile Include="ControlArray\VBTreeViewArray.cs" />
+    <Compile Include="DrawRectangleFlags.cs" />
+    <Compile Include="VBGraphicsCache.cs" />
+    <Compile Include="VBControlPaint.cs" />
     <Compile Include="VBLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="NativeDrawMode.cs" />
     <Compile Include="VBSafeGlobalMemory.cs" />
     <Compile Include="OLE_COLOR.cs" />
     <Compile Include="VBCache.cs" />
@@ -129,7 +133,6 @@
     </Compile>
     <Compile Include="VBGraphics.cs" />
     <Compile Include="VBNativeBrush.cs" />
-    <Compile Include="VBNativeBrushCache.cs" />
     <Compile Include="VBSafePointer.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="VBApp.cs" />

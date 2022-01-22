@@ -37,34 +37,17 @@ Public Class Form1
         With VbListView1
             .View = View.Details
             .FullRowSelect = True
-            If .Items.Count < 2 Then
-                .Columns.Add(" 名　前 ", 100, HorizontalAlignment.Left)
-                .Columns.Add("郵便番号", 100, HorizontalAlignment.Left)
-                .Columns.Add(" 住　所 ", 150, HorizontalAlignment.Left)
-            End If
 
-            Dim i As Integer = .Items.Count
+            For c As Integer = 0 To 20
+                .Columns.Add(String.Format("Column{0}", c), 100, HorizontalAlignment.Left)
+            Next
 
-            .Items.Add("草名木　強", i)
-            .Items(i).SubItems.Add("123-4567")
-            .Items(i).SubItems.Add("東京都 新宿区")
-
-            .Items.Add("木邨　卓也", i + 1)
-            .Items(i + 1).SubItems.Add("111-2222")
-            .Items(i + 1).SubItems.Add("東京都 千代田区")
-
-            .Items.Add("仲居　正弘", i + 2)
-            .Items(i + 2).SubItems.Add("222-3333")
-            .Items(i + 2).SubItems.Add("東京都 港区")
-
-            .Items.Add("蚊取　新語", i + 3)
-            .Items(i + 3).SubItems.Add("333-3333")
-            .Items(i + 3).SubItems.Add("東京都 足立区")
-
-            .Items.Add("稲墻　五老", i + 4)
-            .Items(i + 4).SubItems.Add("444-4444")
-            .Items(i + 4).SubItems.Add("東京都 中央区")
-
+            For r As Integer = 0 To 1000
+                Dim item As ListViewItem = .Items.Add(String.Format("row{0}", r))
+                For c As Integer = 1 To .Columns.Count - 1
+                    item.SubItems.Add(String.Format("{0},{1}", r, c))
+                Next
+            Next
         End With
     End Sub
 
@@ -88,6 +71,28 @@ Public Class Form1
     Private Sub ToolStripMenuItem5_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem5.Click
         VBSSTab1.TabVisible(3) = ToolStripMenuItem5.Checked
     End Sub
+
+    Private Sub mnuFileForm2_Click(sender As Object, e As EventArgs) Handles mnuFileForm2.Click
+        Dim f As New Form2()
+        f.Show()
+    End Sub
+
+    Private Sub CheckBox4_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox4.CheckedChanged
+        VbPanel4.Enabled = CheckBox4.Checked
+    End Sub
+
+    Private Sub CheckBox5_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox5.CheckedChanged
+        VbTreeView1.Enabled = CheckBox5.Checked
+    End Sub
+
+    Private Sub CheckBox6_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox6.CheckedChanged
+        VbPanel5.Enabled = CheckBox6.Checked
+    End Sub
+
+    Private Sub CheckBox7_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox7.CheckedChanged
+        Me.VbListView1.Enabled = CheckBox7.Checked
+    End Sub
+
 
 End Class
 
