@@ -1919,10 +1919,7 @@ namespace VBCompatible
         {
             public IntPtr hdc;
             public bool fErase;
-            public int rcPaint_left;
-            public int rcPaint_top;
-            public int rcPaint_right;
-            public int rcPaint_bottom;
+            public RECT rcPaint;
             public bool fRestore;
             public bool fIncUpdate;
             public int reserved1;

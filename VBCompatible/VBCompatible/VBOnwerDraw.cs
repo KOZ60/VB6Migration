@@ -19,8 +19,8 @@ namespace VBCompatible
         private readonly OnPaintDelegate OnPaint;
         private readonly OnPaintBackgroundDelegate OnPaintBackground;
 
-        private bool CallOnPeint;
-        private NativeDrawMode DrawMode;
+        private readonly bool CallOnPeint;
+        private readonly NativeDrawMode DrawMode;
 
         /// <summary>
         /// コントロールのオーナードローを補佐します。
@@ -28,8 +28,8 @@ namespace VBCompatible
         /// <param name="owner">対象のコントロール。</param>
         /// <param name="callOnPaint">OnPaint/OnPaintBackground を呼び出して描画するときは True。
         /// コントロールに描画を任せるときは False。</param>
-        /// <param name="printMessage">コントロールに描画を任せるときに WM_PRINTCLIENT を送るときは Ture。
-        /// WM_PAINT を送るときは False。</param>
+        /// <param name="drawMode">コントロールに描画を任せるときに WM_PRINTCLIENT を送るときは WmPrint。
+        /// WM_PAINT を送るときは WmPaint。</param>
         public VBOnwerDraw(Control owner, bool callOnPaint, NativeDrawMode drawMode)
             : base(owner) {
 
@@ -72,8 +72,7 @@ namespace VBCompatible
                 var ps = new NativeMethods.PAINTSTRUCT();
                 IntPtr hdc = NativeMethods.BeginPaint(m.HWnd, ref ps);
                 try {
-                    Rectangle clip = Rectangle.FromLTRB(ps.rcPaint_left, ps.rcPaint_top,
-                                                    ps.rcPaint_right, ps.rcPaint_bottom);
+                    Rectangle clip = ps.rcPaint.Rectangle;
                     if (clip.Width > 0 && clip.Height > 0) {
                         IntPtr oldPal = NativeMethods.SetUpPalette(hdc, false, false);
                         try {
@@ -115,8 +114,12 @@ namespace VBCompatible
                     try {
                         OnPaintBackground(pevent);
                     } finally {
+                    }
+                    try {
                         pevent.Graphics.Restore(state);
                         OnPaint(pevent);
+                    } finally {
+
                     }
                 }
             } else {
@@ -125,10 +128,14 @@ namespace VBCompatible
         }
 
         public void DrawNative(PaintEventArgs pe) {
-            DrawNative(pe.Graphics, pe.ClipRectangle);
+            DrawNative(pe.Graphics, pe.ClipRectangle, DrawMode);
         }
 
-        public virtual void DrawNative(Graphics g, Rectangle clip) {
+        public void DrawNative(Graphics g, Rectangle clip) {
+            DrawNative(g, clip, DrawMode);
+        }
+
+        public virtual void DrawNative(Graphics g, Rectangle clip, NativeDrawMode drawMode) {
             var brush = VBGraphicsCache.GetSolidBrush(Owner.BackColor);
             g.FillRectangle(brush, clip);
             IntPtr hdc = g.GetHdc();
@@ -138,9 +145,9 @@ namespace VBCompatible
                 m = Message.Create(Handle, NativeMethods.WM_ERASEBKGND, hdc, IntPtr.Zero);
                 DefWndProc(ref m);
 
-                if (DrawMode == NativeDrawMode.WmPrint) {
+                if (drawMode == NativeDrawMode.WmPrint) {
                     int flags = NativeMethods.PRF_CLIENT;
-                    if (Owner.IsSelectable()) {
+                    if (!Owner.IsContainer()) {
                         flags |= NativeMethods.PRF_CHILDREN;
                     }
                     m = Message.Create(Handle, NativeMethods.WM_PRINTCLIENT, hdc, (IntPtr)flags);

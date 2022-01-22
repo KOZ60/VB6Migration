@@ -114,17 +114,18 @@ namespace VBCompatible
         }
 
         /// <summary>
-        /// 指定したコントロールが選択可能かどうかを取得します。
-        /// CanSelect プロパティと違い、Visible/Enabled プロパティの影響を受けません。
+        /// 指定したコントロールがコンテナかどうかを取得します。
         /// </summary>
-        /// <param name="con">選択可能かどうかを取得するコントロール</param>
-        /// <returns>選択可能なら true、そうでなければ false が返ります。</returns>
-        public static bool IsSelectable(this Control con) {
-            // Form や TabControl 等のコンテナは 選択可能だが便宜上選択不可として扱う
-            if (con is Form || con is TabControl || con is Panel) {
+        /// <param name="con">コンテナかどうかを取得するコントロール</param>
+        /// <returns>コンテナなら true、そうでなければ false が返ります。</returns>
+        public static bool IsContainer(this Control con) {
+            if (con is UserControl) {
                 return false;
             }
-            return GetStyle(con, ControlStyles.Selectable);
+            if (con is Form || con is TabControl || con is Panel || con is GroupBox || con is ToolStrip) {
+                return true;
+            }
+            return !GetStyle(con, ControlStyles.Selectable);
         }
 
         /// <summary>

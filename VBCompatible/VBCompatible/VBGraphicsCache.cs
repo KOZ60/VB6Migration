@@ -7,15 +7,15 @@ namespace VBCompatible
     public class VBGraphicsCache
     {
         public static Pen GetPen(Color color) {
-            return GetPen(color, 1.0f, DashStyle.Solid);
+            return GetPen(color, 1.0f, DashStyle.Solid, PenAlignment.Center);
         }
 
         public static Pen GetPen(Color color, float width) {
-            return GetPen(color, width, DashStyle.Solid);
+            return GetPen(color, width, DashStyle.Solid, PenAlignment.Center);
         }
 
         public static Pen GetPen(Color color, DashStyle style) {
-            return GetPen(color, 1.0f, style);
+            return GetPen(color, 1.0f, style, PenAlignment.Center);
         }
 
         public static Pen GetPen(Color color, float width, DashStyle style) {

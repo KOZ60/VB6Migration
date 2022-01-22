@@ -75,7 +75,7 @@ namespace VBCompatible
 
         private void EnumRegistTabIndex(Control con) {
             RegistTabIndex(con, false);
-            if ((!con.IsSelectable()) && con.HasChildren) {
+            if (con.HasChildren) {
                 for (int i = 0; i < con.Controls.Count; i++) {
                     EnumRegistTabIndex(con.Controls[i]);
                 }
@@ -129,16 +129,12 @@ namespace VBCompatible
         }
 
         // DataGridView のように動的にコントロールを追加するものがあるので
-        // 親に Selectable のものがあったらリストに登録しない
+        // 親にコンテナで無いものがあったらリストに登録しない
 
         private static bool IsRegistControl(Control con) {
             Control p = con.Parent;
             while (p != null) {
-                // Form が見つかったら親に Selectable なものは無い
-                if (p is Form) {
-                    return true;
-                }
-                if (p.IsSelectable()) {
+                if (!p.IsContainer()) {
                     return false;
                 }
                 p = p.Parent;
@@ -146,13 +142,15 @@ namespace VBCompatible
             return true;
         }
 
-        private void RemoveTabIndex(Control con) {
-            if (m_TabIndexList.Contains(con)) {
+        private int RemoveTabIndex(Control con) {
+            int index = m_TabIndexList.IndexOf(con);
+            if (index >= 0) {
+                m_TabIndexList.RemoveAt(index);
                 con.TabIndexChanged -= OnChildTabIndexChanged;
                 con.ControlAdded -= ControlAddedEvent;
                 con.ControlRemoved -= ControlRemovedEvent;
-                m_TabIndexList.Remove(con);
             }
+            return index;
         }
 
         // 子コントロールの TabIndex が変更されたとき
@@ -290,7 +288,7 @@ namespace VBCompatible
             get {
                 for (int i = 0; i < m_TabIndexList.Count; i++) {
                     Control con = m_TabIndexList[i];
-                    if (con.ContainsFocus && con.IsSelectable()) {
+                    if (con.ContainsFocus && !con.IsContainer()) {
                         return con;
                     }
                 }
