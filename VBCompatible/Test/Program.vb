@@ -16,10 +16,3 @@ Module Program
 
 End Module
 
-Public Structure VBDouble
-
-    Private Value As String
-
-
-
-End Structure
