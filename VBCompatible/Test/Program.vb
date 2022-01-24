@@ -1,4 +1,5 @@
 ﻿Imports VBCompatible
+Imports System.Numerics
 
 Module Program
 
@@ -14,3 +15,11 @@ Module Program
     End Sub
 
 End Module
+
+Public Structure VBDouble
+
+    Private Value As String
+
+
+
+End Structure

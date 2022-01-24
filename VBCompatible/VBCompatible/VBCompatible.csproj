@@ -118,6 +118,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="VBSafeDCHandle.cs" />
+    <Compile Include="VBSplitContainer.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="VBSSTab.cs">
       <SubType>Component</SubType>
     </Compile>

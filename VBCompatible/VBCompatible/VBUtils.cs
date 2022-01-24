@@ -122,7 +122,8 @@ namespace VBCompatible
             if (con is UserControl) {
                 return false;
             }
-            if (con is Form || con is TabControl || con is Panel || con is GroupBox || con is ToolStrip) {
+            if (con is IContainerControl || con is TabControl || con is Panel || 
+                con is GroupBox || con is ToolStrip || con is PictureBox) {
                 return true;
             }
             return !GetStyle(con, ControlStyles.Selectable);

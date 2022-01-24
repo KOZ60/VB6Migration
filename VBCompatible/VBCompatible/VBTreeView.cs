@@ -206,7 +206,7 @@ namespace VBCompatible
         // .NET ソースより一部抜粋
         private unsafe void CustomDraw(ref Message m) {
 
-            NativeMethods.NMTVCUSTOMDRAW* nmcd = (NativeMethods.NMTVCUSTOMDRAW*)m.LParam.ToPointer();
+            NativeMethods.NMTVCUSTOMDRAW* nmcd = (NativeMethods.NMTVCUSTOMDRAW*)m.LParam;
 
             switch (nmcd->nmcd.dwDrawStage) {
 
@@ -309,7 +309,7 @@ namespace VBCompatible
                 return;
             }
             // クライアント領域外のものを除く
-            if (Rectangle.Intersect(e.Bounds, base.ClientRectangle).IsEmpty) {
+            if (!ClientRectangle.IntersectsWith(e.Bounds)) {
                 return;
             }
 
