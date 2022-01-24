@@ -121,6 +121,7 @@
     <Compile Include="VBSplitContainer.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ControlArray\VBSplitContainerArray.cs" />
     <Compile Include="VBSSTab.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -539,7 +539,7 @@ namespace VBCompatible
             bool fromUnicode = (Conversion & VbStrConvEx.vbFromUnicode) == VbStrConvEx.vbFromUnicode;
             Conversion = Conversion & ~VbStrConvEx.vbFromUnicode;
 
-            // LCMapStringW を実行
+            // LCMapString を実行
             if (Conversion != 0)
                 value = LCMapStringCaller(value, (VbStrConv)Conversion, LocaleID);
 
