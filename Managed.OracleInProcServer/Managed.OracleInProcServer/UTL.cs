@@ -158,50 +158,6 @@ namespace Managed.OracleInProcServer
 
         public static OracleDbTypeToTypeDictionary OracleDbTypeToType = new OracleDbTypeToTypeDictionary();
 
-        public class OracleDbTypeToDbTypeDictionary : ConvertDictionary<OracleDbType, DbType>
-        {
-            public OracleDbTypeToDbTypeDictionary() {
-                Add(OracleDbType.BFile, DbType.Object);
-                Add(OracleDbType.Blob, DbType.Binary);
-                Add(OracleDbType.BinaryFloat, DbType.Single);
-                Add(OracleDbType.BinaryDouble, DbType.Double);
-                //Add(OracleDbType.Boolean, DbType.Boolean);
-                Add(OracleDbType.Byte, DbType.Byte);
-                Add(OracleDbType.Char, DbType.StringFixedLength);
-                Add(OracleDbType.Clob, DbType.String);
-                Add(OracleDbType.Date, DbType.Date);
-                Add(OracleDbType.Decimal, DbType.Decimal);
-                Add(OracleDbType.Double, DbType.Double);
-                Add(OracleDbType.Int16, DbType.Int16);
-                Add(OracleDbType.Int32, DbType.Int32);
-                Add(OracleDbType.Int64, DbType.Int64);
-                Add(OracleDbType.IntervalDS, DbType.Object);
-                Add(OracleDbType.IntervalYM, DbType.Int64);
-                Add(OracleDbType.Long, DbType.String);
-                Add(OracleDbType.LongRaw, DbType.Binary);
-                Add(OracleDbType.NChar, DbType.StringFixedLength);
-                Add(OracleDbType.NClob, DbType.String);
-                Add(OracleDbType.NVarchar2, DbType.String);
-                //Add(OracleDbType.Object, DbType.Object);
-                Add(OracleDbType.Raw, DbType.Binary);
-                //Add(OracleDbType.Ref, DbType.Object);
-                Add(OracleDbType.RefCursor, DbType.Object);
-                Add(OracleDbType.Single, DbType.Single);
-                Add(OracleDbType.TimeStamp, DbType.Object);
-                Add(OracleDbType.TimeStampLTZ, DbType.Object);
-                Add(OracleDbType.TimeStampTZ, DbType.Object);
-                Add(OracleDbType.Varchar2, DbType.String);
-                Add(OracleDbType.XmlType, DbType.String);
-            }
-
-            protected override DbType CashOut(OracleDbType key) {
-                return DbType.Object;
-            }
-        }
-
-        public static OracleDbTypeToDbTypeDictionary OracleDbTypeToDbType = new OracleDbTypeToDbTypeDictionary();
-
-
         /// <summary>
         /// Type を OracleDbType に変換します。
         /// </summary>
