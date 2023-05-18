@@ -14,7 +14,6 @@ namespace VBCompatible.ControlArray
         public VBTreeViewArray(IContainer Container) : base(Container) { }
 
         protected override void HookUpControl(VBTreeView target) {
-            base.HookUpControl(target);
             if (BeforeLabelEdit != null) target.BeforeLabelEdit += BeforeLabelEdit;
             if (AfterLabelEdit != null) target.AfterLabelEdit += AfterLabelEdit;
             if (BeforeCheck != null) target.BeforeCheck += BeforeCheck;

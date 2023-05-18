@@ -1,47 +1,112 @@
-﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Forms;
-
+﻿
 namespace VBCompatible.ControlArray
 {
-    [ToolboxItem(false)]
-    [DesignerCategory("Code")]
-    [ProvideProperty("Index", typeof(Control))]
-    public class VBControllArray<T> : BaseControlArray, IExtenderProvider where T : Control
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Windows.Forms;
+    using Microsoft.VisualBasic;
+    using Microsoft.VisualBasic.CompilerServices;
+
+    // [ProvideProperty("Index", typeof(T))]
+    public abstract class VBControllArray<T> : Component, 
+                            IExtenderProvider, IEnumerable<T> 
+                            where T : Control, new()
     {
+        private string _Name;
+        protected readonly Dictionary<T, int> indices = new Dictionary<T, int>();
+        protected readonly Dictionary<int, T> controls = new Dictionary<int, T>();
+        protected IContainer components;
+
         public VBControllArray() { }
 
-        public VBControllArray(IContainer Container) : base(Container) { }
+        public VBControllArray(IContainer Container) {
+            Container.Add(this);
+            components = Container;
+        }
+
+        public string Name { 
+            get {
+                return _Name;
+            }
+            set {
+                if (_Name != value) {
+                    _Name = value;
+                    OnNameChanged(EventArgs.Empty);
+                }
+            }
+        }
+
+        protected virtual void OnNameChanged(EventArgs e) {
+            indices.Clear();
+            controls.Clear();
+        }
 
         public T this[int Index] {
             get {
-                return (T)base.BaseGetItem(Index);
+                return controls[Index];
             }
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool CanExtend(object target) {
-            bool flag = false;
-            if (GetControlInstanceType().Equals(target.GetType())) {
-                flag = base.BaseCanExtend(RuntimeHelpers.GetObjectValue(target));
+            var con = target as T;
+            if (con != null) {
+                return false;
             }
-            return flag;
+            return con.GetType().Equals(typeof(T)) && con.Name.StartsWith(Name);
         }
 
-        protected override Type GetControlInstanceType() {
-            return typeof(T);
+        public int GetIndex(T o) {
+            if (indices.TryGetValue(o, out int index)) {
+                return index;
+            }
+            return -1;
         }
 
-        public int GetIndex(Button o) {
-            return base.BaseGetIndex(o);
+        public void SetIndex(T o, int Index) {
+            indices[o] = Index;
+            controls[Index] = o;
+            HookUpEventsOfControl(o);
+            HookUpControl(o);
         }
 
-        protected virtual void HookUpControl(T target) {
+        public void ResetIndex(T o) {
+            if (indices.TryGetValue(o, out int index)) {
+                indices.Remove(o);
+                controls.Remove(index);
+            }
         }
 
-        protected override sealed void HookUpControlEvents(object o) {
-            T target = (T)o;
+        public bool ShouldSerializeIndex(T o) {
+            return indices.ContainsKey(o);
+        }
+
+        public int Count {
+            get {
+                return controls.Count;
+            }
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() {
+            foreach (var kp in controls) {
+                yield return kp.Value;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            foreach (var kp in controls) {
+                yield return kp.Value;
+            }
+        }
+
+        protected override void Dispose(bool disposing) {
+            components = null;
+            base.Dispose(disposing);
+        }
+
+        private void HookUpEventsOfControl(Control target) {
             if (AutoSizeChanged != null) target.AutoSizeChanged += AutoSizeChanged;
             if (BackColorChanged != null) target.BackColorChanged += BackColorChanged;
             if (BackgroundImageChanged != null) target.BackgroundImageChanged += BackgroundImageChanged;
@@ -59,6 +124,7 @@ namespace VBCompatible.ControlArray
             if (Disposed != null) target.Disposed += Disposed;
             if (DockChanged != null) target.DockChanged += DockChanged;
             if (DoubleClick != null) target.DoubleClick += DoubleClick;
+            // For .NET Core or NETx
             //if (DpiChangedAfterParent != null) target.DpiChangedAfterParent += DpiChangedAfterParent;
             //if (DpiChangedBeforeParent != null) target.DpiChangedBeforeParent += DpiChangedBeforeParent;
             if (DragDrop != null) target.DragDrop += DragDrop;
@@ -113,23 +179,110 @@ namespace VBCompatible.ControlArray
             if (Validated != null) target.Validated += Validated;
             if (Validating != null) target.Validating += Validating;
             if (VisibleChanged != null) target.VisibleChanged += VisibleChanged;
-            HookUpControl(target);
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void ResetIndex(T o) {
-            base.BaseResetIndex(o);
+        protected abstract void HookUpControl(T o);
+
+        public int LBound() {
+            if (controls.Count == 0) {
+                return 0;
+            }
+            int minValue = int.MaxValue;
+            foreach (var kp in controls) {
+                if (kp.Key < minValue) {
+                    minValue = kp.Key;
+                }
+            }
+            return minValue;
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SetIndex(T o, int Index) {
-            base.BaseSetIndex(o, Index, false);
+        public int UBound() {
+            if (controls.Count == 0) {
+                return -1;
+            }
+            int maxValue = -1;
+            foreach (var kp in controls) {
+                if (kp.Key > maxValue) {
+                    maxValue = kp.Key;
+                }
+            }
+            return maxValue;
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool ShouldSerializeIndex(T o) {
-            return base.BaseShouldSerializeIndex(o);
+        public void Load(int Index) {
+            if (Index < 0 || controls.ContainsKey(Index) || Count == 0) {
+                throw new IndexOutOfRangeException();
+            }
+            var original = controls[LBound()];
+            var clone = CloneControl(original);
+            SetIndex(clone, Index);
+            original.Parent.Controls.Add(clone);
         }
+
+        public void Unload(int Index) {
+            if (Index < 0) {
+                throw new IndexOutOfRangeException();
+            }
+            if (!controls.TryGetValue(Index, out T ctl)) {
+                throw new IndexOutOfRangeException();
+            }
+            ctl.Parent.Controls.Remove(ctl);
+            controls.Remove(Index);
+            indices.Remove(ctl);
+        }
+
+        private T CloneControl(T ctl) {
+            T newCtl = new T();
+            var properties = TypeDescriptor.GetProperties(ctl);
+            foreach (PropertyDescriptor item in properties) {
+                if (ShouldCopyProperty(ctl, item)) {
+                    try {
+                        item.SetValue(newCtl, item.GetValue(ctl));
+                    } catch {
+
+                    }
+                }
+            }
+            if (newCtl is RadioButton radioButton) {
+                radioButton.Checked = false;
+            }
+            try {
+                // VB6 から移植したフォームは ToolTip1 を持っている
+                var form = ctl.FindForm();
+                var toolTip = Versioned.CallByName(form, "ToolTip1", CallType.Get, new object[0]) as ToolTip;
+                if (toolTip != null) {
+                    var caption = toolTip.GetToolTip(ctl);
+                    if (string.IsNullOrEmpty(caption)) {
+                        toolTip.SetToolTip(newCtl, caption);
+                    }
+                }
+            } catch {
+
+            }
+            return newCtl;
+        }
+
+        protected virtual bool ShouldCopyProperty(T ctl, PropertyDescriptor item) {
+            if (item.IsReadOnly) return false;
+            if (item.SerializationVisibility != DesignerSerializationVisibility.Visible) {
+                return false;
+            }
+            try {
+                if (!item.ShouldSerializeValue(ctl)) {
+                    return false;
+                }
+            } catch {
+                return false;
+            }
+            switch (item.Name) {
+                case "TabIndex":
+                case "Index":
+                case "MdiList":
+                    return false;
+            }
+            return true;
+        }
+
 
         public EventHandler AutoSizeChanged;
         public EventHandler BackColorChanged;
@@ -148,6 +301,7 @@ namespace VBCompatible.ControlArray
         public new EventHandler Disposed;
         public EventHandler DockChanged;
         public EventHandler DoubleClick;
+        // For .NET Core or NETx
         //public EventHandler DpiChangedAfterParent;
         //public EventHandler DpiChangedBeforeParent;
         public DragEventHandler DragDrop;
@@ -202,5 +356,6 @@ namespace VBCompatible.ControlArray
         public EventHandler Validated;
         public CancelEventHandler Validating;
         public EventHandler VisibleChanged;
+
     }
 }

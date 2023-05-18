@@ -14,7 +14,6 @@ namespace VBCompatible.ControlArray
         public VBPictureBoxArray(IContainer Container) : base(Container) { }
 
         protected override void HookUpControl(VBPictureBox target) {
-            base.HookUpControl(target);
             if (LoadCompleted != null) target.LoadCompleted += LoadCompleted;
             if (LoadProgressChanged != null) target.LoadProgressChanged += LoadProgressChanged;
             if (SizeModeChanged != null) target.SizeModeChanged += SizeModeChanged;

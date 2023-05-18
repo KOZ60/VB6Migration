@@ -11,5 +11,7 @@ namespace VBCompatible.ControlArray
         public VBCommandButtonArray() { }
 
         public VBCommandButtonArray(IContainer Container) : base(Container) { }
+
+        protected override void HookUpControl(VBCommandButton o) { }
     }
 }

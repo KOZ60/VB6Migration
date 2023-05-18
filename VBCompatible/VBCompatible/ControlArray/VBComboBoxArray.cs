@@ -15,7 +15,6 @@ namespace VBCompatible.ControlArray
         public VBComboBoxArray(IContainer Container) : base(Container) { }
 
         protected override void HookUpControl(VBComboBox target) {
-            base.HookUpControl(target);
             if (ReadOnlyChanged != null) target.ReadOnlyChanged += ReadOnlyChanged;
             if (Scroll != null) target.Scroll += Scroll;
             if (DrawItem != null) target.DrawItem += DrawItem;

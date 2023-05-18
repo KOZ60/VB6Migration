@@ -14,7 +14,6 @@ namespace VBCompatible.ControlArray
         public VBPanelArray(IContainer Container) : base(Container) { }
 
         protected override void HookUpControl(VBPanel target) {
-            base.HookUpControl(target);
             if (Scroll != null) target.Scroll += Scroll;
         }
 

@@ -14,7 +14,6 @@ namespace VBCompatible.ControlArray
         public VBLabelArray(IContainer Container) : base(Container) { }
 
         protected override void HookUpControl(VBLabel target) {
-            base.HookUpControl(target);
             if (TextAlignChanged != null) target.TextAlignChanged += TextAlignChanged;
         }
 

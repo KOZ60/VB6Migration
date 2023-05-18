@@ -14,7 +14,6 @@ namespace VBCompatible.ControlArray
         public VBListViewArray(IContainer Container) : base(Container) { }
 
         protected override void HookUpControl(VBListView target) {
-            base.HookUpControl(target);
             if (RightToLeftLayoutChanged != null) target.RightToLeftLayoutChanged += RightToLeftLayoutChanged;
             if (AfterLabelEdit != null) target.AfterLabelEdit += AfterLabelEdit;
             if (BeforeLabelEdit != null) target.BeforeLabelEdit += BeforeLabelEdit;

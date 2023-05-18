@@ -15,7 +15,6 @@ namespace VBCompatible.ControlArray
         public VBSSTabArray(IContainer Container) : base(Container) { }
 
         protected override void HookUpControl(VBSSTab target) {
-            base.HookUpControl(target);
             if (UseMnemonicChanged != null) target.UseMnemonicChanged += UseMnemonicChanged;
             if (DrawItem != null) target.DrawItem += DrawItem;
             if (RightToLeftLayoutChanged != null) target.RightToLeftLayoutChanged += RightToLeftLayoutChanged;

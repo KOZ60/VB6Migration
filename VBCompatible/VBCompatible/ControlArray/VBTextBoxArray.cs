@@ -14,7 +14,6 @@ namespace VBCompatible.ControlArray
         public VBTextBoxArray(IContainer Container) : base(Container) { }
 
         protected override void HookUpControl(VBTextBox target) {
-            base.HookUpControl(target);
             if (TextAlignChanged != null) target.TextAlignChanged += TextAlignChanged;
             if (AcceptsTabChanged != null) target.AcceptsTabChanged += AcceptsTabChanged;
             if (BorderStyleChanged != null) target.BorderStyleChanged += BorderStyleChanged;

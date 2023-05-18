@@ -13,7 +13,6 @@ namespace VBCompatible.ControlArray
         public VBCheckBoxArray(IContainer Container) : base(Container) { }
 
         protected override void HookUpControl(VBCheckBox target) {
-            base.HookUpControl(target);
             if (AppearanceChanged != null) target.AppearanceChanged += AppearanceChanged;
             if (CheckedChanged != null) target.CheckedChanged += CheckedChanged;
             if (CheckStateChanged != null) target.CheckStateChanged += CheckStateChanged;

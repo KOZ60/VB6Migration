@@ -14,7 +14,6 @@ namespace VBCompatible.ControlArray
         public VBOptionButtonArray(IContainer Container) : base(Container) { }
 
         protected override void HookUpControl(VBOptionButton target) {
-            base.HookUpControl(target);
             if (AppearanceChanged != null) target.AppearanceChanged += AppearanceChanged;
             if (CheckedChanged != null) target.CheckedChanged += CheckedChanged;
         }

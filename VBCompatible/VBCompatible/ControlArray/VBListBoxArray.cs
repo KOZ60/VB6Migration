@@ -14,7 +14,6 @@ namespace VBCompatible.ControlArray
         public VBListBoxArray(IContainer Container) : base(Container) { }
 
         protected override void HookUpControl(VBListBox target) {
-            base.HookUpControl(target);
             if (Scroll != null) target.Scroll += Scroll;
             if (DrawItem != null) target.DrawItem += DrawItem;
             if (MeasureItem != null) target.MeasureItem += MeasureItem;

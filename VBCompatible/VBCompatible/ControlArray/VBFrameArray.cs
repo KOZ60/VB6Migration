@@ -12,8 +12,6 @@ namespace VBCompatible.ControlArray
 
         public VBFrameArray(IContainer Container) : base(Container) { }
 
-        protected override void HookUpControl(VBFrame target) {
-            base.HookUpControl(target);
-        }
+        protected override void HookUpControl(VBFrame target) { }
     }
 }

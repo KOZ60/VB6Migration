@@ -15,7 +15,6 @@ namespace VBCompatible.ControlArray
 
         protected override void HookUpControl(VBSplitContainer target)
         {
-            base.HookUpControl(target);
             if (AutoValidateChanged != null) target.AutoValidateChanged += AutoValidateChanged;
             if (Scroll != null) target.Scroll += Scroll;
             if (SplitterMoved != null) target.SplitterMoved += SplitterMoved;
