@@ -7,7 +7,6 @@
     [ProvideProperty("Index", typeof(VBTreeView))]
     public class VBTreeViewArray : VBControllArray<VBTreeView>
     {
-
         public VBTreeViewArray() { }
 
         public VBTreeViewArray(IContainer Container) : base(Container) { }

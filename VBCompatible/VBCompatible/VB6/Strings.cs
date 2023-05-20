@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -8,56 +9,14 @@ using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using System.Runtime.CompilerServices;
 
-namespace VBCompatible
+namespace VBCompatible.VB6
 {
     /// <summary>
     /// VB6.0 Strings 互換クラス
     /// </summary>
     [StandardModule]
-    public static class VBStrings
+    public static class Strings
     {
-        /// <summary>
-        /// 式を指定した書式に変換し、その文字列の値を返します。
-        /// </summary>
-        /// <param name="Expression">
-        /// 必ず指定します。任意の式を指定します。引数 expression に指定したデータは、引数 format の書式に従って変換されます。
-        /// </param>
-        /// <param name="Style"></param>
-        /// <param name="DayOfWeek"></param>
-        /// <param name="WeekOfYear"></param>
-        /// <returns></returns>
-        public static string VBFormat(object Expression,
-                                string Style = "",
-                                FirstDayOfWeek DayOfWeek = FirstDayOfWeek.Sunday,
-                                FirstWeekOfYear WeekOfYear = FirstWeekOfYear.Jan1) {
-            if (Expression is long) {
-                Expression = new decimal(Convert.ToInt64(RuntimeHelpers.GetObjectValue(Expression)));
-            } else if (Expression is char) {
-                Expression = Expression.ToString();
-            }
-            int nResult;
-            string str;
-            IntPtr ptr = Marshal.AllocCoTaskMem(24);
-            try {
-                NativeMethods.VariantInit(ptr);
-                try {
-                    Marshal.GetNativeVariantForObject(Expression, ptr);
-                    int dwFlags = (Thread.CurrentThread.CurrentCulture.Calendar is HijriCalendar)
-                                    ? NativeMethods.VAR_CALENDAR_HIJRI : NativeMethods.VAR_FORMAT_NOSUBSTITUTE;
-                    nResult = NativeMethods.VarFormat(ptr, ref Style, (int)DayOfWeek, (int)WeekOfYear, dwFlags, out str);
-                } finally {
-                    NativeMethods.VariantClear(ptr);
-                }
-            } finally {
-                Marshal.FreeCoTaskMem(ptr);
-            }
-            if (nResult < 0) {
-                throw new ArgumentException();
-            }
-            return str;
-        }
-
-
         /// <summary>
         /// 指定した文字列の文字数または指定した変数を格納するのに必要なバイト数を返します。
         /// </summary>
@@ -263,7 +222,9 @@ namespace VBCompatible
                                 ref defaultChar,
                                 out useDefaultChar
                                 );
-
+            if (result == 0) {
+                return false;
+            }
             return !useDefaultChar;
         }
 
@@ -355,21 +316,8 @@ namespace VBCompatible
         /// </returns>
         public static int LenU(string str) {
             if (string.IsNullOrEmpty(str)) return 0;
-
-            int lengthC = str.Length;
-            int lengthU = 0;
-            int i = 0;
-            while (i < lengthC) {
-                char c = str[i];
-                if (i + 1 < lengthC && char.IsSurrogatePair(c, str[i + 1])) {
-                    lengthU++;
-                    i += 2;
-                } else {
-                    lengthU++;
-                    i += 1;
-                }
-            }
-            return lengthU;
+            var info = new StringInfo(str);
+            return info.LengthInTextElements;
         }
 
         /// <summary>
@@ -427,49 +375,13 @@ namespace VBCompatible
         /// </returns>
         public static string MidU(string str, int start, int length) {
             if (string.IsNullOrEmpty(str)) return string.Empty;
-
-            // 開始位置を検索
-
-            int pos = GetStartPositionU(str, start);
-
-            // 開始位置以降の文字を取得
-
+            var info = new StringInfo(str);
+            int end = Math.Min(start + length - 1, info.LengthInTextElements);
             StringBuilder builder = new StringBuilder(str.Length);
-            int lengthU = 0;
-            int lengthC = str.Length;
-
-            while (pos < lengthC && lengthU < length) {
-                char c = str[pos];
-                if (pos + 1 < lengthC && char.IsSurrogatePair(c, str[pos + 1])) {
-                    builder.Append(c);
-                    builder.Append(str[pos + 1]);
-                    lengthU++;
-                    pos += 2;
-                } else {
-                    builder.Append(c);
-                    lengthU++;
-                    pos += 1;
-                }
+            for (int i = start - 1; i < end; i++) {
+                builder.Append(info.SubstringByTextElements(i, 1));
             }
             return builder.ToString();
-        }
-
-        private static int GetStartPositionU(string str, int start) {
-            int lengthC = str.Length;
-            int skipLength = 0;
-            int pos = 0;
-            start = start - 1;
-            while (pos < lengthC && skipLength < start) {
-                char c = str[pos];
-                if (pos + 1 < lengthC && char.IsSurrogatePair(c, str[pos + 1])) {
-                    skipLength++;
-                    pos += 2;
-                } else {
-                    skipLength++;
-                    pos += 1;
-                }
-            }
-            return pos;
         }
 
         /// <summary>
@@ -517,9 +429,16 @@ namespace VBCompatible
         /// <param name="Compare">文字列比較の比較モードを指定する番号を設定します。</param>
         /// <returns>最初に見つかった位置</returns>
         public static int InStrU(int Start, string StringCheck, string StringMatch, CompareMethod Compare = CompareMethod.Binary) {
-            int nPos = Strings.InStr(GetStartPositionU(StringCheck, Start) + 1, StringCheck, StringMatch, Compare);
-            if (nPos == 0) return 0;
-            return LenU(Strings.Mid(StringCheck, 1, nPos));
+            var InfoCheck = new StringInfo(StringCheck);
+            var length = LenU(StringMatch);
+            var end = InfoCheck.LengthInTextElements - length + 1;
+            for (int i = Start - 1; i < end; i++) {
+                var ret = Microsoft.VisualBasic.Strings.StrComp(InfoCheck.SubstringByTextElements(i, length), StringMatch, Compare);
+                if (ret == 0) {
+                    return i + 1;
+                }
+            }
+            return -1;
         }
 
         /// <summary>
@@ -532,11 +451,12 @@ namespace VBCompatible
         /// <param name="Compare">文字列比較の比較モードを指定する番号を設定します。</param>
         /// <returns>最初に出現する位置</returns>
         public static int InStrRevU(string StringCheck, string StringMatch, int Start = -1, CompareMethod Compare = CompareMethod.Binary) {
-            if (Start != -1)
+            if (Start != -1) {
                 StringCheck = LeftU(StringCheck, Start);
-            int nPos = Strings.InStrRev(StringCheck, StringMatch, -1, Compare);
+            }
+            int nPos = Microsoft.VisualBasic.Strings.InStrRev(StringCheck, StringMatch, -1, Compare);
             if (nPos == 0) return 0;
-            return LenU(Strings.Mid(StringCheck, 1, nPos));
+            return LenU(Microsoft.VisualBasic.Strings.Mid(StringCheck, 1, nPos));
         }
 
         /// <summary>
@@ -545,8 +465,8 @@ namespace VBCompatible
         /// <param name="Expression">変換する VBString 型の式。</param>
         /// <param name="Conversion">vb6Conversion 列挙型 メンバ。実行する比較の種類を指定する列挙値。</param>
         /// <returns>変換後の VBString オブジェクト</returns>
-        public static VBString VB6StrConv(VBString Expression, vb6Conversion Conversion) {
-            return VB6StrConv(Expression, Conversion, 0);
+        public static VBString StrConv(VBString Expression, VbStrConv Conversion) {
+            return StrConv(Expression, Conversion, 0);
         }
 
         /// <summary>
@@ -556,21 +476,21 @@ namespace VBCompatible
         /// <param name="Conversion">VbStrConvEx 列挙型 メンバ。実行する比較の種類を指定する列挙値。</param>
         /// <param name="LocaleID">システムとは異なる国別情報識別子 (LCID) を指定できます。</param>
         /// <returns>変換後の VBString オブジェクト</returns>
-        public static VBString VB6StrConv(VBString Expression, vb6Conversion Conversion, int LocaleID) {
+        public static VBString StrConv(VBString Expression, VbStrConv Conversion, int LocaleID) {
             if ((object)Expression == null) return string.Empty;
             if (Expression.LengthB == 0) return string.Empty;
 
             // vbUnicode は先に変換する
 
-            if ((Conversion & vb6Conversion.vbUnicode) == vb6Conversion.vbUnicode) {
+            if ((Conversion & VbStrConv.vbUnicode) == VbStrConv.vbUnicode) {
                 Expression = VBEncoding.Default.GetString(Expression.ToByteArray());
-                Conversion = Conversion & ~vb6Conversion.vbUnicode;
+                Conversion = Conversion & ~VbStrConv.vbUnicode;
             }
 
             // vbFromUnicode は後で変換するので、フラグとして保存する
 
-            bool fromUnicode = (Conversion & vb6Conversion.vbFromUnicode) == vb6Conversion.vbFromUnicode;
-            Conversion = Conversion & ~vb6Conversion.vbFromUnicode;
+            bool fromUnicode = (Conversion & VbStrConv.vbFromUnicode) == VbStrConv.vbFromUnicode;
+            Conversion = Conversion & ~VbStrConv.vbFromUnicode;
 
             // LCMapString を実行
             if (Conversion != 0)
@@ -597,32 +517,32 @@ namespace VBCompatible
             }
 
             int dwMapFlags = 0;
-            bool properCase = (Conversion & VbStrConv.ProperCase) == VbStrConv.ProperCase;
+            bool properCase = (Conversion & VbStrConv.vbProperCase) == VbStrConv.vbProperCase;
 
             // ProperCase(3) が指定されていなければ、Uppercase(1) と Lowercase(2) が有効
 
             if (!properCase) {
-                if ((Conversion & VbStrConv.Uppercase) == VbStrConv.Uppercase) dwMapFlags |= NativeMethods.LCMAP_UPPERCASE;
-                if ((Conversion & VbStrConv.Lowercase) == VbStrConv.Lowercase) dwMapFlags |= NativeMethods.LCMAP_LOWERCASE;
+                if ((Conversion & VbStrConv.vbUpperCase) == VbStrConv.vbUpperCase) dwMapFlags |= NativeMethods.LCMAP_UPPERCASE;
+                if ((Conversion & VbStrConv.vbLowerCase) == VbStrConv.vbLowerCase) dwMapFlags |= NativeMethods.LCMAP_LOWERCASE;
             }
 
             // その他のフラグを設定
 
-            if ((Conversion & VbStrConv.Wide) == VbStrConv.Wide) dwMapFlags |= NativeMethods.LCMAP_FULLWIDTH;
-            if ((Conversion & VbStrConv.Narrow) == VbStrConv.Narrow) dwMapFlags |= NativeMethods.LCMAP_HALFWIDTH;
+            if ((Conversion & VbStrConv.vbWide) == VbStrConv.vbWide) dwMapFlags |= NativeMethods.LCMAP_FULLWIDTH;
+            if ((Conversion & VbStrConv.vbNarrow) == VbStrConv.vbNarrow) dwMapFlags |= NativeMethods.LCMAP_HALFWIDTH;
 
-            if ((Conversion & VbStrConv.Hiragana) == VbStrConv.Hiragana) dwMapFlags |= NativeMethods.LCMAP_HIRAGANA;
-            if ((Conversion & VbStrConv.Katakana) == VbStrConv.Katakana) dwMapFlags |= NativeMethods.LCMAP_KATAKANA;
+            if ((Conversion & VbStrConv.vbHiragana) == VbStrConv.vbHiragana) dwMapFlags |= NativeMethods.LCMAP_HIRAGANA;
+            if ((Conversion & VbStrConv.vbKatakana) == VbStrConv.vbKatakana) dwMapFlags |= NativeMethods.LCMAP_KATAKANA;
 
-            if ((Conversion & VbStrConv.SimplifiedChinese) == VbStrConv.SimplifiedChinese) dwMapFlags |= NativeMethods.LCMAP_SIMPLIFIED_CHINESE;
-            if ((Conversion & VbStrConv.TraditionalChinese) == VbStrConv.TraditionalChinese) dwMapFlags |= NativeMethods.LCMAP_TRADITIONAL_CHINESE;
-            if ((Conversion & VbStrConv.LinguisticCasing) == VbStrConv.LinguisticCasing) dwMapFlags |= NativeMethods.LCMAP_LINGUISTIC_CASING;
+            if ((Conversion & VbStrConv.vbSimplifiedChinese) == VbStrConv.vbSimplifiedChinese) dwMapFlags |= NativeMethods.LCMAP_SIMPLIFIED_CHINESE;
+            if ((Conversion & VbStrConv.vbTraditionalChinese) == VbStrConv.vbTraditionalChinese) dwMapFlags |= NativeMethods.LCMAP_TRADITIONAL_CHINESE;
+            if ((Conversion & VbStrConv.vbLinguisticCasing) == VbStrConv.vbLinguisticCasing) dwMapFlags |= NativeMethods.LCMAP_LINGUISTIC_CASING;
 
             // 必要なバッファ長を調べ、アンマネージメモリを確保する
 
             int stringLength = NativeMethods.LCMapString(cultureInfo.LCID, dwMapFlags, value, value.Length, IntPtr.Zero, 0);
             if (stringLength == 0) {
-                throw new Exception(string.Format("LCMapString がエラー値を返しました。{0}", Marshal.GetLastWin32Error()));
+                throw new Win32Exception("LCMapString がエラーを返しました。");
             }
 
             // 文字数が返るので２倍のバイト数が必要
@@ -634,7 +554,7 @@ namespace VBCompatible
                 // 変換
                 int result = NativeMethods.LCMapString(cultureInfo.LCID, dwMapFlags, value, value.Length, buffer, bufferLength);
                 if (result == 0) {
-                    throw new Exception(string.Format("LCMapString がエラー値を返しました。{0}", Marshal.GetLastWin32Error()));
+                    throw new Win32Exception("LCMapString がエラーを返しました。");
                 }
 
                 // 文字数分切り出し

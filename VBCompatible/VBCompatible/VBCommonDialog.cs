@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using VBCompatible.VB6;
 
 namespace VBCompatible
 {

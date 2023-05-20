@@ -21,30 +21,53 @@ Partial Class Form2
     'コード エディターを使って変更しないでください。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.VbTextBox1 = New VBCompatible.VBTextBox()
+        Me.components = New System.ComponentModel.Container()
+        Me.cmd01 = New VBCompatible.VBCommandButton()
+        Me.cmd = New VBCompatible.ControlArray.VBCommandButtonArray(Me.components)
+        Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
+        Me.VbCommandButton1 = New VBCompatible.VBCommandButton()
+        CType(Me.cmd, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
-        'VbTextBox1
+        'cmd01
         '
-        Me.VbTextBox1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.VbTextBox1.Location = New System.Drawing.Point(0, 0)
-        Me.VbTextBox1.Multiline = True
-        Me.VbTextBox1.Name = "VbTextBox1"
-        Me.VbTextBox1.Size = New System.Drawing.Size(403, 325)
-        Me.VbTextBox1.TabIndex = 0
+        Me.cmd.SetIndex(Me.cmd01, 0)
+        Me.cmd01.Location = New System.Drawing.Point(12, 12)
+        Me.cmd01.Name = "cmd01"
+        Me.cmd01.Size = New System.Drawing.Size(162, 36)
+        Me.cmd01.TabIndex = 0
+        Me.cmd01.Text = "VbCommandButton1"
+        Me.ToolTip1.SetToolTip(Me.cmd01, "ほげほげ")
+        Me.cmd01.UseVisualStyleBackColor = True
+        '
+        'cmd
+        '
+        '
+        'VbCommandButton1
+        '
+        Me.VbCommandButton1.Location = New System.Drawing.Point(229, 54)
+        Me.VbCommandButton1.Name = "VbCommandButton1"
+        Me.VbCommandButton1.Size = New System.Drawing.Size(125, 29)
+        Me.VbCommandButton1.TabIndex = 1
+        Me.VbCommandButton1.Text = "VbCommandButton1"
+        Me.VbCommandButton1.UseVisualStyleBackColor = True
         '
         'Form2
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(403, 325)
-        Me.Controls.Add(Me.VbTextBox1)
+        Me.Controls.Add(Me.VbCommandButton1)
+        Me.Controls.Add(Me.cmd01)
         Me.Name = "Form2"
         Me.Text = "TabIndex Demo"
+        CType(Me.cmd, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
-        Me.PerformLayout()
 
     End Sub
 
-    Friend WithEvents VbTextBox1 As VBCompatible.VBTextBox
+    Friend WithEvents cmd01 As VBCompatible.VBCommandButton
+    Friend WithEvents cmd As VBCompatible.ControlArray.VBCommandButtonArray
+    Public WithEvents ToolTip1 As ToolTip
+    Friend WithEvents VbCommandButton1 As VBCompatible.VBCommandButton
 End Class

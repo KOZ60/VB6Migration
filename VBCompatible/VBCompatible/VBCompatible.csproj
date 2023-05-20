@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VBCompatible</RootNamespace>
     <AssemblyName>VBCompatible</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
@@ -94,6 +96,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DrawRectangleFlags.cs" />
+    <Compile Include="VB6\Constants.cs" />
+    <Compile Include="VB6\Strings.cs" />
+    <Compile Include="VB6\Support.cs" />
     <Compile Include="VBGraphicsCache.cs" />
     <Compile Include="VBControlPaint.cs" />
     <Compile Include="VBLabel.cs">
@@ -165,7 +170,6 @@
     <Compile Include="VBGlobal.cs" />
     <Compile Include="VBSystem.cs" />
     <Compile Include="VBString.cs" />
-    <Compile Include="VBStrings.cs" />
     <Compile Include="VBHiddenModule.cs" />
     <Compile Include="VBTextBox.cs">
       <SubType>Component</SubType>

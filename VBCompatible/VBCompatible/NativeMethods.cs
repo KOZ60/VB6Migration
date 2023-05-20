@@ -1,16 +1,15 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
-using Microsoft.Win32;
-
-namespace VBCompatible
+﻿namespace VBCompatible
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.IO;
+    using System.Runtime.InteropServices;
+    using System.Text;
+    using System.Windows.Forms;
+
     internal static class NativeMethods
     {
         public const int ERROR_SUCCESS = 0;
@@ -1062,21 +1061,21 @@ namespace VBCompatible
 
         // ウインドウスタイルをセット
         public static int SetWindowStyle(IntPtr hwnd, int style) {
-            int newStyle = NativeMethods.GetWindowLong(hwnd, NativeMethods.GWL_STYLE);
+            int newStyle = GetWindowLong(hwnd, GWL_STYLE);
             newStyle = newStyle | style;
-            return NativeMethods.SetWindowLong(hwnd, NativeMethods.GWL_STYLE, newStyle);
+            return SetWindowLong(hwnd, GWL_STYLE, newStyle);
         }
 
         // ウインドウスタイルをリセット
         public static int ResetWindowStyle(IntPtr hwnd, int style) {
-            int newStyle = NativeMethods.GetWindowLong(hwnd, NativeMethods.GWL_STYLE);
+            int newStyle = GetWindowLong(hwnd, GWL_STYLE);
             newStyle = newStyle | ~style;
-            return NativeMethods.SetWindowLong(hwnd, NativeMethods.GWL_STYLE, newStyle);
+            return SetWindowLong(hwnd, GWL_STYLE, newStyle);
         }
 
         // ウインドウのスタイルを取得
         public static int GetWindowStyle(IntPtr hwnd, int mask) {
-            int style = NativeMethods.GetWindowLong(hwnd, NativeMethods.GWL_STYLE);
+            int style = GetWindowLong(hwnd, GWL_STYLE);
             style = style & mask;
             return style;
         }
@@ -1540,7 +1539,7 @@ namespace VBCompatible
 
         public static int ListView_GetNextItem(IntPtr hwndRef, int index, int flags) {
             IntPtr LParam = new IntPtr(MAKEDWORD(flags, 0));
-            IntPtr result = SendMessage(hwndRef, LVM_GETNEXTITEM, new IntPtr(index), new IntPtr(flags));
+            IntPtr result = SendMessage(hwndRef, LVM_GETNEXTITEM, new IntPtr(index), LParam);
             return (int)result;
         }
 
@@ -1629,7 +1628,7 @@ namespace VBCompatible
             WC_COMPOSITECHECK = 0x00000200,
             WC_NO_BEST_FIT_CHARS = 0x00000400;
 
-        [DllImport(ExternDll.Kernel32, CharSet = CharSet.Unicode)]
+        [DllImport(ExternDll.Kernel32, CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int WideCharToMultiByte(
                     int CodePage,
                     int dwFlags,
@@ -1640,7 +1639,7 @@ namespace VBCompatible
                     ref char lpDefaultChar,
                     out bool lpUsedDefaultChar);
 
-        [DllImport(ExternDll.Kernel32, CharSet = CharSet.Unicode)]
+        [DllImport(ExternDll.Kernel32, CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int WideCharToMultiByte(
                     int CodePage,
                     int dwFlags,
@@ -1950,7 +1949,7 @@ namespace VBCompatible
             public RECT NormalPosition;
 
             public WINDOWPLACEMENT() {
-                this.Length = Marshal.SizeOf(typeof(NativeMethods.WINDOWPLACEMENT));
+                this.Length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
             }
         }
 
@@ -2187,12 +2186,12 @@ namespace VBCompatible
 
         // WM_PRINT
         public const int
-            PRF_CHECKVISIBLE    = 0x00000001,
-            PRF_NONCLIENT       = 0x00000002,
-            PRF_CLIENT          = 0x00000004,
-            PRF_ERASEBKGND      = 0x00000008,
-            PRF_CHILDREN        = 0x00000010,
-            PRF_OWNED           = 0x00000020;
+            PRF_CHECKVISIBLE = 0x00000001,
+            PRF_NONCLIENT = 0x00000002,
+            PRF_CLIENT = 0x00000004,
+            PRF_ERASEBKGND = 0x00000008,
+            PRF_CHILDREN = 0x00000010,
+            PRF_OWNED = 0x00000020;
 
         [StructLayout(LayoutKind.Sequential)]
         public class COMRECT
@@ -2235,23 +2234,20 @@ namespace VBCompatible
             }
         }
 
-        [DllImport(ExternDll.Uxtheme, ExactSpelling = true, CharSet = CharSet.Unicode)]
-        public static extern int GetThemeTextExtent(IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, [MarshalAs(UnmanagedType.LPWStr)] string pszText, int iCharCount, int dwTextFlags, [In] NativeMethods.COMRECT pBoundingRect, [Out] NativeMethods.COMRECT pExtentRect);
-
         // GDI+ で生成するハーフトーンの品質を向上
         public static IntPtr SetUpPalette(IntPtr dc, bool force, bool realizePalette) {
             IntPtr halftonePalette = Graphics.GetHalftonePalette();
-            IntPtr result = NativeMethods.SelectPalette(dc, halftonePalette, (force ? 0 : 1));
+            IntPtr result = SelectPalette(dc, halftonePalette, (force ? 0 : 1));
             if (result != IntPtr.Zero && realizePalette) {
-                NativeMethods.RealizePalette(dc);
+                RealizePalette(dc);
             }
             return result;
         }
 
         // WM_PRINT を送って hdc に描画してもらう
         public static void PaintDC(Control con, IntPtr hdc) {
-            NativeMethods.SendMessage(con.Handle, NativeMethods.WM_PRINT, hdc,
-                    (IntPtr)(NativeMethods.PRF_CHILDREN | NativeMethods.PRF_CLIENT | NativeMethods.PRF_ERASEBKGND));
+            SendMessage(con.Handle, WM_PRINT, hdc,
+                    (IntPtr)(PRF_CHILDREN | PRF_CLIENT | PRF_ERASEBKGND));
         }
 
         [DllImport(ExternDll.User32)]
@@ -2486,7 +2482,7 @@ namespace VBCompatible
         /// </summary>
         private static bool EnumOwnedCallback(IntPtr handle, IntPtr pointer) {
             // オーナーウインドウを取得
-            IntPtr hwndOwner = NativeMethods.GetWindow(handle, NativeMethods.GW_OWNER);
+            IntPtr hwndOwner = GetWindow(handle, GW_OWNER);
 
             // ポインタから OwnedArgument を取得
             GCHandle gch = GCHandle.FromIntPtr(pointer);
@@ -2873,29 +2869,29 @@ namespace VBCompatible
         public static bool SetClipboardText(string value) {
             // Global メモリを確保して文字列をコピー
             var builder = new StringBuilder(value);
-            IntPtr hMem = NativeMethods.GlobalAlloc(GHND, (IntPtr)(value.Length * 2 + 2));
+            IntPtr hMem = GlobalAlloc(GHND, (IntPtr)(value.Length * 2 + 2));
             if (hMem == IntPtr.Zero) {
                 throw new Win32Exception();
             }
-            IntPtr ptr = NativeMethods.GlobalLock(hMem);
+            IntPtr ptr = GlobalLock(hMem);
             if (ptr == IntPtr.Zero) {
                 throw new Win32Exception();
             }
-            NativeMethods.MoveMemory(ptr, builder, value.Length * 2);
-            NativeMethods.GlobalUnlock(hMem);
+            MoveMemory(ptr, builder, value.Length * 2);
+            GlobalUnlock(hMem);
 
             // クリップボード操作
             bool result = false;
-            if (NativeMethods.OpenClipboard(IntPtr.Zero)) {
-                NativeMethods.EmptyClipboard();
-                if (NativeMethods.SetClipboardData(NativeMethods.CF_UNICODETEXT, hMem) != IntPtr.Zero) {
+            if (OpenClipboard(IntPtr.Zero)) {
+                EmptyClipboard();
+                if (SetClipboardData(CF_UNICODETEXT, hMem) != IntPtr.Zero) {
                     result = true;
                 } else {
                     // SetClipboardData が失敗したら解放
                     // 成功した場合はクリップボードが保持するので解放してはいけない
-                    NativeMethods.GlobalFree(hMem);
+                    GlobalFree(hMem);
                 }
-                NativeMethods.CloseClipboard();
+                CloseClipboard();
             }
             return result;
         }
@@ -3391,14 +3387,14 @@ namespace VBCompatible
 
         public static string SearchPath(string fileName) {
             IntPtr filePart;
-            var buffer = new StringBuilder(NativeMethods.MAX_PATH + 1);
-            int result = NativeMethods.SearchPath(null, fileName, null, MAX_PATH, buffer, out filePart);
+            var buffer = new StringBuilder(MAX_PATH + 1);
+            int result = SearchPath(null, fileName, null, MAX_PATH, buffer, out filePart);
             if (result > 0) {
                 return buffer.ToString();
             }
             string pathExt = Environment.GetEnvironmentVariable("PATHEXT");
             foreach (string ext in pathExt.Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)) {
-                result = NativeMethods.SearchPath(null, fileName, ext, MAX_PATH, buffer, out filePart);
+                result = SearchPath(null, fileName, ext, MAX_PATH, buffer, out filePart);
                 if (result > 0) {
                     return buffer.ToString();
                 }
@@ -3505,20 +3501,20 @@ namespace VBCompatible
         );
 
         [DllImport(ExternDll.Comdlg32, EntryPoint = "PrintDlg", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool PrintDlg_32([In, Out] NativeMethods.PRINTDLG_32 lppd);
+        public static extern bool PrintDlg_32([In, Out] PRINTDLG_32 lppd);
 
         [DllImport(ExternDll.Comdlg32, EntryPoint = "PrintDlg", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool PrintDlg_64([In, Out] NativeMethods.PRINTDLG_64 lppd);
+        public static extern bool PrintDlg_64([In, Out] PRINTDLG_64 lppd);
 
-        public static bool PrintDlg([In, Out] NativeMethods.PRINTDLG lppd) {
+        public static bool PrintDlg([In, Out] PRINTDLG lppd) {
             if (IntPtr.Size == 4) {
-                NativeMethods.PRINTDLG_32 lppd_32 = lppd as NativeMethods.PRINTDLG_32;
+                PRINTDLG_32 lppd_32 = lppd as PRINTDLG_32;
                 if (lppd_32 == null) {
                     throw new System.NullReferenceException("PRINTDLG data is null");
                 }
                 return PrintDlg_32(lppd_32);
             } else {
-                NativeMethods.PRINTDLG_64 lppd_64 = lppd as NativeMethods.PRINTDLG_64;
+                PRINTDLG_64 lppd_64 = lppd as PRINTDLG_64;
                 if (lppd_64 == null) {
                     throw new System.NullReferenceException("PRINTDLG data is null");
                 }
@@ -3526,12 +3522,12 @@ namespace VBCompatible
             }
         }
 
-        internal static NativeMethods.PRINTDLG CreatePRINTDLG() {
-            NativeMethods.PRINTDLG data = null;
+        internal static PRINTDLG CreatePRINTDLG() {
+            PRINTDLG data = null;
             if (IntPtr.Size == 4) {
-                data = new NativeMethods.PRINTDLG_32();
+                data = new PRINTDLG_32();
             } else {
-                data = new NativeMethods.PRINTDLG_64();
+                data = new PRINTDLG_64();
             }
             data.lStructSize = Marshal.SizeOf(data);
             data.hwndOwner = IntPtr.Zero;
@@ -3646,8 +3642,8 @@ namespace VBCompatible
             public IntPtr hSetupTemplate { get { return m_hSetupTemplate; } set { m_hSetupTemplate = value; } }
 
             public void Dispose() {
-                NativeMethods.GlobalFree(hDevMode);
-                NativeMethods.GlobalFree(hDevNames);
+                GlobalFree(hDevMode);
+                GlobalFree(hDevNames);
             }
         }
 
@@ -3711,8 +3707,8 @@ namespace VBCompatible
             public IntPtr hSetupTemplate { get { return m_hSetupTemplate; } set { m_hSetupTemplate = value; } }
 
             public void Dispose() {
-                NativeMethods.GlobalFree(hDevMode);
-                NativeMethods.GlobalFree(hDevNames);
+                GlobalFree(hDevMode);
+                GlobalFree(hDevNames);
             }
         }
 
@@ -3894,7 +3890,7 @@ namespace VBCompatible
             public SafeProcessTokenHandle(IntPtr hToken) : base(hToken) { }
 
             protected override bool ReleaseHandleCore() {
-                return NativeMethods.CloseHandle(handle);
+                return CloseHandle(handle);
             }
         }
 

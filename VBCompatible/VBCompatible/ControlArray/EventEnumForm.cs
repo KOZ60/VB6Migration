@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Reflection;
-
-namespace VBCompatible.ControlArray
+﻿namespace VBCompatible.ControlArray
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text;
+    using System.Windows.Forms;
+
     public partial class EventEnumForm : VBForm
     {
         readonly List<Assembly> Assemblies = new List<Assembly>();
-        readonly HashSet<Tuple<string, string>> ControlEvents = new HashSet<Tuple<string, string>>();
-
+        readonly HashSet<string> controlEvents = new HashSet<string>();
         public EventEnumForm() {
             InitializeComponent();
             Assemblies.Add(Assembly.GetAssembly(typeof(Control)));
             Assemblies.Add(Assembly.GetAssembly(typeof(VBTextBox)));
             cboAssembly.Items.AddRange(Assemblies.OrderBy(i => i.FullName).ToArray());
             foreach (EventInfo info in typeof(Control).GetEvents()) {
-                var item = new Tuple<string, string>(info.EventHandlerType.ToString(), info.Name);
-                ControlEvents.Add(item);
+                controlEvents.Add(info.Name);
             }
         }
 
@@ -83,8 +78,12 @@ namespace VBCompatible.ControlArray
                 s2.AppendLine("            o.{0} -= On{0};", item.Name);
                 s3.AppendLine("        private {1} On{0} => new {1}((s, e) => {0}?.Invoke(s, e));",
                                                     item.Name, item.EventHandlerType.Name);
-                s4.AppendLine("        public event {1} {0};",
-                                                    item.Name, item.EventHandlerType.Name);
+                var strNew = string.Empty;
+                if (controlEvents.Contains(item.Name)) {
+                    strNew = "new ";
+                }
+                s4.AppendLine("        public {2}event {1} {0};",
+                                                    item.Name, item.EventHandlerType.Name, strNew);
             }
             var result = template.Replace("%0%", s0);
             result = result.Replace("%1%", s1.ToString().TrimEnd('\r', '\n'));
@@ -94,8 +93,7 @@ namespace VBCompatible.ControlArray
             return result;
         }
 
-        const string template = @"
-    using System;
+        const string template = @"    using System;
     using System.ComponentModel;
     using System.Windows.Forms;
 

@@ -7,7 +7,6 @@
     [ProvideProperty("Index", typeof(VBCheckBox))]
     public class VBCheckBoxArray : VBControllArray<VBCheckBox>
     {
-
         public VBCheckBoxArray() { }
 
         public VBCheckBoxArray(IContainer Container) : base(Container) { }

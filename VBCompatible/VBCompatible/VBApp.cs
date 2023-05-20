@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
-using System.Security.Principal;
-using Microsoft.VisualBasic.ApplicationServices;
-
-namespace VBCompatible
+﻿namespace VBCompatible
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.IO;
+    using System.Reflection;
+    using System.Runtime.InteropServices;
+    using System.Text;
+    using System.Windows.Forms;
+    using System.Security.Principal;
+    using Microsoft.VisualBasic.ApplicationServices;
+    using VBCompatible.VB6;
+
     /// <summary>
     /// VB 互換 App オブジェクト
     /// </summary>

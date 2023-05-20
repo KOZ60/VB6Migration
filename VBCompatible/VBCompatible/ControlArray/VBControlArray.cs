@@ -1,5 +1,4 @@
-﻿
-namespace VBCompatible.ControlArray
+﻿namespace VBCompatible.ControlArray
 {
     using System;
     using System.Collections;
@@ -8,34 +7,43 @@ namespace VBCompatible.ControlArray
     using System.Reflection;
     using System.Windows.Forms;
 
-    // [ProvideProperty("Index", typeof(T))]
+    /// <summary>
+    /// コントロール配列のベースとなるクラス
+    /// </summary>
+    /// <typeparam name="T">配列の要素となるコントロールの型。</typeparam>
+    /// <remarks>
+    /// 継承したクラスで拡張プロパティの定義を行ってください。
+    /// 例)
+    /// [ProvideProperty("Index", typeof(TextBox))]
+    /// </remarks>
     [DesignerCategory("Code")]
     public abstract class VBControllArray<T> : Component, ISupportInitialize,
                             IExtenderProvider, IEnumerable<T>
-                            where T : Control, new() {
-        protected readonly Dictionary<T, int> indices = new Dictionary<T, int>();
-        protected readonly Dictionary<int, T> controls = new Dictionary<int, T>();
-        protected IContainer components;
+                            where T : Control {
 
+        private readonly Dictionary<T, int> _Indices = new Dictionary<T, int>();
+        private readonly Dictionary<int, T> _Controls = new Dictionary<int, T>();
+        private IContainer components;
         private Form _Form;
         private Type _FormType;
         private bool _ToolTipScaned;
         private ToolTip _ToolTip;
+        private const string _ToolTip1Name = "ToolTip1";
         private const BindingFlags _BindingFlags =
                                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         private readonly PropertyDescriptorCollection properties =
                                 TypeDescriptor.GetProperties(typeof(T));
 
-        public VBControllArray() { }
+        protected VBControllArray() { }
 
-        public VBControllArray(IContainer Container) {
-            Container.Add(this);
+        protected VBControllArray(IContainer Container) {
             components = Container;
+            components.Add(this);
         }
 
         public T this[int Index] {
             get {
-                return controls[Index];
+                return _Controls[Index];
             }
         }
 
@@ -51,7 +59,7 @@ namespace VBCompatible.ControlArray
         public int GetIndex(object o) {
             var target = o as T;
             if (target != null) {
-                if (indices.TryGetValue(target, out int index)) {
+                if (_Indices.TryGetValue(target, out int index)) {
                     return index;
                 }
             }
@@ -62,15 +70,15 @@ namespace VBCompatible.ControlArray
             if (!CanExtend(o)) {
                 throw new ArgumentException("型が違います。");
             }
-            if (controls.TryGetValue(Index, out T instance)) {
+            if (_Controls.TryGetValue(Index, out T instance)) {
                 if (!ReferenceEquals(o, instance)) {
                     throw new ArgumentException("同じインデックスが存在しています。");
                 }
             }
             ResetIndex(o);
             var target = (T)o;
-            indices[target] = Index;
-            controls[Index] = target;
+            _Indices[target] = Index;
+            _Controls[Index] = target;
             HookUpEventsOfControl(target);
             HookUpEvents(target);
         }
@@ -81,9 +89,9 @@ namespace VBCompatible.ControlArray
         public void ResetIndex(object o) {
             var target = o as T;
             if (target != null) {
-                if (indices.TryGetValue(target, out int index)) {
-                    indices.Remove(target);
-                    controls.Remove(index);
+                if (_Indices.TryGetValue(target, out int index)) {
+                    _Indices.Remove(target);
+                    _Controls.Remove(index);
                     HookDownEventsOfControl(target);
                     HookDownEvents(target);
                 }
@@ -91,26 +99,25 @@ namespace VBCompatible.ControlArray
         }
 
         public bool ShouldSerializeIndex(object o) {
-            var target = o as T;
-            if (target != null) {
-                return indices.ContainsKey(target);
+            if (o is T target) {
+                return _Indices.ContainsKey(target);
             }
             return false;
         }
 
         public int Count {
             get {
-                return controls.Count;
+                return _Controls.Count;
             }
         }
 
         public int LBound {
             get {
-                if (controls.Count == 0) {
+                if (_Controls.Count == 0) {
                     return 0;
                 }
                 int minValue = int.MaxValue;
-                foreach (var kp in controls) {
+                foreach (var kp in _Controls) {
                     if (kp.Key < minValue) {
                         minValue = kp.Key;
                     }
@@ -121,11 +128,11 @@ namespace VBCompatible.ControlArray
 
         public int UBound {
             get {
-                if (controls.Count == 0) {
+                if (_Controls.Count == 0) {
                     return -1;
                 }
                 int maxValue = -1;
-                foreach (var kp in controls) {
+                foreach (var kp in _Controls) {
                     if (kp.Key > maxValue) {
                         maxValue = kp.Key;
                     }
@@ -135,13 +142,13 @@ namespace VBCompatible.ControlArray
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() {
-            foreach (var kp in controls) {
+            foreach (var kp in _Controls) {
                 yield return kp.Value;
             }
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
-            foreach (var kp in controls) {
+            foreach (var kp in _Controls) {
                 yield return kp.Value;
             }
         }
@@ -155,7 +162,7 @@ namespace VBCompatible.ControlArray
         }
 
         public T Load(int Index) {
-            if (Index < 0 || Count == 0 || controls.ContainsKey(Index)) {
+            if (Index < 0 || Count == 0 || _Controls.ContainsKey(Index)) {
                 throw new IndexOutOfRangeException();
             }
             var clone = CloneControl();
@@ -164,7 +171,7 @@ namespace VBCompatible.ControlArray
         }
 
         public void Unload(int Index) {
-            if (Index < 0 || !controls.TryGetValue(Index, out T ctl)) {
+            if (Index < 0 || !_Controls.TryGetValue(Index, out T ctl)) {
                 throw new IndexOutOfRangeException();
             }
             ResetIndex(ctl);
@@ -172,7 +179,7 @@ namespace VBCompatible.ControlArray
         }
 
         private T CloneControl() {
-            T lowest = controls[LBound];
+            T lowest = _Controls[LBound];
             T ctl = (T)Activator.CreateInstance(typeof(T));
             foreach (PropertyDescriptor p in properties) {
                 if (IsSerialized(lowest, p)) {
@@ -182,7 +189,8 @@ namespace VBCompatible.ControlArray
             if (ctl is RadioButton radioButton) {
                 radioButton.Checked = false;
             }
-            // VB6 から移植したフォームは ToolTip1 を持っているので設定された caption もコピー
+            // VB6 から移植したフォームは ToolTip1 を持っているので
+            // 設定された caption もコピー
             if (ToolTip1 != null) {
                 var caption = ToolTip1.GetToolTip(lowest);
                 if (!string.IsNullOrEmpty(caption)) {
@@ -198,21 +206,20 @@ namespace VBCompatible.ControlArray
                 if (_ToolTipScaned) {
                     return _ToolTip;
                 }
-                var lowest = controls[LBound];
-                if (_Form != null) {
+                var lowest = _Controls[LBound];
+                if (_Form == null) {
                     _Form = lowest.FindForm();
                     _FormType = _Form.GetType();
                 }
-                var pi = _FormType.GetProperty("ToolTip1", _BindingFlags);
+                var pi = _FormType.GetProperty(_ToolTip1Name, _BindingFlags);
                 if (pi != null) {
                     _ToolTip = pi.GetValue(_Form, null) as ToolTip;
                 }
                 if (_ToolTip == null) {
-                    var fi = _FormType.GetField("ToolTip1", _BindingFlags);
+                    var fi = _FormType.GetField(_ToolTip1Name, _BindingFlags);
                     if (fi != null) {
                         _ToolTip = fi.GetValue(_Form) as ToolTip;
                     }
-
                 }
                 _ToolTipScaned = true;
                 return _ToolTip;
@@ -257,9 +264,10 @@ namespace VBCompatible.ControlArray
             o.Disposed -= OnDisposedEvent;
             o.DockChanged -= OnDockChanged;
             o.DoubleClick -= OnDoubleClick;
-            // .NET4.7 Higher
-            //target.DpiChangedAfterParent -= OnDpiChangedAfterParent;
-            //target.DpiChangedBeforeParent -= OnDpiChangedBeforeParent;
+#if NET48
+            o.DpiChangedAfterParent -= OnDpiChangedAfterParent;
+            o.DpiChangedBeforeParent -= OnDpiChangedBeforeParent;
+#endif
             o.DragDrop -= OnDragDrop;
             o.DragEnter -= OnDragEnter;
             o.DragLeave -= OnDragLeave;
@@ -332,9 +340,10 @@ namespace VBCompatible.ControlArray
             o.Disposed += OnDisposedEvent;
             o.DockChanged += OnDockChanged;
             o.DoubleClick += OnDoubleClick;
-            // .NET4.7 Higher
-            //target.DpiChangedAfterParent += OnDpiChangedAfterParent;
-            //target.DpiChangedBeforeParent += OnDpiChangedBeforeParent;
+#if NET47_OR_GREATER
+            o.DpiChangedAfterParent += OnDpiChangedAfterParent;
+            o.DpiChangedBeforeParent += OnDpiChangedBeforeParent;
+#endif
             o.DragDrop += OnDragDrop;
             o.DragEnter += OnDragEnter;
             o.DragLeave += OnDragLeave;
@@ -406,9 +415,10 @@ namespace VBCompatible.ControlArray
         private EventHandler OnDisposedEvent => new EventHandler((s, e) => { DisposedEvent?.Invoke(s, e); });
         private EventHandler OnDockChanged => new EventHandler((s, e) => { DockChanged?.Invoke(s, e); });
         private EventHandler OnDoubleClick => new EventHandler((s, e) => { DoubleClick?.Invoke(s, e); });
-        // For .NET4.7 higher
-        //private EventHandler OnDpiChangedAfterParent => new EventHandler((s, e) => { DpiChangedAfterParent?.Invoke(s, e); });
-        //private EventHandler OnDpiChangedBeforeParent => new EventHandler((s, e) => { DpiChangedBeforeParent?.Invoke(s, e); });
+#if NET47_OR_GREATER
+        private EventHandler OnDpiChangedAfterParent => new EventHandler((s, e) => { DpiChangedAfterParent?.Invoke(s, e); });
+        private EventHandler OnDpiChangedBeforeParent => new EventHandler((s, e) => { DpiChangedBeforeParent?.Invoke(s, e); });
+#endif
         private DragEventHandler OnDragDrop => new DragEventHandler((s, e) => { DragDrop?.Invoke(s, e); });
         private DragEventHandler OnDragEnter => new DragEventHandler((s, e) => { DragEnter?.Invoke(s, e); });
         private EventHandler OnDragLeave => new EventHandler((s, e) => { DragLeave?.Invoke(s, e); });
@@ -479,9 +489,10 @@ namespace VBCompatible.ControlArray
         public event EventHandler DisposedEvent;
         public event EventHandler DockChanged;
         public event EventHandler DoubleClick;
-        // For .NET4.7 higher
-        //public event EventHandler DpiChangedAfterParent;
-        //public event EventHandler DpiChangedBeforeParent;
+#if NET47_OR_GREATER
+        public event EventHandler DpiChangedAfterParent;
+        public event EventHandler DpiChangedBeforeParent;
+#endif
         public event DragEventHandler DragDrop;
         public event DragEventHandler DragEnter;
         public event EventHandler DragLeave;
