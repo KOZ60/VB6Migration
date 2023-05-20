@@ -56,18 +56,67 @@ namespace VBCompatible.ControlArray
             if (type != null) {
                 var sb = new StringBuilder();
                 List<EventInfo> lst = new List<EventInfo>();
-                lst.AddRange(type.GetEvents().OrderBy(i => i.Name).ToArray());
-                foreach (EventInfo info in lst) {
-                    var item = new Tuple<string, string>(info.EventHandlerType.ToString(), info.Name);
-                    if (type == typeof(Control) || !ControlEvents.Contains(item)) {
-                        sb.Append(info.EventHandlerType.ToString());
-                        sb.Append('\t');
-                        sb.AppendLine(info.Name);
-                    }
-                }
-                txtEvents.Text = sb.ToString();
+                lst.AddRange(EnumEvents(type));
+                lst = lst.OrderBy((i) => i.Name).ToList();
+                txtEvents.Text = CreateControlArray(type, lst);
             }
         }
 
+        private const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+        private List<EventInfo> EnumEvents(Type type) {
+            List<EventInfo> events = new List<EventInfo>();
+            events.AddRange(type.GetEvents(flags));
+            if (type.BaseType != typeof(Control)) {
+                events.AddRange(EnumEvents(type.BaseType));
+            }
+            return events;
+        }
+
+        private string CreateControlArray(Type type, List<EventInfo> eventList) {
+            var s0 = type.Name;
+            var s1 = new StringBuilder();
+            var s2 = new StringBuilder();
+            var s3 = new StringBuilder();
+            var s4 = new StringBuilder();
+            foreach (var item in eventList) {
+                s1.AppendLine("            o.{0} += On{0};", item.Name);
+                s2.AppendLine("            o.{0} -= On{0};", item.Name);
+                s3.AppendLine("        private {1} On{0} => new {1}((s, e) => {0}?.Invoke(s, e));",
+                                                    item.Name, item.EventHandlerType.Name);
+                s4.AppendLine("        public event {1} {0};",
+                                                    item.Name, item.EventHandlerType.Name);
+            }
+            var result = template.Replace("%0%", s0);
+            result = result.Replace("%1%", s1.ToString().TrimEnd('\r', '\n'));
+            result = result.Replace("%2%", s2.ToString().TrimEnd('\r', '\n'));
+            result = result.Replace("%3%", s3.ToString().TrimEnd('\r', '\n'));
+            result = result.Replace("%4%", s4.ToString().TrimEnd('\r', '\n'));
+            return result;
+        }
+
+        const string template = @"
+    using System;
+    using System.ComponentModel;
+    using System.Windows.Forms;
+
+    [ProvideProperty(""Index"", typeof(%0%))]
+    public class %0%Array : VBControllArray<%0%> {
+
+        public %0%Array() { }
+
+        public %0%Array(IContainer Container) : base(Container) { }
+
+        protected override void HookUpEvents(%0% o) {
+%1%
+        }
+
+        protected override void HookDownEvents(%0% o) {
+%2%
+        }
+
+%3%
+
+%4%
+    }";
     }
 }

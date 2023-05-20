@@ -1,62 +1,124 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows.Forms;
-
-namespace VBCompatible.ControlArray
+﻿namespace VBCompatible.ControlArray
 {
-    [ToolboxItem(false)]
-    [DesignerCategory("Code")]
+
+    using System;
+    using System.ComponentModel;
+    using System.Windows.Forms;
+
     [ProvideProperty("Index", typeof(VBListView))]
     public class VBListViewArray : VBControllArray<VBListView>
     {
+
         public VBListViewArray() { }
 
         public VBListViewArray(IContainer Container) : base(Container) { }
 
-        protected override void HookUpControl(VBListView target) {
-            if (RightToLeftLayoutChanged != null) target.RightToLeftLayoutChanged += RightToLeftLayoutChanged;
-            if (AfterLabelEdit != null) target.AfterLabelEdit += AfterLabelEdit;
-            if (BeforeLabelEdit != null) target.BeforeLabelEdit += BeforeLabelEdit;
-            if (CacheVirtualItems != null) target.CacheVirtualItems += CacheVirtualItems;
-            if (ColumnClick != null) target.ColumnClick += ColumnClick;
-            if (ColumnReordered != null) target.ColumnReordered += ColumnReordered;
-            if (ColumnWidthChanged != null) target.ColumnWidthChanged += ColumnWidthChanged;
-            if (ColumnWidthChanging != null) target.ColumnWidthChanging += ColumnWidthChanging;
-            if (DrawColumnHeader != null) target.DrawColumnHeader += DrawColumnHeader;
-            if (DrawItem != null) target.DrawItem += DrawItem;
-            if (DrawSubItem != null) target.DrawSubItem += DrawSubItem;
-            if (ItemActivate != null) target.ItemActivate += ItemActivate;
-            if (ItemCheck != null) target.ItemCheck += ItemCheck;
-            if (ItemChecked != null) target.ItemChecked += ItemChecked;
-            if (ItemDrag != null) target.ItemDrag += ItemDrag;
-            if (ItemMouseHover != null) target.ItemMouseHover += ItemMouseHover;
-            if (ItemSelectionChanged != null) target.ItemSelectionChanged += ItemSelectionChanged;
-            if (RetrieveVirtualItem != null) target.RetrieveVirtualItem += RetrieveVirtualItem;
-            if (SearchForVirtualItem != null) target.SearchForVirtualItem += SearchForVirtualItem;
-            if (SelectedIndexChanged != null) target.SelectedIndexChanged += SelectedIndexChanged;
-            if (VirtualItemsSelectionRangeChanged != null) target.VirtualItemsSelectionRangeChanged += VirtualItemsSelectionRangeChanged;
+        protected override void HookUpEvents(VBListView o) {
+            o.AfterLabelEdit += OnAfterLabelEdit;
+            o.BackgroundImageLayoutChanged += OnBackgroundImageLayoutChanged;
+            o.BeforeLabelEdit += OnBeforeLabelEdit;
+            o.CacheVirtualItems += OnCacheVirtualItems;
+            o.ColumnClick += OnColumnClick;
+            o.ColumnReordered += OnColumnReordered;
+            o.ColumnWidthChanged += OnColumnWidthChanged;
+            o.ColumnWidthChanging += OnColumnWidthChanging;
+            o.DrawColumnHeader += OnDrawColumnHeader;
+            o.DrawItem += OnDrawItem;
+            o.DrawSubItem += OnDrawSubItem;
+            o.ItemActivate += OnItemActivate;
+            o.ItemCheck += OnItemCheck;
+            o.ItemChecked += OnItemChecked;
+            o.ItemDrag += OnItemDrag;
+            o.ItemMouseHover += OnItemMouseHover;
+            o.ItemSelectionChanged += OnItemSelectionChanged;
+            o.PaddingChanged += OnPaddingChanged;
+            o.Paint += OnPaint;
+            o.RetrieveVirtualItem += OnRetrieveVirtualItem;
+            o.RightToLeftLayoutChanged += OnRightToLeftLayoutChanged;
+            o.SearchForVirtualItem += OnSearchForVirtualItem;
+            o.SelectedIndexChanged += OnSelectedIndexChanged;
+            o.TextChanged += OnTextChanged;
+            o.VirtualItemsSelectionRangeChanged += OnVirtualItemsSelectionRangeChanged;
         }
 
-        public EventHandler RightToLeftLayoutChanged;
-        public LabelEditEventHandler AfterLabelEdit;
-        public LabelEditEventHandler BeforeLabelEdit;
-        public CacheVirtualItemsEventHandler CacheVirtualItems;
-        public ColumnClickEventHandler ColumnClick;
-        public ColumnReorderedEventHandler ColumnReordered;
-        public ColumnWidthChangedEventHandler ColumnWidthChanged;
-        public ColumnWidthChangingEventHandler ColumnWidthChanging;
-        public DrawListViewColumnHeaderEventHandler DrawColumnHeader;
-        public DrawListViewItemEventHandler DrawItem;
-        public DrawListViewSubItemEventHandler DrawSubItem;
-        public EventHandler ItemActivate;
-        public ItemCheckEventHandler ItemCheck;
-        public ItemCheckedEventHandler ItemChecked;
-        public ItemDragEventHandler ItemDrag;
-        public ListViewItemMouseHoverEventHandler ItemMouseHover;
-        public ListViewItemSelectionChangedEventHandler ItemSelectionChanged;
-        public RetrieveVirtualItemEventHandler RetrieveVirtualItem;
-        public SearchForVirtualItemEventHandler SearchForVirtualItem;
-        public EventHandler SelectedIndexChanged;
-        public ListViewVirtualItemsSelectionRangeChangedEventHandler VirtualItemsSelectionRangeChanged;
+        protected override void HookDownEvents(VBListView o) {
+            o.AfterLabelEdit -= OnAfterLabelEdit;
+            o.BackgroundImageLayoutChanged -= OnBackgroundImageLayoutChanged;
+            o.BeforeLabelEdit -= OnBeforeLabelEdit;
+            o.CacheVirtualItems -= OnCacheVirtualItems;
+            o.ColumnClick -= OnColumnClick;
+            o.ColumnReordered -= OnColumnReordered;
+            o.ColumnWidthChanged -= OnColumnWidthChanged;
+            o.ColumnWidthChanging -= OnColumnWidthChanging;
+            o.DrawColumnHeader -= OnDrawColumnHeader;
+            o.DrawItem -= OnDrawItem;
+            o.DrawSubItem -= OnDrawSubItem;
+            o.ItemActivate -= OnItemActivate;
+            o.ItemCheck -= OnItemCheck;
+            o.ItemChecked -= OnItemChecked;
+            o.ItemDrag -= OnItemDrag;
+            o.ItemMouseHover -= OnItemMouseHover;
+            o.ItemSelectionChanged -= OnItemSelectionChanged;
+            o.PaddingChanged -= OnPaddingChanged;
+            o.Paint -= OnPaint;
+            o.RetrieveVirtualItem -= OnRetrieveVirtualItem;
+            o.RightToLeftLayoutChanged -= OnRightToLeftLayoutChanged;
+            o.SearchForVirtualItem -= OnSearchForVirtualItem;
+            o.SelectedIndexChanged -= OnSelectedIndexChanged;
+            o.TextChanged -= OnTextChanged;
+            o.VirtualItemsSelectionRangeChanged -= OnVirtualItemsSelectionRangeChanged;
+        }
+
+        private LabelEditEventHandler OnAfterLabelEdit => new LabelEditEventHandler((s, e) => AfterLabelEdit?.Invoke(s, e));
+        private EventHandler OnBackgroundImageLayoutChanged => new EventHandler((s, e) => BackgroundImageLayoutChanged?.Invoke(s, e));
+        private LabelEditEventHandler OnBeforeLabelEdit => new LabelEditEventHandler((s, e) => BeforeLabelEdit?.Invoke(s, e));
+        private CacheVirtualItemsEventHandler OnCacheVirtualItems => new CacheVirtualItemsEventHandler((s, e) => CacheVirtualItems?.Invoke(s, e));
+        private ColumnClickEventHandler OnColumnClick => new ColumnClickEventHandler((s, e) => ColumnClick?.Invoke(s, e));
+        private ColumnReorderedEventHandler OnColumnReordered => new ColumnReorderedEventHandler((s, e) => ColumnReordered?.Invoke(s, e));
+        private ColumnWidthChangedEventHandler OnColumnWidthChanged => new ColumnWidthChangedEventHandler((s, e) => ColumnWidthChanged?.Invoke(s, e));
+        private ColumnWidthChangingEventHandler OnColumnWidthChanging => new ColumnWidthChangingEventHandler((s, e) => ColumnWidthChanging?.Invoke(s, e));
+        private DrawListViewColumnHeaderEventHandler OnDrawColumnHeader => new DrawListViewColumnHeaderEventHandler((s, e) => DrawColumnHeader?.Invoke(s, e));
+        private DrawListViewItemEventHandler OnDrawItem => new DrawListViewItemEventHandler((s, e) => DrawItem?.Invoke(s, e));
+        private DrawListViewSubItemEventHandler OnDrawSubItem => new DrawListViewSubItemEventHandler((s, e) => DrawSubItem?.Invoke(s, e));
+        private EventHandler OnItemActivate => new EventHandler((s, e) => ItemActivate?.Invoke(s, e));
+        private ItemCheckEventHandler OnItemCheck => new ItemCheckEventHandler((s, e) => ItemCheck?.Invoke(s, e));
+        private ItemCheckedEventHandler OnItemChecked => new ItemCheckedEventHandler((s, e) => ItemChecked?.Invoke(s, e));
+        private ItemDragEventHandler OnItemDrag => new ItemDragEventHandler((s, e) => ItemDrag?.Invoke(s, e));
+        private ListViewItemMouseHoverEventHandler OnItemMouseHover => new ListViewItemMouseHoverEventHandler((s, e) => ItemMouseHover?.Invoke(s, e));
+        private ListViewItemSelectionChangedEventHandler OnItemSelectionChanged => new ListViewItemSelectionChangedEventHandler((s, e) => ItemSelectionChanged?.Invoke(s, e));
+        private EventHandler OnPaddingChanged => new EventHandler((s, e) => PaddingChanged?.Invoke(s, e));
+        private PaintEventHandler OnPaint => new PaintEventHandler((s, e) => Paint?.Invoke(s, e));
+        private RetrieveVirtualItemEventHandler OnRetrieveVirtualItem => new RetrieveVirtualItemEventHandler((s, e) => RetrieveVirtualItem?.Invoke(s, e));
+        private EventHandler OnRightToLeftLayoutChanged => new EventHandler((s, e) => RightToLeftLayoutChanged?.Invoke(s, e));
+        private SearchForVirtualItemEventHandler OnSearchForVirtualItem => new SearchForVirtualItemEventHandler((s, e) => SearchForVirtualItem?.Invoke(s, e));
+        private EventHandler OnSelectedIndexChanged => new EventHandler((s, e) => SelectedIndexChanged?.Invoke(s, e));
+        private EventHandler OnTextChanged => new EventHandler((s, e) => TextChanged?.Invoke(s, e));
+        private ListViewVirtualItemsSelectionRangeChangedEventHandler OnVirtualItemsSelectionRangeChanged => new ListViewVirtualItemsSelectionRangeChangedEventHandler((s, e) => VirtualItemsSelectionRangeChanged?.Invoke(s, e));
+
+        public event LabelEditEventHandler AfterLabelEdit;
+        public new event EventHandler BackgroundImageLayoutChanged;
+        public event LabelEditEventHandler BeforeLabelEdit;
+        public event CacheVirtualItemsEventHandler CacheVirtualItems;
+        public event ColumnClickEventHandler ColumnClick;
+        public event ColumnReorderedEventHandler ColumnReordered;
+        public event ColumnWidthChangedEventHandler ColumnWidthChanged;
+        public event ColumnWidthChangingEventHandler ColumnWidthChanging;
+        public event DrawListViewColumnHeaderEventHandler DrawColumnHeader;
+        public event DrawListViewItemEventHandler DrawItem;
+        public event DrawListViewSubItemEventHandler DrawSubItem;
+        public event EventHandler ItemActivate;
+        public event ItemCheckEventHandler ItemCheck;
+        public event ItemCheckedEventHandler ItemChecked;
+        public event ItemDragEventHandler ItemDrag;
+        public event ListViewItemMouseHoverEventHandler ItemMouseHover;
+        public event ListViewItemSelectionChangedEventHandler ItemSelectionChanged;
+        public new event EventHandler PaddingChanged;
+        public new event PaintEventHandler Paint;
+        public event RetrieveVirtualItemEventHandler RetrieveVirtualItem;
+        public event EventHandler RightToLeftLayoutChanged;
+        public event SearchForVirtualItemEventHandler SearchForVirtualItem;
+        public event EventHandler SelectedIndexChanged;
+        public new event EventHandler TextChanged;
+        public event ListViewVirtualItemsSelectionRangeChangedEventHandler VirtualItemsSelectionRangeChanged;
     }
 }

@@ -3898,6 +3898,21 @@ namespace VBCompatible
             }
         }
 
+        public const int VAR_FORMAT_NOSUBSTITUTE = 0x20;
+        public const int VAR_CALENDAR_HIJRI = 0x8;
+
+        [DllImport(ExternDll.Oleaut32, ExactSpelling = true)]
+        public static extern int VariantClear(IntPtr pObject);
+
+        [DllImport(ExternDll.Oleaut32, CharSet = CharSet.Unicode, ExactSpelling = true)]
+        public static extern int VarFormat(IntPtr pvariant,
+                                         [MarshalAs(UnmanagedType.VBByRefStr)] ref string sfmt,
+                                         int dow, int woy, int dwFlags,
+                                         [MarshalAs(UnmanagedType.BStr)] out string sb);
+
+        [DllImport(ExternDll.Oleaut32, ExactSpelling = true)]
+        public static extern int VariantInit(IntPtr pObject);
+
         internal static class ExternDll
         {
             public const string Activeds = "activeds.dll";

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using System.Runtime.CompilerServices;
 
 namespace VBCompatible
 {
@@ -13,8 +14,50 @@ namespace VBCompatible
     /// VB6.0 Strings 互換クラス
     /// </summary>
     [StandardModule]
-    public static partial class VBStrings
+    public static class VBStrings
     {
+        /// <summary>
+        /// 式を指定した書式に変換し、その文字列の値を返します。
+        /// </summary>
+        /// <param name="Expression">
+        /// 必ず指定します。任意の式を指定します。引数 expression に指定したデータは、引数 format の書式に従って変換されます。
+        /// </param>
+        /// <param name="Style"></param>
+        /// <param name="DayOfWeek"></param>
+        /// <param name="WeekOfYear"></param>
+        /// <returns></returns>
+        public static string VBFormat(object Expression,
+                                string Style = "",
+                                FirstDayOfWeek DayOfWeek = FirstDayOfWeek.Sunday,
+                                FirstWeekOfYear WeekOfYear = FirstWeekOfYear.Jan1) {
+            if (Expression is long) {
+                Expression = new decimal(Convert.ToInt64(RuntimeHelpers.GetObjectValue(Expression)));
+            } else if (Expression is char) {
+                Expression = Expression.ToString();
+            }
+            int nResult;
+            string str;
+            IntPtr ptr = Marshal.AllocCoTaskMem(24);
+            try {
+                NativeMethods.VariantInit(ptr);
+                try {
+                    Marshal.GetNativeVariantForObject(Expression, ptr);
+                    int dwFlags = (Thread.CurrentThread.CurrentCulture.Calendar is HijriCalendar)
+                                    ? NativeMethods.VAR_CALENDAR_HIJRI : NativeMethods.VAR_FORMAT_NOSUBSTITUTE;
+                    nResult = NativeMethods.VarFormat(ptr, ref Style, (int)DayOfWeek, (int)WeekOfYear, dwFlags, out str);
+                } finally {
+                    NativeMethods.VariantClear(ptr);
+                }
+            } finally {
+                Marshal.FreeCoTaskMem(ptr);
+            }
+            if (nResult < 0) {
+                throw new ArgumentException();
+            }
+            return str;
+        }
+
+
         /// <summary>
         /// 指定した文字列の文字数または指定した変数を格納するのに必要なバイト数を返します。
         /// </summary>
@@ -198,7 +241,7 @@ namespace VBCompatible
         /// <param name="charValue">チェックするキャラクタ</param>
         /// <returns>半角文字なら True, 全角文字なら False</returns>
         public static bool IsHalfChar(this char charValue) {
-            return VBStrings.OneByteChars.Contains(charValue);
+            return OneByteChars.Contains(charValue);
         }
 
         /// <summary>
@@ -499,55 +542,45 @@ namespace VBCompatible
         /// <summary>
         /// 指定どおりに変換された VBString オブジェクトを返します。Unicode を文字化けさせません。
         /// </summary>
-        /// <param name="value">変換する VBString 型の式。</param>
-        /// <param name="Conversion">VbStrConvEx 列挙型 メンバ。実行する比較の種類を指定する列挙値。</param>
+        /// <param name="Expression">変換する VBString 型の式。</param>
+        /// <param name="Conversion">vb6Conversion 列挙型 メンバ。実行する比較の種類を指定する列挙値。</param>
         /// <returns>変換後の VBString オブジェクト</returns>
-        public static VBString StrConvEx(VBString value, int Conversion) {
-            return StrConvEx(value, (VbStrConvEx)Conversion, 0);
+        public static VBString VB6StrConv(VBString Expression, vb6Conversion Conversion) {
+            return VB6StrConv(Expression, Conversion, 0);
         }
 
         /// <summary>
         /// 指定どおりに変換された VBString オブジェクトを返します。Unicode を文字化けさせません。
         /// </summary>
-        /// <param name="value">変換する VBString 型の式。</param>
-        /// <param name="Conversion">VbStrConvEx 列挙型 メンバ。実行する比較の種類を指定する列挙値。</param>
-        /// <returns>変換後の VBString オブジェクト</returns>
-        public static VBString StrConvEx(VBString value, VbStrConvEx Conversion) {
-            return StrConvEx(value, Conversion, 0);
-        }
-
-        /// <summary>
-        /// 指定どおりに変換された VBString オブジェクトを返します。Unicode を文字化けさせません。
-        /// </summary>
-        /// <param name="value">変換する VBString 型の式。</param>
+        /// <param name="Expression">変換する VBString 型の式。</param>
         /// <param name="Conversion">VbStrConvEx 列挙型 メンバ。実行する比較の種類を指定する列挙値。</param>
         /// <param name="LocaleID">システムとは異なる国別情報識別子 (LCID) を指定できます。</param>
         /// <returns>変換後の VBString オブジェクト</returns>
-        public static VBString StrConvEx(VBString value, VbStrConvEx Conversion, int LocaleID) {
-            if ((object)value == null) return string.Empty;
-            if (value.LengthB == 0) return string.Empty;
+        public static VBString VB6StrConv(VBString Expression, vb6Conversion Conversion, int LocaleID) {
+            if ((object)Expression == null) return string.Empty;
+            if (Expression.LengthB == 0) return string.Empty;
 
             // vbUnicode は先に変換する
 
-            if ((Conversion & VbStrConvEx.vbUnicode) == VbStrConvEx.vbUnicode) {
-                value = VBEncoding.Default.GetString(value.ToByteArray());
-                Conversion = Conversion & ~VbStrConvEx.vbUnicode;
+            if ((Conversion & vb6Conversion.vbUnicode) == vb6Conversion.vbUnicode) {
+                Expression = VBEncoding.Default.GetString(Expression.ToByteArray());
+                Conversion = Conversion & ~vb6Conversion.vbUnicode;
             }
 
             // vbFromUnicode は後で変換するので、フラグとして保存する
 
-            bool fromUnicode = (Conversion & VbStrConvEx.vbFromUnicode) == VbStrConvEx.vbFromUnicode;
-            Conversion = Conversion & ~VbStrConvEx.vbFromUnicode;
+            bool fromUnicode = (Conversion & vb6Conversion.vbFromUnicode) == vb6Conversion.vbFromUnicode;
+            Conversion = Conversion & ~vb6Conversion.vbFromUnicode;
 
             // LCMapString を実行
             if (Conversion != 0)
-                value = LCMapStringCaller(value, (VbStrConv)Conversion, LocaleID);
+                Expression = LCMapStringCaller(Expression, (VbStrConv)Conversion, LocaleID);
 
             // シフト JIS に変換
             if (fromUnicode)
-                return VBEncoding.Default.GetBytes(value);
+                return VBEncoding.Default.GetBytes(Expression);
             else
-                return value;
+                return Expression;
         }
 
         // LCMapString を実行する

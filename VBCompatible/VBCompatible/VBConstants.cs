@@ -3373,7 +3373,7 @@ namespace VBCompatible
     /// StrConvEx の第２引数
     /// </summary>
     [Flags]
-    public enum VbStrConvEx
+    public enum vb6Conversion
     {
         /// <summary>
         /// 文字列を大文字に変換します。

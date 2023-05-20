@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -274,7 +275,7 @@ namespace VBCompatible
         private static bool GetControlEnabled(Control con) {
             PropertyInfo pi = con.GetType().GetProperty("Enabled");
             if (pi != null)
-                return (bool)pi.GetValue(con);
+                return (bool)pi.GetValue(con, null);
             else
                 return con.Enabled;
         }
@@ -293,7 +294,7 @@ namespace VBCompatible
         }
 
         public static EventHandlerList Events(Component component) {
-            return (EventHandlerList)EventsPropertyInfo.GetValue(component);
+            return (EventHandlerList)EventsPropertyInfo.GetValue(component, null);
         }
 
         public static void OnEnabledChanged(Control control, EventArgs e) {
@@ -324,6 +325,10 @@ namespace VBCompatible
 
         public static T CreateDelegate<T>(this MethodInfo mi, object instance) where T : Delegate {
             return (T)Delegate.CreateDelegate(typeof(T), instance, mi);
+        }
+
+        public static StringBuilder AppendLine(this StringBuilder sb, string format, params object[] value) {
+            return sb.AppendLine(string.Format(format, value));
         }
     }
 }

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VBCompatible</RootNamespace>
     <AssemblyName>VBCompatible</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -45,7 +45,6 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -55,22 +54,45 @@
     <Compile Include="ControlArray\EventEnumForm.Designer.cs">
       <DependentUpon>EventEnumForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlArray\VB6Errors.cs" />
     <Compile Include="ControlArray\VBCheckBoxArray.cs" />
     <Compile Include="ControlArray\VBComboBoxArray.cs" />
-    <Compile Include="ControlArray\VBCommandButtonArray.cs" />
-    <Compile Include="ControlArray\VBControlArray.cs">
-      <SubType>Component</SubType>
+    <Compile Include="ControlArray\VBCommandButtonArray.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ControlArray\VBFrameArray.cs" />
-    <Compile Include="ControlArray\VBLabelArray.cs" />
-    <Compile Include="ControlArray\VBListBoxArray.cs" />
-    <Compile Include="ControlArray\VBListViewArray.cs" />
-    <Compile Include="ControlArray\VBOptionButtonArray.cs" />
-    <Compile Include="ControlArray\VBPanelArray.cs" />
-    <Compile Include="ControlArray\VBPictureBoxArray.cs" />
-    <Compile Include="ControlArray\VBTextBoxArray.cs" />
-    <Compile Include="ControlArray\VBTreeViewArray.cs" />
+    <Compile Include="ControlArray\VBControlArray.cs" />
+    <Compile Include="ControlArray\VBFrameArray.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlArray\VBLabelArray.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlArray\VBListBoxArray.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlArray\VBListViewArray.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlArray\VBOptionButtonArray.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlArray\VBPanelArray.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlArray\VBPictureBoxArray.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlArray\VBSplitContainerArray.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlArray\VBSSTabArray.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlArray\VBTextBoxArray.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlArray\VBTreeViewArray.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DrawRectangleFlags.cs" />
     <Compile Include="VBGraphicsCache.cs" />
     <Compile Include="VBControlPaint.cs" />
@@ -120,11 +142,9 @@
     <Compile Include="VBSplitContainer.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ControlArray\VBSplitContainerArray.cs" />
     <Compile Include="VBSSTab.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ControlArray\VBSSTabArray.cs" />
     <Compile Include="VBTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
