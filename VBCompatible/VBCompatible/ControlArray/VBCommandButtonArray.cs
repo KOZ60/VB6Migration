@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBCommandButton))]
-    public class VBCommandButtonArray : VBControllArray<VBCommandButton>
+    public class VBCommandButtonArray : BaseControlArray<VBCommandButton>
     {
 
         public VBCommandButtonArray() { }

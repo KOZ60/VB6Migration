@@ -50,7 +50,7 @@
 			}
 			int nResult;
 			string str;
-			IntPtr ptr = Marshal.AllocCoTaskMem(64);
+			IntPtr ptr = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(NativeMethods.VARIANT)));
 			try {
 				NativeMethods.VariantInit(ptr);
 				try {

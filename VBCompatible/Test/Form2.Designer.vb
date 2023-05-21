@@ -56,7 +56,7 @@ Partial Class Form2
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(403, 325)
+        Me.ClientSize = New System.Drawing.Size(403, 178)
         Me.Controls.Add(Me.VbCommandButton1)
         Me.Controls.Add(Me.cmd01)
         Me.Name = "Form2"

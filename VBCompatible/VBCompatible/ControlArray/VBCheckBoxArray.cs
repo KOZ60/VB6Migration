@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBCheckBox))]
-    public class VBCheckBoxArray : VBControllArray<VBCheckBox>
+    public class VBCheckBoxArray : BaseControlArray<VBCheckBox>
     {
         public VBCheckBoxArray() { }
 

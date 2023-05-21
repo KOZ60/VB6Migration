@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBPictureBox))]
-    public class VBPictureBoxArray : VBControllArray<VBPictureBox>
+    public class VBPictureBoxArray : BaseControlArray<VBPictureBox>
     {
 
         public VBPictureBoxArray() { }

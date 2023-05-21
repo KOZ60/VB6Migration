@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBSplitContainer))]
-    public class VBSplitContainerArray : VBControllArray<VBSplitContainer>
+    public class VBSplitContainerArray : BaseControlArray<VBSplitContainer>
     {
 
         public VBSplitContainerArray() { }

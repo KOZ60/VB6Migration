@@ -17,13 +17,43 @@
     /// [ProvideProperty("Index", typeof(TextBox))]
     /// </remarks>
     [DesignerCategory("Code")]
-    public abstract class VBControllArray<T> : Component, ISupportInitialize,
+    public abstract class BaseControlArray<T> : Component, ISupportInitialize,
                             IExtenderProvider, IEnumerable<T>
                             where T : Control {
 
+        protected abstract void HookUpEvents(T o);
+        protected abstract void HookDownEvents(T o);
+
+        [ThreadStatic]
+        private static List<PropertyDescriptor> _Properties;
+        private static List<PropertyDescriptor> Properties {
+            get {
+                if (_Properties == null) {
+                    _Properties = new List<PropertyDescriptor>();
+                    foreach (PropertyDescriptor p in TypeDescriptor.GetProperties(typeof(T))) {
+                        if (p.IsReadOnly) {
+                            continue;
+                        }
+                        if (p.SerializationVisibility != DesignerSerializationVisibility.Visible) {
+                            continue;
+                        }
+                        switch (p.Name) {
+                            case "Visible":
+                            case "TabIndex":
+                            case "Index":
+                            case "MdiList":
+                                continue;
+                        }
+                        _Properties.Add(p);
+                    }
+                }
+                return _Properties;
+            }
+        }
+
+        private IContainer components;
         private readonly Dictionary<T, int> _Indices = new Dictionary<T, int>();
         private readonly Dictionary<int, T> _Controls = new Dictionary<int, T>();
-        private IContainer components;
         private Form _Form;
         private Type _FormType;
         private bool _ToolTipScaned;
@@ -31,12 +61,10 @@
         private const string _ToolTip1Name = "ToolTip1";
         private const BindingFlags _BindingFlags =
                                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-        private readonly PropertyDescriptorCollection properties =
-                                TypeDescriptor.GetProperties(typeof(T));
 
-        protected VBControllArray() { }
+        protected BaseControlArray() { }
 
-        protected VBControllArray(IContainer Container) {
+        protected BaseControlArray(IContainer Container) {
             components = Container;
             components.Add(this);
         }
@@ -82,9 +110,6 @@
             HookUpEventsOfControl(target);
             HookUpEvents(target);
         }
-
-        protected abstract void HookUpEvents(T o);
-        protected abstract void HookDownEvents(T o);
 
         public void ResetIndex(object o) {
             var target = o as T;
@@ -176,12 +201,13 @@
             }
             ResetIndex(ctl);
             ctl.Parent.Controls.Remove(ctl);
+            ctl.Dispose();
         }
 
         private T CloneControl() {
             T lowest = _Controls[LBound];
             T ctl = (T)Activator.CreateInstance(typeof(T));
-            foreach (PropertyDescriptor p in properties) {
+            foreach (PropertyDescriptor p in Properties) {
                 if (IsSerialized(lowest, p)) {
                     p.SetValue(ctl, p.GetValue(lowest));
                 }
@@ -227,12 +253,6 @@
         }
 
         protected virtual bool IsSerialized(T ctl, PropertyDescriptor p) {
-            if (p.IsReadOnly) {
-                return false;
-            }
-            if (p.SerializationVisibility != DesignerSerializationVisibility.Visible) {
-                return false;
-            }
             if (!p.ShouldSerializeValue(ctl)) {
                 return false;
             }
@@ -264,7 +284,7 @@
             o.Disposed -= OnDisposedEvent;
             o.DockChanged -= OnDockChanged;
             o.DoubleClick -= OnDoubleClick;
-#if NET48
+#if NET47_OR_GREATER
             o.DpiChangedAfterParent -= OnDpiChangedAfterParent;
             o.DpiChangedBeforeParent -= OnDpiChangedBeforeParent;
 #endif
@@ -415,7 +435,7 @@
         private EventHandler OnDisposedEvent => new EventHandler((s, e) => { DisposedEvent?.Invoke(s, e); });
         private EventHandler OnDockChanged => new EventHandler((s, e) => { DockChanged?.Invoke(s, e); });
         private EventHandler OnDoubleClick => new EventHandler((s, e) => { DoubleClick?.Invoke(s, e); });
-#if NET47_OR_GREATER
+#if net48
         private EventHandler OnDpiChangedAfterParent => new EventHandler((s, e) => { DpiChangedAfterParent?.Invoke(s, e); });
         private EventHandler OnDpiChangedBeforeParent => new EventHandler((s, e) => { DpiChangedBeforeParent?.Invoke(s, e); });
 #endif

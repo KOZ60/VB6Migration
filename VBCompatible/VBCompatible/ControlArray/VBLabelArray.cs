@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBLabel))]
-    public class VBLabelArray : VBControllArray<VBLabel>
+    public class VBLabelArray : BaseControlArray<VBLabel>
     {
 
         public VBLabelArray() { }

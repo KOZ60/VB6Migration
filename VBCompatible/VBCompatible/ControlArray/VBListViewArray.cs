@@ -6,7 +6,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBListView))]
-    public class VBListViewArray : VBControllArray<VBListView>
+    public class VBListViewArray : BaseControlArray<VBListView>
     {
 
         public VBListViewArray() { }

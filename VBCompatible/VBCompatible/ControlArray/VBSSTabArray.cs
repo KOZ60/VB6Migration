@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBSSTab))]
-    public class VBSSTabArray : VBControllArray<VBSSTab>
+    public class VBSSTabArray : BaseControlArray<VBSSTab>
     {
 
         public VBSSTabArray() { }

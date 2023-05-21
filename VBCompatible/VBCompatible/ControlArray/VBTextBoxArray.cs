@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBTextBox))]
-    public class VBTextBoxArray : VBControllArray<VBTextBox>
+    public class VBTextBoxArray : BaseControlArray<VBTextBox>
     {
 
         public VBTextBoxArray() { }

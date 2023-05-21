@@ -61,7 +61,7 @@
     <Compile Include="ControlArray\VBCommandButtonArray.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ControlArray\VBControlArray.cs" />
+    <Compile Include="ControlArray\BaseControlArray.cs" />
     <Compile Include="ControlArray\VBFrameArray.cs">
       <SubType>Code</SubType>
     </Compile>

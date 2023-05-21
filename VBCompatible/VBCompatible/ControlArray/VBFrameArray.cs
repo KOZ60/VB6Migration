@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBFrame))]
-    public class VBFrameArray : VBControllArray<VBFrame>
+    public class VBFrameArray : BaseControlArray<VBFrame>
     {
 
         public VBFrameArray() { }

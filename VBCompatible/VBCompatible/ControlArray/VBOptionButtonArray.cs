@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBOptionButton))]
-    public class VBOptionButtonArray : VBControllArray<VBOptionButton>
+    public class VBOptionButtonArray : BaseControlArray<VBOptionButton>
     {
 
         public VBOptionButtonArray() { }

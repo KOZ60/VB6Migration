@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBTreeView))]
-    public class VBTreeViewArray : VBControllArray<VBTreeView>
+    public class VBTreeViewArray : BaseControlArray<VBTreeView>
     {
         public VBTreeViewArray() { }
 

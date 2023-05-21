@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBPanel))]
-    public class VBPanelArray : VBControllArray<VBPanel>
+    public class VBPanelArray : BaseControlArray<VBPanel>
     {
 
         public VBPanelArray() { }

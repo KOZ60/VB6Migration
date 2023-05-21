@@ -3897,6 +3897,17 @@
         public const int VAR_FORMAT_NOSUBSTITUTE = 0x20;
         public const int VAR_CALENDAR_HIJRI = 0x8;
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VARIANT
+        {
+            public short vt;
+            public short reserved1;
+            public short reserved2;
+            public short reserved3;
+            public IntPtr data1;
+            public IntPtr data2;
+        }
+
         [DllImport(ExternDll.Oleaut32, ExactSpelling = true)]
         public static extern int VariantClear(IntPtr pObject);
 

@@ -5,7 +5,7 @@
     using System.Windows.Forms;
 
     [ProvideProperty("Index", typeof(VBComboBox))]
-    public class VBComboBoxArray : VBControllArray<VBComboBox>
+    public class VBComboBoxArray : BaseControlArray<VBComboBox>
     {
 
         public VBComboBoxArray() { }
