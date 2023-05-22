@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Reflection;
     using System.Text;
+    using System.ComponentModel;
     using System.Windows.Forms;
 
     public partial class EventEnumForm : VBForm
@@ -58,10 +59,11 @@
         }
 
         private const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+
         private List<EventInfo> EnumEvents(Type type) {
             List<EventInfo> events = new List<EventInfo>();
             events.AddRange(type.GetEvents(flags));
-            if (type.BaseType != typeof(Control)) {
+            if (type.BaseType != null && type.BaseType != typeof(Control)) {
                 events.AddRange(EnumEvents(type.BaseType));
             }
             return events;

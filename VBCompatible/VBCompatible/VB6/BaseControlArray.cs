@@ -1,4 +1,10 @@
-﻿namespace VBCompatible.ControlArray
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace VBCompatible.VB6
 {
     using System;
     using System.Collections;
@@ -7,71 +13,51 @@
     using System.Reflection;
     using System.Windows.Forms;
 
-    /// <summary>
-    /// コントロール配列のベースとなるクラス
-    /// </summary>
-    /// <typeparam name="T">配列の要素となるコントロールの型。</typeparam>
-    /// <remarks>
-    /// 継承したクラスで拡張プロパティの定義を行ってください。
-    /// 例)
-    /// [ProvideProperty("Index", typeof(TextBox))]
-    /// </remarks>
     [DesignerCategory("Code")]
-    public abstract class BaseControlArray<T> :
-                            BaseControlArray, ISupportInitialize,
-                            IExtenderProvider, IEnumerable<T>
-                            where T : Control, new() {
+    public abstract class BaseControlArray : Component, IExtenderProvider
+    {
+        private const BindingFlags bindingFlags =
+                                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        private const BindingFlags declaredOnlyFlags = bindingFlags | BindingFlags.DeclaredOnly;
 
-        protected abstract void HookUpEvents(T o);
-        protected abstract void HookDownEvents(T o);
+        private readonly static PropertyInfo[] EventProperties =
+                    typeof(BaseControlArray).GetProperties(declaredOnlyFlags).Where(
+                        (ei) => ei.CanRead && ei.Name.StartsWith("On")).ToArray();
 
-        [ThreadStatic]
-        private static List<PropertyDescriptor> _Properties;
-        private static List<PropertyDescriptor> Properties {
-            get {
-                if (_Properties == null) {
-                    _Properties = new List<PropertyDescriptor>();
-                    foreach (PropertyDescriptor p in TypeDescriptor.GetProperties(typeof(T))) {
-                        if (p.IsReadOnly) {
-                            continue;
-                        }
-                        if (p.SerializationVisibility != DesignerSerializationVisibility.Visible) {
-                            continue;
-                        }
-                        switch (p.Name) {
-                            case "Visible":
-                            case "TabIndex":
-                            case "Index":
-                            case "MdiList":
-                                continue;
-                        }
-                        _Properties.Add(p);
-                    }
-                }
-                return _Properties;
-            }
-        }
+        protected abstract Type GetControlInstanceType { get; }
 
         protected IContainer components;
-        protected readonly Dictionary<T, int> indices = new Dictionary<T, int>();
-        protected readonly Dictionary<int, T> controls = new Dictionary<int, T>();
-        protected readonly HashSet<T> controlAddedAtDesignTime = new HashSet<T>();
+        protected readonly Dictionary<Control, int> indices = new Dictionary<Control, int>();
+        protected readonly Dictionary<int, Control> controls = new Dictionary<int, Control>();
+        protected readonly HashSet<Control> controlAddedAtDesignTime = new HashSet<Control>();
         protected bool fIsEndInitCalled;
 
         private string _Name;
+        private Dictionary<string, Delegate> _BaseControlEvents;
         private Form _Form;
         private Type _FormType;
         private bool _ToolTipScaned;
         private ToolTip _ToolTip;
         private const string _ToolTip1Name = "ToolTip1";
-        private const BindingFlags _BindingFlags =
-                                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
         protected BaseControlArray() { }
 
         protected BaseControlArray(IContainer Container) {
             components = Container;
             components.Add(this);
+        }
+
+
+        private Dictionary<string, Delegate> BaseControlEvents {
+            get {
+                if (_BaseControlEvents == null) {
+                    _BaseControlEvents = new Dictionary<string, Delegate>();
+                    foreach (var info in EventProperties) {
+                        _BaseControlEvents.Add(info.Name.Substring(2), (Delegate)info.GetValue(this, null));
+                    }
+                }
+                return _BaseControlEvents;
+            }
         }
 
         [Browsable(false)]
@@ -96,22 +82,28 @@
             }
         }
 
-        public T this[int Index] {
-            get {
-                return controls[Index];
+        protected void HookUpEventsOfControl(Control o) {
+            foreach (var info in typeof(Control).GetEvents()) {
+                if (BaseControlEvents.TryGetValue(info.Name, out Delegate invoker)) {
+                    info.AddEventHandler(o, invoker);
+                }
+            }
+        }
+
+        protected void HookDownEventsOfControl(Control o) {
+            foreach (var info in typeof(Control).GetEvents()) {
+                if (BaseControlEvents.TryGetValue(info.Name, out Delegate invoker)) {
+                    info.RemoveEventHandler(o, invoker);
+                }
             }
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool CanExtend(object extendee) {
-            return BaseCanExtend(extendee as T);
-        }
-
-        protected virtual bool BaseCanExtend(T o) {
-            if (o == null) {
+            if (!(extendee is Control o)) {
                 return false;
             }
-            if (!o.GetType().Equals(typeof(T))) {
+            if (!o.GetType().Equals(GetControlInstanceType)) {
                 return false;
             }
             if (indices.ContainsKey(o)) {
@@ -126,8 +118,14 @@
             return false;
         }
 
+
         public int GetIndex(object o) {
-            return BaseGetIndex(o as T);
+            if (o is Control c) {
+                if (indices.TryGetValue(c, out int index)) {
+                    return index;
+                }
+            }
+            return -1;
         }
 
         protected virtual int BaseGetIndex(T o) {
@@ -139,247 +137,7 @@
             return -1;
         }
 
-        public void SetIndex(object o, int Index) {
-            if (!TrueDesignMode) {
-                throw new InvalidOperationException("デザイン時以外は使えません。");
-            }
-            BaseSetIndex(o as T, Index);
-        }
 
-        protected virtual void BaseSetIndex(T o, int Index) {
-            if (o == null || !o.GetType().Equals(typeof(T))) {
-                throw new ArgumentException("型が違います。");
-            }
-            if (Index < 0) {
-                throw new IndexOutOfRangeException();
-            }
-            if (controls.TryGetValue(Index, out T instance)) {
-                if (!ReferenceEquals(o, instance)) {
-                    throw new ArgumentException("同じインデックスが存在しています。");
-                }
-            }
-            indices[o] = Index;
-            controls[Index] = o;
-            if (TrueDesignMode) {
-                controlAddedAtDesignTime.Add(o);
-            }
-            HookUpEventsOfControl(o);
-            HookUpEvents(o);
-        }
-
-        public void ResetIndex(object o) {
-            if (!TrueDesignMode) {
-                throw new InvalidOperationException("デザイン時以外は使えません。");
-            }
-            BaseResetIndex(o as T);
-        }
-
-        protected virtual void BaseResetIndex(T o) {
-            if (o == null) {
-                throw new ArgumentException("型が違います。");
-            }
-            if (indices.TryGetValue(o, out int index)) {
-                indices.Remove(o);
-                controls.Remove(index);
-                if (controlAddedAtDesignTime.Contains(o)) {
-                    controlAddedAtDesignTime.Remove(o);
-                }
-                HookDownEventsOfControl(o);
-                HookDownEvents(o);
-            }
-        }
-
-        public bool ShouldSerializeIndex(object o) {
-            if (o is T target) {
-                return indices.ContainsKey(target);
-            }
-            return false;
-        }
-
-        [Browsable(false)]
-        public int Count {
-            get {
-                return controls.Count;
-            }
-        }
-
-        [Browsable(false)]
-        public int LBound {
-            get {
-                if (controls.Count == 0) {
-                    return 0;
-                }
-                int minValue = int.MaxValue;
-                foreach (var kp in controls) {
-                    if (kp.Key < minValue) {
-                        minValue = kp.Key;
-                    }
-                }
-                return minValue;
-            }
-        }
-
-        [Browsable(false)]
-        public int UBound {
-            get {
-                if (controls.Count == 0) {
-                    return -1;
-                }
-                int maxValue = -1;
-                foreach (var kp in controls) {
-                    if (kp.Key > maxValue) {
-                        maxValue = kp.Key;
-                    }
-                }
-                return maxValue;
-            }
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() {
-            foreach (var kp in controls) {
-                yield return kp.Value;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            foreach (var kp in controls) {
-                yield return kp.Value;
-            }
-        }
-
-        void ISupportInitialize.BeginInit() { }
-
-        void ISupportInitialize.EndInit() {
-            fIsEndInitCalled = true;
-        }
-
-        protected override void Dispose(bool disposing) {
-            components = null;
-            base.Dispose(disposing);
-        }
-
-        public T Load(int Index) {
-            if (Index < 0 || Count == 0 || controls.ContainsKey(Index)) {
-                throw new IndexOutOfRangeException();
-            }
-            var clone = CloneControl();
-            BaseSetIndex(clone, Index);
-            return clone;
-        }
-
-        public void Unload(int Index) {
-            if (Index < 0 || !controls.TryGetValue(Index, out T ctl)) {
-                throw new IndexOutOfRangeException();
-            }
-            if (controlAddedAtDesignTime.Contains(ctl)) {
-                throw new InvalidOperationException("デザイン時に設定したコントロールは Unload できません。");
-            }
-            BaseResetIndex(ctl);
-            ctl.Parent.Controls.Remove(ctl);
-            ctl.Dispose();
-        }
-
-        private bool TrueDesignMode {
-            get {
-                return DesignMode || !fIsEndInitCalled;
-            }
-        }
-
-        private T CloneControl() {
-            T lowest = controls[LBound];
-            T ctl = new T();
-            foreach (PropertyDescriptor p in Properties) {
-                if (p.ShouldSerializeValue(lowest)) {
-                    p.SetValue(ctl, p.GetValue(lowest));
-                }
-            }
-            if (ctl is RadioButton radioButton) {
-                radioButton.Checked = false;
-            }
-            // VB6 から移植したフォームは ToolTip1 を持っているので
-            // 設定された caption もコピー
-            if (ToolTip1 != null) {
-                var caption = ToolTip1.GetToolTip(lowest);
-                if (!string.IsNullOrEmpty(caption)) {
-                    ToolTip1.SetToolTip(ctl, caption);
-                }
-            }
-            lowest.Parent.Controls.Add(ctl);
-            return ctl;
-        }
-
-        private ToolTip ToolTip1 {
-            get {
-                if (_ToolTipScaned) {
-                    return _ToolTip;
-                }
-                var lowest = controls[LBound];
-                if (_Form == null) {
-                    _Form = lowest.FindForm();
-                    _FormType = _Form.GetType();
-                }
-                var pi = _FormType.GetProperty(_ToolTip1Name, _BindingFlags);
-                if (pi != null) {
-                    _ToolTip = pi.GetValue(_Form, null) as ToolTip;
-                }
-                if (_ToolTip == null) {
-                    var fi = _FormType.GetField(_ToolTip1Name, _BindingFlags);
-                    if (fi != null) {
-                        _ToolTip = fi.GetValue(_Form) as ToolTip;
-                    }
-                }
-                _ToolTipScaned = true;
-                return _ToolTip;
-            }
-        }
-
-    }
-
-    public class BaseControlArray : Component
-    {
-
-        private const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic |
-                                                BindingFlags.Instance | BindingFlags.DeclaredOnly;
-
-        private readonly static List<PropertyInfo> EventProperties = new List<PropertyInfo>();
-
-        static BaseControlArray() {
-            foreach (var info in typeof(BaseControlArray).GetProperties(flags)) {
-                if (info.CanRead && info.Name.StartsWith("On")) {
-                    EventProperties.Add(info);
-                }
-            }
-        }
-
-        private Dictionary<string, Delegate> _BaseEvents;
-
-        private Dictionary<string, Delegate> BaseEvents {
-            get {
-                if (_BaseEvents == null) {
-                    _BaseEvents = new Dictionary<string, Delegate>();
-                    foreach (var info in EventProperties) {
-                        _BaseEvents.Add(info.Name.Substring(2), (Delegate)info.GetValue(this, null));
-                    }
-                }
-                return _BaseEvents;
-            }
-        }
-
-        protected void HookUpEventsOfControl(Control o) {
-            foreach (var info in typeof(Control).GetEvents()) {
-                if (BaseEvents.TryGetValue(info.Name, out Delegate invoker)) {
-                    info.AddEventHandler(o, invoker);
-                }
-            }
-        }
-
-        protected void HookDownEventsOfControl(Control o) {
-            foreach (var info in typeof(Control).GetEvents()) {
-                if (BaseEvents.TryGetValue(info.Name, out Delegate invoker)) {
-                    info.RemoveEventHandler(o, invoker);
-                }
-            }
-        }
 
 #pragma warning disable IDE0051
 
@@ -528,7 +286,5 @@
         public event EventHandler Validated;
         public event CancelEventHandler Validating;
         public event EventHandler VisibleChanged;
-
     }
-
 }

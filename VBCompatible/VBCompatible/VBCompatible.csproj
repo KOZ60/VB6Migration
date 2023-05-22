@@ -96,6 +96,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DrawRectangleFlags.cs" />
+    <Compile Include="VB6\BaseControlArray.cs" />
     <Compile Include="VB6\Constants.cs" />
     <Compile Include="VB6\Strings.cs" />
     <Compile Include="VB6\Support.cs" />
