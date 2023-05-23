@@ -138,17 +138,19 @@ Partial Class Form1
         Me.VbPanel1.Controls.Add(Me.VbTextBox1)
         Me.VbPanel1.Controls.Add(Me.VbListBox1)
         Me.VbPanel1.Controls.Add(Me.VbComboBox1)
-        Me.VbPanel1.Location = New System.Drawing.Point(109, 51)
+        Me.VbPanel1.Location = New System.Drawing.Point(146, 64)
+        Me.VbPanel1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbPanel1.Name = "VbPanel1"
-        Me.VbPanel1.Size = New System.Drawing.Size(213, 270)
+        Me.VbPanel1.Size = New System.Drawing.Size(283, 351)
         Me.VbPanel1.TabIndex = 12
         '
         'VbOptionButton1
         '
         Me.VbOptionButton1.AutoSize = True
-        Me.VbOptionButton1.Location = New System.Drawing.Point(20, 204)
+        Me.VbOptionButton1.Location = New System.Drawing.Point(27, 255)
+        Me.VbOptionButton1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbOptionButton1.Name = "VbOptionButton1"
-        Me.VbOptionButton1.Size = New System.Drawing.Size(110, 16)
+        Me.VbOptionButton1.Size = New System.Drawing.Size(142, 20)
         Me.VbOptionButton1.TabIndex = 17
         Me.VbOptionButton1.TabStop = True
         Me.VbOptionButton1.Text = "VbOptionButton1"
@@ -157,9 +159,10 @@ Partial Class Form1
         'VbLabel1
         '
         Me.VbLabel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.VbLabel1.Location = New System.Drawing.Point(20, 175)
+        Me.VbLabel1.Location = New System.Drawing.Point(27, 218)
+        Me.VbLabel1.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.VbLabel1.Name = "VbLabel1"
-        Me.VbLabel1.Size = New System.Drawing.Size(164, 22)
+        Me.VbLabel1.Size = New System.Drawing.Size(218, 27)
         Me.VbLabel1.TabIndex = 16
         Me.VbLabel1.Text = "VbLabel1"
         '
@@ -167,38 +170,42 @@ Partial Class Form1
         '
         Me.VbCheckBox1.AutoSize = True
         Me.VbCheckBox1.BackColor = System.Drawing.Color.Transparent
-        Me.VbCheckBox1.Location = New System.Drawing.Point(20, 227)
+        Me.VbCheckBox1.Location = New System.Drawing.Point(27, 284)
+        Me.VbCheckBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbCheckBox1.Name = "VbCheckBox1"
-        Me.VbCheckBox1.Size = New System.Drawing.Size(96, 16)
+        Me.VbCheckBox1.Size = New System.Drawing.Size(120, 20)
         Me.VbCheckBox1.TabIndex = 18
         Me.VbCheckBox1.Text = "VbCheckBox1"
         Me.VbCheckBox1.UseVisualStyleBackColor = False
         '
         'VbTextBox1
         '
-        Me.VbTextBox1.Location = New System.Drawing.Point(20, 15)
+        Me.VbTextBox1.Location = New System.Drawing.Point(27, 19)
+        Me.VbTextBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbTextBox1.Name = "VbTextBox1"
-        Me.VbTextBox1.Size = New System.Drawing.Size(164, 19)
+        Me.VbTextBox1.Size = New System.Drawing.Size(217, 22)
         Me.VbTextBox1.TabIndex = 13
         Me.VbTextBox1.Text = "AAAAAAAAAAAAAA"
         '
         'VbListBox1
         '
         Me.VbListBox1.FormattingEnabled = True
-        Me.VbListBox1.ItemHeight = 12
+        Me.VbListBox1.ItemHeight = 15
         Me.VbListBox1.Items.AddRange(New Object() {"AAAAAAAAAAAAAA", "BBBBBBBBBBBBBB", "CCCCCCCCCCCCCC"})
-        Me.VbListBox1.Location = New System.Drawing.Point(20, 68)
+        Me.VbListBox1.Location = New System.Drawing.Point(27, 85)
+        Me.VbListBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbListBox1.Name = "VbListBox1"
-        Me.VbListBox1.Size = New System.Drawing.Size(164, 100)
+        Me.VbListBox1.Size = New System.Drawing.Size(217, 124)
         Me.VbListBox1.TabIndex = 15
         '
         'VbComboBox1
         '
         Me.VbComboBox1.FormattingEnabled = True
         Me.VbComboBox1.Items.AddRange(New Object() {"AAAAAAAAAAAAAA", "BBBBBBBBBBBBBB", "CCCCCCCCCCCCCC"})
-        Me.VbComboBox1.Location = New System.Drawing.Point(20, 41)
+        Me.VbComboBox1.Location = New System.Drawing.Point(27, 52)
+        Me.VbComboBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbComboBox1.Name = "VbComboBox1"
-        Me.VbComboBox1.Size = New System.Drawing.Size(164, 20)
+        Me.VbComboBox1.Size = New System.Drawing.Size(217, 23)
         Me.VbComboBox1.TabIndex = 14
         '
         'CheckBox1
@@ -206,9 +213,10 @@ Partial Class Form1
         Me.CheckBox1.AutoSize = True
         Me.CheckBox1.Checked = True
         Me.CheckBox1.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox1.Location = New System.Drawing.Point(109, 29)
+        Me.CheckBox1.Location = New System.Drawing.Point(146, 37)
+        Me.CheckBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(52, 16)
+        Me.CheckBox1.Size = New System.Drawing.Size(64, 20)
         Me.CheckBox1.TabIndex = 9
         Me.CheckBox1.Text = "Panel"
         Me.CheckBox1.UseVisualStyleBackColor = True
@@ -218,9 +226,10 @@ Partial Class Form1
         Me.CheckBox2.AutoSize = True
         Me.CheckBox2.Checked = True
         Me.CheckBox2.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox2.Location = New System.Drawing.Point(167, 29)
+        Me.CheckBox2.Location = New System.Drawing.Point(222, 37)
+        Me.CheckBox2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.CheckBox2.Name = "CheckBox2"
-        Me.CheckBox2.Size = New System.Drawing.Size(61, 16)
+        Me.CheckBox2.Size = New System.Drawing.Size(77, 20)
         Me.CheckBox2.TabIndex = 10
         Me.CheckBox2.Text = "Control"
         Me.CheckBox2.UseVisualStyleBackColor = True
@@ -228,18 +237,20 @@ Partial Class Form1
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(107, 14)
+        Me.Label1.Location = New System.Drawing.Point(142, 18)
+        Me.Label1.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(45, 12)
+        Me.Label1.Size = New System.Drawing.Size(60, 16)
         Me.Label1.TabIndex = 8
         Me.Label1.Text = "Enabled"
         '
         'CheckBox3
         '
         Me.CheckBox3.AutoSize = True
-        Me.CheckBox3.Location = New System.Drawing.Point(249, 29)
+        Me.CheckBox3.Location = New System.Drawing.Point(332, 37)
+        Me.CheckBox3.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.CheckBox3.Name = "CheckBox3"
-        Me.CheckBox3.Size = New System.Drawing.Size(73, 16)
+        Me.CheckBox3.Size = New System.Drawing.Size(91, 20)
         Me.CheckBox3.TabIndex = 11
         Me.CheckBox3.Text = "ReadOnly"
         Me.CheckBox3.UseVisualStyleBackColor = True
@@ -249,7 +260,8 @@ Partial Class Form1
         Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuFile, Me.TABToolStripMenuItem})
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
-        Me.MenuStrip1.Size = New System.Drawing.Size(478, 24)
+        Me.MenuStrip1.Padding = New System.Windows.Forms.Padding(8, 3, 0, 3)
+        Me.MenuStrip1.Size = New System.Drawing.Size(637, 25)
         Me.MenuStrip1.TabIndex = 19
         Me.MenuStrip1.Text = "MenuStrip1"
         '
@@ -257,7 +269,7 @@ Partial Class Form1
         '
         Me.mnuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.EventEnumFormToolStripMenuItem, Me.mnuFileForm2, Me.mnuExit})
         Me.mnuFile.Name = "mnuFile"
-        Me.mnuFile.Size = New System.Drawing.Size(66, 20)
+        Me.mnuFile.Size = New System.Drawing.Size(66, 19)
         Me.mnuFile.Text = "ファイル(&F)"
         '
         'EventEnumFormToolStripMenuItem
@@ -282,7 +294,7 @@ Partial Class Form1
         '
         Me.TABToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItem2, Me.ToolStripMenuItem3, Me.ToolStripMenuItem4, Me.ToolStripMenuItem5})
         Me.TABToolStripMenuItem.Name = "TABToolStripMenuItem"
-        Me.TABToolStripMenuItem.Size = New System.Drawing.Size(40, 20)
+        Me.TABToolStripMenuItem.Size = New System.Drawing.Size(40, 19)
         Me.TABToolStripMenuItem.Text = "TAB"
         '
         'ToolStripMenuItem2
@@ -326,8 +338,9 @@ Partial Class Form1
         Me.VbListView1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.VbListView1.HideSelection = False
         Me.VbListView1.Location = New System.Drawing.Point(0, 0)
+        Me.VbListView1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbListView1.Name = "VbListView1"
-        Me.VbListView1.Size = New System.Drawing.Size(438, 291)
+        Me.VbListView1.Size = New System.Drawing.Size(584, 365)
         Me.VbListView1.TabIndex = 20
         Me.VbListView1.UseCompatibleStateImageBehavior = False
         Me.VbListView1.View = System.Windows.Forms.View.Details
@@ -337,6 +350,7 @@ Partial Class Form1
         Me.VbTreeView1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.VbTreeView1.Enabled = False
         Me.VbTreeView1.Location = New System.Drawing.Point(0, 0)
+        Me.VbTreeView1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbTreeView1.Name = "VbTreeView1"
         TreeNode1.Name = "ノード25"
         TreeNode1.Text = "ノード25"
@@ -429,7 +443,7 @@ Partial Class Form1
         TreeNode45.Name = "ノード4"
         TreeNode45.Text = "ノード4"
         Me.VbTreeView1.Nodes.AddRange(New System.Windows.Forms.TreeNode() {TreeNode15, TreeNode27, TreeNode37, TreeNode41, TreeNode45})
-        Me.VbTreeView1.Size = New System.Drawing.Size(438, 294)
+        Me.VbTreeView1.Size = New System.Drawing.Size(584, 369)
         Me.VbTreeView1.TabIndex = 22
         '
         'VbPanel2
@@ -438,32 +452,36 @@ Partial Class Form1
         Me.VbPanel2.Controls.Add(Me.TabIndexTextBox2)
         Me.VbPanel2.Controls.Add(Me.TabIndexTextBox4)
         Me.VbPanel2.Controls.Add(Me.TabIndexTextBox6)
-        Me.VbPanel2.Location = New System.Drawing.Point(236, 86)
+        Me.VbPanel2.Location = New System.Drawing.Point(315, 108)
+        Me.VbPanel2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbPanel2.Name = "VbPanel2"
-        Me.VbPanel2.Size = New System.Drawing.Size(178, 128)
+        Me.VbPanel2.Size = New System.Drawing.Size(237, 160)
         Me.VbPanel2.TabIndex = 23
         '
         'TabIndexTextBox2
         '
-        Me.TabIndexTextBox2.Location = New System.Drawing.Point(16, 94)
+        Me.TabIndexTextBox2.Location = New System.Drawing.Point(21, 117)
+        Me.TabIndexTextBox2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.TabIndexTextBox2.Name = "TabIndexTextBox2"
-        Me.TabIndexTextBox2.Size = New System.Drawing.Size(139, 19)
+        Me.TabIndexTextBox2.Size = New System.Drawing.Size(184, 22)
         Me.TabIndexTextBox2.TabIndex = 5
         Me.TabIndexTextBox2.Text = "5"
         '
         'TabIndexTextBox4
         '
-        Me.TabIndexTextBox4.Location = New System.Drawing.Point(16, 51)
+        Me.TabIndexTextBox4.Location = New System.Drawing.Point(21, 64)
+        Me.TabIndexTextBox4.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.TabIndexTextBox4.Name = "TabIndexTextBox4"
-        Me.TabIndexTextBox4.Size = New System.Drawing.Size(139, 19)
+        Me.TabIndexTextBox4.Size = New System.Drawing.Size(184, 22)
         Me.TabIndexTextBox4.TabIndex = 3
         Me.TabIndexTextBox4.Text = "3"
         '
         'TabIndexTextBox6
         '
-        Me.TabIndexTextBox6.Location = New System.Drawing.Point(16, 12)
+        Me.TabIndexTextBox6.Location = New System.Drawing.Point(21, 15)
+        Me.TabIndexTextBox6.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.TabIndexTextBox6.Name = "TabIndexTextBox6"
-        Me.TabIndexTextBox6.Size = New System.Drawing.Size(139, 19)
+        Me.TabIndexTextBox6.Size = New System.Drawing.Size(184, 22)
         Me.TabIndexTextBox6.TabIndex = 1
         Me.TabIndexTextBox6.Text = "1"
         '
@@ -473,32 +491,36 @@ Partial Class Form1
         Me.VbPanel3.Controls.Add(Me.TabIndexTextBox5)
         Me.VbPanel3.Controls.Add(Me.TabIndexTextBox3)
         Me.VbPanel3.Controls.Add(Me.TabIndexTextBox1)
-        Me.VbPanel3.Location = New System.Drawing.Point(29, 86)
+        Me.VbPanel3.Location = New System.Drawing.Point(39, 108)
+        Me.VbPanel3.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbPanel3.Name = "VbPanel3"
-        Me.VbPanel3.Size = New System.Drawing.Size(178, 128)
+        Me.VbPanel3.Size = New System.Drawing.Size(237, 160)
         Me.VbPanel3.TabIndex = 21
         '
         'TabIndexTextBox5
         '
-        Me.TabIndexTextBox5.Location = New System.Drawing.Point(16, 94)
+        Me.TabIndexTextBox5.Location = New System.Drawing.Point(21, 117)
+        Me.TabIndexTextBox5.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.TabIndexTextBox5.Name = "TabIndexTextBox5"
-        Me.TabIndexTextBox5.Size = New System.Drawing.Size(139, 19)
+        Me.TabIndexTextBox5.Size = New System.Drawing.Size(184, 22)
         Me.TabIndexTextBox5.TabIndex = 4
         Me.TabIndexTextBox5.Text = "4"
         '
         'TabIndexTextBox3
         '
-        Me.TabIndexTextBox3.Location = New System.Drawing.Point(16, 51)
+        Me.TabIndexTextBox3.Location = New System.Drawing.Point(21, 64)
+        Me.TabIndexTextBox3.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.TabIndexTextBox3.Name = "TabIndexTextBox3"
-        Me.TabIndexTextBox3.Size = New System.Drawing.Size(139, 19)
+        Me.TabIndexTextBox3.Size = New System.Drawing.Size(184, 22)
         Me.TabIndexTextBox3.TabIndex = 2
         Me.TabIndexTextBox3.Text = "2"
         '
         'TabIndexTextBox1
         '
-        Me.TabIndexTextBox1.Location = New System.Drawing.Point(16, 12)
+        Me.TabIndexTextBox1.Location = New System.Drawing.Point(21, 15)
+        Me.TabIndexTextBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.TabIndexTextBox1.Name = "TabIndexTextBox1"
-        Me.TabIndexTextBox1.Size = New System.Drawing.Size(139, 19)
+        Me.TabIndexTextBox1.Size = New System.Drawing.Size(184, 22)
         Me.TabIndexTextBox1.TabIndex = 0
         Me.TabIndexTextBox1.Text = "0"
         '
@@ -511,11 +533,12 @@ Partial Class Form1
         Me.VBSSTab1.Controls.Add(Me.TabPage2)
         Me.VBSSTab1.Controls.Add(Me.TabPage3)
         Me.VBSSTab1.Controls.Add(Me.TabPage4)
-        Me.VBSSTab1.Location = New System.Drawing.Point(12, 42)
+        Me.VBSSTab1.Location = New System.Drawing.Point(16, 52)
+        Me.VBSSTab1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VBSSTab1.Multiline = True
         Me.VBSSTab1.Name = "VBSSTab1"
         Me.VBSSTab1.SelectedIndex = 0
-        Me.VBSSTab1.Size = New System.Drawing.Size(458, 365)
+        Me.VBSSTab1.Size = New System.Drawing.Size(611, 472)
         Me.VBSSTab1.TabIndex = 30
         '
         'TabPage1
@@ -525,10 +548,11 @@ Partial Class Form1
         Me.TabPage1.Controls.Add(Me.CheckBox1)
         Me.TabPage1.Controls.Add(Me.VbPanel1)
         Me.TabPage1.Controls.Add(Me.CheckBox2)
-        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage1.Location = New System.Drawing.Point(4, 25)
+        Me.TabPage1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(450, 339)
+        Me.TabPage1.Padding = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.TabPage1.Size = New System.Drawing.Size(603, 443)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Basic(&1)"
         Me.TabPage1.UseVisualStyleBackColor = True
@@ -537,10 +561,11 @@ Partial Class Form1
         '
         Me.TabPage2.Controls.Add(Me.VbPanel3)
         Me.TabPage2.Controls.Add(Me.VbPanel2)
-        Me.TabPage2.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 25)
+        Me.TabPage2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.TabPage2.Name = "TabPage2"
-        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(450, 339)
+        Me.TabPage2.Padding = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.TabPage2.Size = New System.Drawing.Size(603, 443)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "Tab Demo(&2)"
         Me.TabPage2.UseVisualStyleBackColor = True
@@ -551,10 +576,11 @@ Partial Class Form1
         Me.TabPage3.Controls.Add(Me.CheckBox6)
         Me.TabPage3.Controls.Add(Me.CheckBox7)
         Me.TabPage3.Controls.Add(Me.VbPanel5)
-        Me.TabPage3.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage3.Location = New System.Drawing.Point(4, 25)
+        Me.TabPage3.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage3.Size = New System.Drawing.Size(450, 339)
+        Me.TabPage3.Padding = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.TabPage3.Size = New System.Drawing.Size(603, 443)
         Me.TabPage3.TabIndex = 6
         Me.TabPage3.Text = "ListView(&3)"
         Me.TabPage3.UseVisualStyleBackColor = True
@@ -562,9 +588,10 @@ Partial Class Form1
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(6, 3)
+        Me.Label3.Location = New System.Drawing.Point(8, 4)
+        Me.Label3.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(45, 12)
+        Me.Label3.Size = New System.Drawing.Size(60, 16)
         Me.Label3.TabIndex = 27
         Me.Label3.Text = "Enabled"
         '
@@ -573,9 +600,10 @@ Partial Class Form1
         Me.CheckBox6.AutoSize = True
         Me.CheckBox6.Checked = True
         Me.CheckBox6.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox6.Location = New System.Drawing.Point(8, 18)
+        Me.CheckBox6.Location = New System.Drawing.Point(11, 22)
+        Me.CheckBox6.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.CheckBox6.Name = "CheckBox6"
-        Me.CheckBox6.Size = New System.Drawing.Size(52, 16)
+        Me.CheckBox6.Size = New System.Drawing.Size(61, 19)
         Me.CheckBox6.TabIndex = 28
         Me.CheckBox6.Text = "Panel"
         Me.CheckBox6.UseVisualStyleBackColor = True
@@ -585,9 +613,10 @@ Partial Class Form1
         Me.CheckBox7.AutoSize = True
         Me.CheckBox7.Checked = True
         Me.CheckBox7.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox7.Location = New System.Drawing.Point(66, 18)
+        Me.CheckBox7.Location = New System.Drawing.Point(88, 22)
+        Me.CheckBox7.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.CheckBox7.Name = "CheckBox7"
-        Me.CheckBox7.Size = New System.Drawing.Size(61, 16)
+        Me.CheckBox7.Size = New System.Drawing.Size(73, 19)
         Me.CheckBox7.TabIndex = 29
         Me.CheckBox7.Text = "Control"
         Me.CheckBox7.UseVisualStyleBackColor = True
@@ -598,9 +627,10 @@ Partial Class Form1
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.VbPanel5.Controls.Add(Me.VbListView1)
-        Me.VbPanel5.Location = New System.Drawing.Point(6, 42)
+        Me.VbPanel5.Location = New System.Drawing.Point(8, 52)
+        Me.VbPanel5.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbPanel5.Name = "VbPanel5"
-        Me.VbPanel5.Size = New System.Drawing.Size(438, 291)
+        Me.VbPanel5.Size = New System.Drawing.Size(584, 365)
         Me.VbPanel5.TabIndex = 21
         '
         'TabPage4
@@ -609,10 +639,11 @@ Partial Class Form1
         Me.TabPage4.Controls.Add(Me.CheckBox4)
         Me.TabPage4.Controls.Add(Me.CheckBox5)
         Me.TabPage4.Controls.Add(Me.VbPanel4)
-        Me.TabPage4.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage4.Location = New System.Drawing.Point(4, 25)
+        Me.TabPage4.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.TabPage4.Name = "TabPage4"
-        Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(450, 339)
+        Me.TabPage4.Padding = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.TabPage4.Size = New System.Drawing.Size(603, 443)
         Me.TabPage4.TabIndex = 7
         Me.TabPage4.Text = "TreeView(&4)"
         Me.TabPage4.UseVisualStyleBackColor = True
@@ -620,9 +651,10 @@ Partial Class Form1
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(6, 3)
+        Me.Label2.Location = New System.Drawing.Point(8, 4)
+        Me.Label2.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(45, 12)
+        Me.Label2.Size = New System.Drawing.Size(60, 16)
         Me.Label2.TabIndex = 24
         Me.Label2.Text = "Enabled"
         '
@@ -631,9 +663,10 @@ Partial Class Form1
         Me.CheckBox4.AutoSize = True
         Me.CheckBox4.Checked = True
         Me.CheckBox4.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox4.Location = New System.Drawing.Point(8, 18)
+        Me.CheckBox4.Location = New System.Drawing.Point(11, 22)
+        Me.CheckBox4.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.CheckBox4.Name = "CheckBox4"
-        Me.CheckBox4.Size = New System.Drawing.Size(52, 16)
+        Me.CheckBox4.Size = New System.Drawing.Size(61, 19)
         Me.CheckBox4.TabIndex = 25
         Me.CheckBox4.Text = "Panel"
         Me.CheckBox4.UseVisualStyleBackColor = True
@@ -643,9 +676,10 @@ Partial Class Form1
         Me.CheckBox5.AutoSize = True
         Me.CheckBox5.Checked = True
         Me.CheckBox5.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox5.Location = New System.Drawing.Point(66, 18)
+        Me.CheckBox5.Location = New System.Drawing.Point(88, 22)
+        Me.CheckBox5.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.CheckBox5.Name = "CheckBox5"
-        Me.CheckBox5.Size = New System.Drawing.Size(61, 16)
+        Me.CheckBox5.Size = New System.Drawing.Size(73, 19)
         Me.CheckBox5.TabIndex = 26
         Me.CheckBox5.Text = "Control"
         Me.CheckBox5.UseVisualStyleBackColor = True
@@ -656,20 +690,23 @@ Partial Class Form1
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.VbPanel4.Controls.Add(Me.VbTreeView1)
-        Me.VbPanel4.Location = New System.Drawing.Point(6, 39)
+        Me.VbPanel4.Location = New System.Drawing.Point(8, 49)
+        Me.VbPanel4.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.VbPanel4.Name = "VbPanel4"
-        Me.VbPanel4.Size = New System.Drawing.Size(438, 294)
+        Me.VbPanel4.Size = New System.Drawing.Size(584, 369)
         Me.VbPanel4.TabIndex = 23
         '
         'Form1
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 15.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Gray
-        Me.ClientSize = New System.Drawing.Size(478, 419)
+        Me.ClientSize = New System.Drawing.Size(637, 539)
         Me.Controls.Add(Me.VBSSTab1)
         Me.Controls.Add(Me.MenuStrip1)
+        Me.Font = New System.Drawing.Font("ＭＳ Ｐゴシック", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
         Me.MainMenuStrip = Me.MenuStrip1
+        Me.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.Name = "Form1"
         Me.Text = "VBCompatible DEMO"
         Me.VbPanel1.ResumeLayout(False)

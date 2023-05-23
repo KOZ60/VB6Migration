@@ -24,11 +24,10 @@ Partial Class Form2
         Me.components = New System.ComponentModel.Container()
         Me.cmd01 = New VBCompatible.VBCommandButton()
         Me.cmd = New VBCompatible.VB6.VBCommandButtonArray(Me.components)
-        Me.cmd02 = New VBCompatible.VBCommandButton()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.VbCommandButton1 = New VBCompatible.VBCommandButton()
         Me.VbFrame1 = New VBCompatible.VBFrame()
         Me.VbCommandButton2 = New VBCompatible.VBCommandButton()
+        Me.VbLabel1 = New VBCompatible.VBLabel()
         CType(Me.cmd, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.VbFrame1.SuspendLayout()
         Me.SuspendLayout()
@@ -40,32 +39,13 @@ Partial Class Form2
         Me.cmd01.Name = "cmd01"
         Me.cmd01.Size = New System.Drawing.Size(162, 36)
         Me.cmd01.TabIndex = 0
-        Me.cmd01.Text = "VbCommandButton1"
+        Me.cmd01.Text = "cmd00"
         Me.ToolTip1.SetToolTip(Me.cmd01, "ほげほげ")
         Me.cmd01.UseVisualStyleBackColor = True
         '
         'cmd
         '
         Me.cmd.Name = "cmd"
-        '
-        'cmd02
-        '
-        Me.cmd02.Location = New System.Drawing.Point(244, 195)
-        Me.cmd02.Name = "cmd02"
-        Me.cmd02.Size = New System.Drawing.Size(162, 36)
-        Me.cmd02.TabIndex = 1
-        Me.cmd02.Text = "VbCommandButton1"
-        Me.ToolTip1.SetToolTip(Me.cmd02, "ほげほげ")
-        Me.cmd02.UseVisualStyleBackColor = True
-        '
-        'VbCommandButton1
-        '
-        Me.VbCommandButton1.Location = New System.Drawing.Point(244, 46)
-        Me.VbCommandButton1.Name = "VbCommandButton1"
-        Me.VbCommandButton1.Size = New System.Drawing.Size(162, 36)
-        Me.VbCommandButton1.TabIndex = 1
-        Me.VbCommandButton1.Text = "ShowEventEnum"
-        Me.VbCommandButton1.UseVisualStyleBackColor = True
         '
         'VbFrame1
         '
@@ -79,22 +59,29 @@ Partial Class Form2
         '
         'VbCommandButton2
         '
-        Me.VbCommandButton2.Location = New System.Drawing.Point(244, 120)
+        Me.VbCommandButton2.Location = New System.Drawing.Point(243, 46)
         Me.VbCommandButton2.Name = "VbCommandButton2"
         Me.VbCommandButton2.Size = New System.Drawing.Size(162, 36)
         Me.VbCommandButton2.TabIndex = 3
         Me.VbCommandButton2.Text = "cmdRemove"
         Me.VbCommandButton2.UseVisualStyleBackColor = True
         '
+        'VbLabel1
+        '
+        Me.VbLabel1.Location = New System.Drawing.Point(246, 105)
+        Me.VbLabel1.Name = "VbLabel1"
+        Me.VbLabel1.Size = New System.Drawing.Size(158, 36)
+        Me.VbLabel1.TabIndex = 4
+        Me.VbLabel1.Text = "VbLabel1"
+        '
         'Form2
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(431, 479)
-        Me.Controls.Add(Me.cmd02)
+        Me.Controls.Add(Me.VbLabel1)
         Me.Controls.Add(Me.VbCommandButton2)
         Me.Controls.Add(Me.VbFrame1)
-        Me.Controls.Add(Me.VbCommandButton1)
         Me.Name = "Form2"
         Me.Text = "TabIndex Demo"
         CType(Me.cmd, System.ComponentModel.ISupportInitialize).EndInit()
@@ -106,8 +93,7 @@ Partial Class Form2
     Friend WithEvents cmd01 As VBCompatible.VBCommandButton
     Friend WithEvents cmd As VBCompatible.VB6.VBCommandButtonArray
     Public WithEvents ToolTip1 As ToolTip
-    Friend WithEvents VbCommandButton1 As VBCompatible.VBCommandButton
     Friend WithEvents VbFrame1 As VBCompatible.VBFrame
     Friend WithEvents VbCommandButton2 As VBCompatible.VBCommandButton
-    Friend WithEvents cmd02 As VBCompatible.VBCommandButton
+    Friend WithEvents VbLabel1 As VBCompatible.VBLabel
 End Class
