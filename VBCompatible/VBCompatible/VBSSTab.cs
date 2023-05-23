@@ -13,6 +13,7 @@ namespace VBCompatible
     /// <summary>
     /// VB6.0 SSTab 互換コントロール
     /// </summary>
+    [DesignerCategory("Code")]
     public class VBSSTab : TabControl
     {
         [ThreadStatic]

@@ -9,8 +9,7 @@ namespace VBCompatible
     /// <summary>
     /// VB6.0 PopupMenu 互換コントロール
     /// </summary>
-    [Serializable]
-    [ComVisible(true)]
+    [DesignerCategory("Code")]
     public class VBPopupMenu : ContextMenuStrip
     {
         ToolStripMenuItem m_Menu;

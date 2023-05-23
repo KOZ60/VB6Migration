@@ -104,9 +104,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Program.vb" />
-    <Compile Include="TabIndexTextBox.vb">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="TabIndexTextBox.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form1.resx">

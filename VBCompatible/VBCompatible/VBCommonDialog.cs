@@ -11,7 +11,7 @@ namespace VBCompatible
     /// <summary>
     /// VB6.0 CommonDialog 互換コントロール
     /// </summary>
-    [Serializable]
+    [DesignerCategory("Code")]
     public class VBCommonDialog : Component
     {
         const int CDERR_DIALOGFAILURE = 0x7FF3;

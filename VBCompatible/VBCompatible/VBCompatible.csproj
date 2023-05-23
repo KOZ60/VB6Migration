@@ -50,110 +50,56 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControlArray\EventEnumForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlArray\EventEnumForm.Designer.cs">
-      <DependentUpon>EventEnumForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ControlArray\VBCheckBoxArray.cs" />
-    <Compile Include="ControlArray\VBComboBoxArray.cs" />
-    <Compile Include="ControlArray\VBCommandButtonArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ControlArray\BaseControlArray.cs" />
-    <Compile Include="ControlArray\VBFrameArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ControlArray\VBLabelArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ControlArray\VBListBoxArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ControlArray\VBListViewArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ControlArray\VBOptionButtonArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ControlArray\VBPanelArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ControlArray\VBPictureBoxArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ControlArray\VBSplitContainerArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ControlArray\VBSSTabArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ControlArray\VBTextBoxArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ControlArray\VBTreeViewArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="DrawRectangleFlags.cs" />
     <Compile Include="VB6\BaseControlArray.cs" />
     <Compile Include="VB6\Constants.cs" />
+    <Compile Include="VB6\ControlArray.cs" />
+    <Compile Include="VB6\EventEnumForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VB6\EventEnumForm.Designer.cs">
+      <DependentUpon>EventEnumForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VB6\Strings.cs" />
     <Compile Include="VB6\Support.cs" />
+    <Compile Include="VB6\VBCheckBoxArray.cs" />
+    <Compile Include="VB6\VBComboBoxArray.cs" />
+    <Compile Include="VB6\VBCommandButtonArray.cs" />
+    <Compile Include="VB6\VBFrameArray.cs" />
+    <Compile Include="VB6\VBLabelArray.cs" />
+    <Compile Include="VB6\VBListBoxArray.cs" />
+    <Compile Include="VB6\VBListViewArray.cs" />
+    <Compile Include="VB6\VBOptionButtonArray.cs" />
+    <Compile Include="VB6\VBPanelArray.cs" />
+    <Compile Include="VB6\VBPictureBoxArray.cs" />
+    <Compile Include="VB6\VBSplitContainerArray.cs" />
+    <Compile Include="VB6\VBSSTabArray.cs" />
+    <Compile Include="VB6\VBTextBoxArray.cs" />
+    <Compile Include="VB6\VBTreeViewArray.cs" />
     <Compile Include="VBGraphicsCache.cs" />
     <Compile Include="VBControlPaint.cs" />
-    <Compile Include="VBLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="VBLabel.cs" />
     <Compile Include="NativeDrawMode.cs" />
     <Compile Include="VBSafeGlobalMemory.cs" />
     <Compile Include="OLE_COLOR.cs" />
     <Compile Include="VBCache.cs" />
-    <Compile Include="VBCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="VBComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="VBCommandButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="VBCommonDialog.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="VBFrame.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="VBListBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="VBCheckBox.cs" />
+    <Compile Include="VBComboBox.cs" />
+    <Compile Include="VBCommandButton.cs" />
+    <Compile Include="VBCommonDialog.cs" />
+    <Compile Include="VBFrame.cs" />
+    <Compile Include="VBListBox.cs" />
     <Compile Include="VBListBoxItem.cs" />
-    <Compile Include="VBListView.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="VBListView.cs" />
     <Compile Include="VBNativeWindow.cs" />
-    <Compile Include="VBOptionButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="VBPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="VBPictureBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="VBPopupMenu.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="VBOptionButton.cs" />
+    <Compile Include="VBPanel.cs" />
+    <Compile Include="VBPictureBox.cs" />
+    <Compile Include="VBPopupMenu.cs" />
     <Compile Include="VBSafeDCHandle.cs" />
-    <Compile Include="VBSplitContainer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="VBSSTab.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="VBTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="VBSplitContainer.cs" />
+    <Compile Include="VBSSTab.cs" />
+    <Compile Include="VBTreeView.cs" />
     <Compile Include="VBOnwerDraw.cs" />
     <Compile Include="VBUtils.cs" />
     <Compile Include="SR.cs" />
@@ -172,15 +118,14 @@
     <Compile Include="VBSystem.cs" />
     <Compile Include="VBString.cs" />
     <Compile Include="VBHiddenModule.cs" />
-    <Compile Include="VBTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="VBTextBox.cs" />
     <Compile Include="VBTextBoxRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ControlArray\EventEnumForm.resx">
+    <EmbeddedResource Include="VB6\EventEnumForm.resx">
       <DependentUpon>EventEnumForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

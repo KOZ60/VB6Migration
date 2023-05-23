@@ -4,6 +4,7 @@ using System.ComponentModel;
 
 namespace VBCompatible
 {
+    [DesignerCategory("Code")]
     [Designer(typeof(System.Windows.Forms.Design.ControlDesigner))]
     public class VBLabel : Label
     {

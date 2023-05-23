@@ -12,7 +12,7 @@ namespace VBCompatible
     [ComVisible(true)]
     public class VBForm : Form, IEnumerable<Control>
     {
-        private static object EventTabIndexModeChanged = new object();
+        private static readonly object EventTabIndexModeChanged = new object();
 
         private bool EnterOnChildTabIndexChanged = false;
 

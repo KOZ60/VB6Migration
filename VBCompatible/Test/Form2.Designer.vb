@@ -1,8 +1,8 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class Form2
 
     'フォームがコンポーネントの一覧をクリーンアップするために dispose をオーバーライドします。
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -19,24 +19,23 @@ Partial Class Form2
     'メモ: 以下のプロシージャは Windows フォーム デザイナーで必要です。
     'Windows フォーム デザイナーを使用して変更できます。  
     'コード エディターを使って変更しないでください。
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.cmd01 = New VBCompatible.VBCommandButton()
-        Me.cmd = New VBCompatible.ControlArray.VBCommandButtonArray(Me.components)
+        Me.cmd = New VBCompatible.VB6.VBCommandButtonArray(Me.components)
         Me.cmd02 = New VBCompatible.VBCommandButton()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.VbCommandButton1 = New VBCompatible.VBCommandButton()
         Me.VbFrame1 = New VBCompatible.VBFrame()
         Me.VbCommandButton2 = New VBCompatible.VBCommandButton()
-        Me.VbCheckBoxArray1 = New VBCompatible.ControlArray.VBCheckBoxArray(Me.components)
         CType(Me.cmd, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.VbFrame1.SuspendLayout()
-        CType(Me.VbCheckBoxArray1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'cmd01
         '
+        Me.cmd.SetIndex(Me.cmd01, 0)
         Me.cmd01.Location = New System.Drawing.Point(17, 34)
         Me.cmd01.Name = "cmd01"
         Me.cmd01.Size = New System.Drawing.Size(162, 36)
@@ -87,10 +86,6 @@ Partial Class Form2
         Me.VbCommandButton2.Text = "cmdRemove"
         Me.VbCommandButton2.UseVisualStyleBackColor = True
         '
-        'VbCheckBoxArray1
-        '
-        Me.VbCheckBoxArray1.Name = "VbCheckBoxArray1"
-        '
         'Form2
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
@@ -104,17 +99,15 @@ Partial Class Form2
         Me.Text = "TabIndex Demo"
         CType(Me.cmd, System.ComponentModel.ISupportInitialize).EndInit()
         Me.VbFrame1.ResumeLayout(False)
-        CType(Me.VbCheckBoxArray1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
 
     Friend WithEvents cmd01 As VBCompatible.VBCommandButton
-    Friend WithEvents cmd As VBCompatible.ControlArray.VBCommandButtonArray
+    Friend WithEvents cmd As VBCompatible.VB6.VBCommandButtonArray
     Public WithEvents ToolTip1 As ToolTip
     Friend WithEvents VbCommandButton1 As VBCompatible.VBCommandButton
     Friend WithEvents VbFrame1 As VBCompatible.VBFrame
     Friend WithEvents VbCommandButton2 As VBCompatible.VBCommandButton
     Friend WithEvents cmd02 As VBCompatible.VBCommandButton
-    Friend WithEvents VbCheckBoxArray1 As VBCompatible.ControlArray.VBCheckBoxArray
 End Class

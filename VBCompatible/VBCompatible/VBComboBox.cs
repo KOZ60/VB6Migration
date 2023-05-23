@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace VBCompatible
 {
-    [ComVisible(true)]
+    [DesignerCategory("Code")]
     public class VBComboBox : ComboBox
     {
         private static object EventReadOnlyChanged = new object();

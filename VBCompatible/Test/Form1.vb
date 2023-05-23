@@ -52,7 +52,7 @@ Public Class Form1
     End Sub
 
     Private Sub EventEnumFormToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles EventEnumFormToolStripMenuItem.Click
-        Dim f As New VBCompatible.ControlArray.EventEnumForm()
+        Dim f As New VBCompatible.VB6.EventEnumForm()
         f.Show()
     End Sub
 

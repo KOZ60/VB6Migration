@@ -1,8 +1,10 @@
-﻿using System.Drawing;
+﻿using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace VBCompatible
 {
+    [DesignerCategory("Code")]
     public class VBFrame : GroupBox
     {
         public VBFrame() {

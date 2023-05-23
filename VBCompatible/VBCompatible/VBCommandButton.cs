@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 namespace VBCompatible
 {
+    [DesignerCategory("Code")]
     public class VBCommandButton : Button
     {
         public VBCommandButton() {

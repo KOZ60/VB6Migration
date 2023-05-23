@@ -1,14 +1,14 @@
-﻿using System;
-using System.Text;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Windows.Forms;
-
-namespace VBCompatible
+﻿namespace VBCompatible
 {
+    using System;
+    using System.Text;
+    using System.ComponentModel;
+    using System.Drawing;
+    using System.IO;
+    using System.Reflection;
+    using System.Runtime.Serialization.Formatters.Binary;
+    using System.Windows.Forms;
+
     public static class VBUtils
     {
         public const int STATE_CREATED = 0x00000001;

@@ -26,7 +26,7 @@ Public Class Form2
     End Sub
 
     Private Sub VbCommandButton1_Click(sender As Object, e As EventArgs) Handles VbCommandButton1.Click
-        Using dlg = New ControlArray.EventEnumForm()
+        Using dlg = New VB6.EventEnumForm()
             dlg.ShowDialog(Me)
         End Using
     End Sub

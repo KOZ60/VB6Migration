@@ -5,6 +5,7 @@ using System.Windows.Forms;
 
 namespace VBCompatible
 {
+    [DesignerCategory("Code")]
     public class VBListBox : ListBox
     {
         private static object EventScroll = new object();

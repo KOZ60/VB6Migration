@@ -1,9 +1,11 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-
-namespace VBCompatible
+﻿namespace VBCompatible
 {
+    using System;
+    using System.ComponentModel;
+    using System.Drawing;
+    using System.Windows.Forms;
+
+    [DesignerCategory("Code")]
     public class VBTextBox : TextBox
     {
         private readonly VBOnwerDraw ownerDraw;

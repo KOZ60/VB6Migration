@@ -1,8 +1,10 @@
-﻿using System.Drawing;
+﻿using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace VBCompatible
 {
+    [DesignerCategory("Code")]
     public class VBOptionButton : RadioButton
     {
         private readonly VBOnwerDraw ownerDraw;

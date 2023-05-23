@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VBCompatible.VB6
+﻿namespace VBCompatible.VB6
 {
     using System;
     using System.Collections;
@@ -14,15 +8,14 @@ namespace VBCompatible.VB6
     using System.Windows.Forms;
 
     [DesignerCategory("Code")]
-    public abstract class BaseControlArray : Component, IExtenderProvider
+    public abstract class BaseControlArray : Component, ISupportInitialize, IEnumerable
     {
         private const BindingFlags bindingFlags =
                                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         private const BindingFlags declaredOnlyFlags = bindingFlags | BindingFlags.DeclaredOnly;
 
-        private readonly static PropertyInfo[] EventProperties =
-                    typeof(BaseControlArray).GetProperties(declaredOnlyFlags).Where(
-                        (ei) => ei.CanRead && ei.Name.StartsWith("On")).ToArray();
+        private static Dictionary<Type, List<PropertyDescriptor>> AllProperties
+                                = new Dictionary<Type, List<PropertyDescriptor>>();
 
         protected abstract Type GetControlInstanceType { get; }
 
@@ -32,10 +25,10 @@ namespace VBCompatible.VB6
         protected readonly HashSet<Control> controlAddedAtDesignTime = new HashSet<Control>();
         protected bool fIsEndInitCalled;
 
+        private Dictionary<string, Delegate> _BaseFireMethods;
+        private Dictionary<string, Delegate> _FireMethods;
+        private List<PropertyDescriptor> _Properties;
         private string _Name;
-        private Dictionary<string, Delegate> _BaseControlEvents;
-        private Form _Form;
-        private Type _FormType;
         private bool _ToolTipScaned;
         private ToolTip _ToolTip;
         private const string _ToolTip1Name = "ToolTip1";
@@ -45,19 +38,6 @@ namespace VBCompatible.VB6
         protected BaseControlArray(IContainer Container) {
             components = Container;
             components.Add(this);
-        }
-
-
-        private Dictionary<string, Delegate> BaseControlEvents {
-            get {
-                if (_BaseControlEvents == null) {
-                    _BaseControlEvents = new Dictionary<string, Delegate>();
-                    foreach (var info in EventProperties) {
-                        _BaseControlEvents.Add(info.Name.Substring(2), (Delegate)info.GetValue(this, null));
-                    }
-                }
-                return _BaseControlEvents;
-            }
         }
 
         [Browsable(false)]
@@ -76,30 +56,18 @@ namespace VBCompatible.VB6
             set {
                 if (string.IsNullOrEmpty(value)) {
                     _Name = null;
-                } else {
+                }
+                else {
                     _Name = value;
                 }
             }
         }
 
-        protected void HookUpEventsOfControl(Control o) {
-            foreach (var info in typeof(Control).GetEvents()) {
-                if (BaseControlEvents.TryGetValue(info.Name, out Delegate invoker)) {
-                    info.AddEventHandler(o, invoker);
-                }
-            }
+        protected Control BaseGet(int Index) {
+            return controls[Index];
         }
 
-        protected void HookDownEventsOfControl(Control o) {
-            foreach (var info in typeof(Control).GetEvents()) {
-                if (BaseControlEvents.TryGetValue(info.Name, out Delegate invoker)) {
-                    info.RemoveEventHandler(o, invoker);
-                }
-            }
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool CanExtend(object extendee) {
+        protected bool BaseCanExtend(object extendee) {
             if (!(extendee is Control o)) {
                 return false;
             }
@@ -118,17 +86,7 @@ namespace VBCompatible.VB6
             return false;
         }
 
-
-        public int GetIndex(object o) {
-            if (o is Control c) {
-                if (indices.TryGetValue(c, out int index)) {
-                    return index;
-                }
-            }
-            return -1;
-        }
-
-        protected virtual int BaseGetIndex(T o) {
+        protected int BaseGetIndex(Control o) {
             if (o != null) {
                 if (indices.TryGetValue(o, out int index)) {
                     return index;
@@ -137,7 +95,268 @@ namespace VBCompatible.VB6
             return -1;
         }
 
+        protected void BaseSetIndex(Control o, int Index) {
+            if (o == null || !o.GetType().Equals(GetControlInstanceType)) {
+                throw new ArgumentException("型が違います。");
+            }
+            if (Index < 0) {
+                throw new IndexOutOfRangeException();
+            }
+            if (controls.TryGetValue(Index, out Control instance)) {
+                if (!ReferenceEquals(o, instance)) {
+                    throw new ArgumentException("同じインデックスが存在しています。");
+                }
+            }
+            BaseResetIndex(o);
+            indices[o] = Index;
+            controls[Index] = o;
+            if (TrueDesignMode) {
+                controlAddedAtDesignTime.Add(o);
+            }
+            HookUpEvents(o);
+        }
 
+        protected void BaseResetIndex(Control o) {
+            if (o == null) {
+                throw new ArgumentException("型が違います。");
+            }
+            if (indices.TryGetValue(o, out int index)) {
+                indices.Remove(o);
+                controls.Remove(index);
+                if (controlAddedAtDesignTime.Contains(o)) {
+                    controlAddedAtDesignTime.Remove(o);
+                }
+                HookDownEvents(o);
+            }
+        }
+
+        protected bool BaseShouldSerializeIndex(Control o) {
+            if (o == null) {
+                throw new ArgumentException("型が違います。");
+            }
+            return indices.ContainsKey(o);
+        }
+
+        protected Control BaseLoad(int Index) {
+            if (Index < 0 || Count == 0 || controls.ContainsKey(Index)) {
+                throw new IndexOutOfRangeException();
+            }
+            var clone = CloneControl();
+            BaseSetIndex(clone, Index);
+            return clone;
+        }
+
+        protected void BaseUnload(int Index) {
+            if (Index < 0 || !controls.TryGetValue(Index, out Control ctl)) {
+                throw new IndexOutOfRangeException();
+            }
+            if (controlAddedAtDesignTime.Contains(ctl)) {
+                throw new InvalidOperationException("デザイン時に設定したコントロールは Unload できません。");
+            }
+            BaseResetIndex(ctl);
+            ctl.Parent.Controls.Remove(ctl);
+            ctl.Dispose();
+        }
+
+        private Control CloneControl() {
+            var lowest = controls[LBound];
+            var ctl = (Control)Activator.CreateInstance(GetControlInstanceType);
+            foreach (PropertyDescriptor p in Properties) {
+                if (p.ShouldSerializeValue(lowest)) {
+                    p.SetValue(ctl, p.GetValue(lowest));
+                }
+            }
+            if (ctl is RadioButton radioButton) {
+                radioButton.Checked = false;
+            }
+            // VB6 から移植したフォームは ToolTip1 を持っているので
+            // 設定された caption もコピー
+            if (ToolTip1 != null) {
+                var caption = ToolTip1.GetToolTip(lowest);
+                if (!string.IsNullOrEmpty(caption)) {
+                    ToolTip1.SetToolTip(ctl, caption);
+                }
+            }
+            lowest.Parent.Controls.Add(ctl);
+            return ctl;
+        }
+
+        private List<PropertyDescriptor> Properties {
+            get {
+                if (_Properties == null) {
+                    if (!AllProperties.TryGetValue(GetControlInstanceType, out _Properties)) {
+                        _Properties = new List<PropertyDescriptor>();
+                        AllProperties.Add(GetControlInstanceType, _Properties);
+                        foreach (PropertyDescriptor p in TypeDescriptor.GetProperties(GetControlInstanceType)) {
+                            if (p.IsReadOnly) {
+                                continue;
+                            }
+                            if (p.SerializationVisibility != DesignerSerializationVisibility.Visible) {
+                                continue;
+                            }
+                            switch (p.Name) {
+                                case "Visible":
+                                case "TabIndex":
+                                case "Index":
+                                case "MdiList":
+                                    continue;
+                            }
+                            _Properties.Add(p);
+                        }
+                    }
+                }
+                return _Properties;
+            }
+        }
+
+        private ToolTip ToolTip1 {
+            get {
+                if (_ToolTipScaned) {
+                    return _ToolTip;
+                }
+                var lowest = controls[LBound];
+                Form form = lowest.FindForm();
+                Type formType = form.GetType();
+                var pi = formType.GetProperty(_ToolTip1Name, bindingFlags);
+                if (pi != null) {
+                    _ToolTip = pi.GetValue(form, null) as ToolTip;
+                }
+                if (_ToolTip == null) {
+                    var fi = formType.GetField(_ToolTip1Name, bindingFlags);
+                    if (fi != null) {
+                        _ToolTip = fi.GetValue(form) as ToolTip;
+                    }
+                }
+                _ToolTipScaned = true;
+                return _ToolTip;
+            }
+        }
+
+        [Browsable(false)]
+        public int Count {
+            get {
+                return controls.Count;
+            }
+        }
+
+        [Browsable(false)]
+        public int LBound {
+            get {
+                if (controls.Count == 0) {
+                    return 0;
+                }
+                int minValue = int.MaxValue;
+                foreach (var kp in controls) {
+                    if (kp.Key < minValue) {
+                        minValue = kp.Key;
+                    }
+                }
+                return minValue;
+            }
+        }
+
+        [Browsable(false)]
+        public int UBound {
+            get {
+                if (controls.Count == 0) {
+                    return -1;
+                }
+                int maxValue = -1;
+                foreach (var kp in controls) {
+                    if (kp.Key > maxValue) {
+                        maxValue = kp.Key;
+                    }
+                }
+                return maxValue;
+            }
+        }
+
+        void ISupportInitialize.BeginInit() { }
+
+        void ISupportInitialize.EndInit() {
+            fIsEndInitCalled = true;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            foreach (var kp in controls) {
+                yield return kp.Value;
+            }
+        }
+
+        protected override void Dispose(bool disposing) {
+            components = null;
+            base.Dispose(disposing);
+        }
+
+        protected bool TrueDesignMode {
+            get {
+                return DesignMode || !fIsEndInitCalled;
+            }
+        }
+
+        private Dictionary<string, Delegate> BaseFireMethods {
+            get {
+                if (_BaseFireMethods == null) {
+                    _BaseFireMethods = new Dictionary<string, Delegate>();
+                    foreach (var info in typeof(BaseControlArray).GetProperties(declaredOnlyFlags)) {
+                        if (info.CanRead && info.Name.StartsWith("On")) {
+                            var eventName = info.Name.Substring(2);
+                            var invoker = (Delegate)info.GetValue(this, null);
+                            _BaseFireMethods.Add(eventName, invoker);
+                        }
+                    }
+                }
+                return _BaseFireMethods;
+            }
+        }
+
+        private Dictionary<string, Delegate> FireMethods {
+            get {
+                if (_FireMethods == null) {
+                    _FireMethods = new Dictionary<string, Delegate>();
+                    foreach (var info in typeof(BaseControlArray).GetProperties(declaredOnlyFlags)) {
+                        if (info.CanRead && info.Name.StartsWith("On")) {
+                            var eventName = info.Name.Substring(2);
+                            var invoker = (Delegate)info.GetValue(this, null);
+                            _FireMethods.Add(eventName, invoker);
+                        }
+                    }
+                }
+                return _FireMethods;
+            }
+        }
+
+        private void HookUpEvents(Control o) {
+            // Control のイベント
+            foreach (var eventInfo in typeof(Control).GetEvents()) {
+                if (BaseFireMethods.TryGetValue(eventInfo.Name, out Delegate invoker)) {
+                    eventInfo.AddEventHandler(o, invoker);
+                }
+            }
+            // 継承クラスのイベント
+            foreach (var kp in FireMethods) {
+                var eventInfo = o.GetType().GetEvent(kp.Key);
+                if (eventInfo != null) {
+                    eventInfo.AddEventHandler(o, kp.Value);
+                }
+            }
+        }
+
+        private void HookDownEvents(Control o) {
+            // Control のイベント
+            foreach (var eventInfo in typeof(Control).GetEvents()) {
+                if (BaseFireMethods.TryGetValue(eventInfo.Name, out Delegate invoker)) {
+                    eventInfo.RemoveEventHandler(o, invoker);
+                }
+            }
+            // 継承クラスのイベント
+            foreach (var kp in FireMethods) {
+                var eventInfo = o.GetType().GetEvent(kp.Key);
+                if (eventInfo != null) {
+                    eventInfo.RemoveEventHandler(o, kp.Value);
+                }
+            }
+        }
 
 #pragma warning disable IDE0051
 
@@ -212,7 +431,6 @@ namespace VBCompatible.VB6
         private EventHandler OnValidated => new EventHandler((s, e) => Validated?.Invoke(s, e));
         private CancelEventHandler OnValidating => new CancelEventHandler((s, e) => Validating?.Invoke(s, e));
         private EventHandler OnVisibleChanged => new EventHandler((s, e) => VisibleChanged?.Invoke(s, e));
-
 #pragma warning restore IDE0051 
 
         public event EventHandler AutoSizeChanged;
@@ -286,5 +504,6 @@ namespace VBCompatible.VB6
         public event EventHandler Validated;
         public event CancelEventHandler Validating;
         public event EventHandler VisibleChanged;
+
     }
 }
