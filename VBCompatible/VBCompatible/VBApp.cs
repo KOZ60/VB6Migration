@@ -11,6 +11,7 @@
     using System.Windows.Forms;
     using System.Security.Principal;
     using Microsoft.VisualBasic.ApplicationServices;
+    using Microsoft.VisualBasic.CompilerServices;
     using VBCompatible.VB6;
 
     /// <summary>
@@ -53,7 +54,6 @@
         string m_ProductName;
         int m_Revision;
 
-        string m_Title;
         //Dim m_FileDescription As String
         //Dim m_HelpFile As String
         //Dim m_RetainedProject As Boolean
@@ -67,6 +67,27 @@
         bool m_logToNT;
         bool m_logToFile;
         bool m_logThreadID;
+
+        static VBHostImpl m_VBHostImpl;
+
+        static VBApp() {
+            m_VBHostImpl = new VBHostImpl();
+            HostServices.VBHost = m_VBHostImpl;
+        }
+
+        private class VBHostImpl : IVbHost
+        {
+            public IWin32Window GetParentWindow() {
+                return null;
+            }
+
+            public string GetWindowTitle() {
+                return Title;
+            }
+
+            public string Title { get; set; }
+        }
+
 
         private VBApp(Assembly asm) {
             m_PrevInstance = PrevInstanceInternal;
@@ -94,7 +115,7 @@
                     m_LegalTrademarks = tmark.Trademark;
                 } else if (typ == typeof(AssemblyTitleAttribute)) {
                     AssemblyTitleAttribute title = (AssemblyTitleAttribute)v;
-                    m_Title = title.Title;
+                    m_VBHostImpl.Title = title.Title;
                 } else if (typ == typeof(AssemblyProductAttribute)) {
                     AssemblyProductAttribute product = (AssemblyProductAttribute)v;
                     m_ProductName = product.Product;
@@ -301,8 +322,8 @@
         /// タスクリストに表示されるアプリケーションタイトルを設定します。
         /// </summary>
         public string Title {
-            get { return m_Title; }
-            set { m_Title = value; }
+            get { return m_VBHostImpl.Title; }
+            set { m_VBHostImpl.Title = value; }
         }
 
         //Public ReadOnly Property UnattendedApp() As Boolean
