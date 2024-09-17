@@ -2,7 +2,7 @@
 Imports VBCompatible
 
 Public Class Form1
-    Inherits VBCompatible.VBForm
+    Inherits VBForm
 
     Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.CheckedChanged
         VbPanel1.Enabled = CheckBox1.Checked
@@ -52,7 +52,7 @@ Public Class Form1
     End Sub
 
     Private Sub EventEnumFormToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles EventEnumFormToolStripMenuItem.Click
-        Dim f As New VBCompatible.VB6.EventEnumForm()
+        Dim f As New VB6.EventEnumForm()
         f.Show()
     End Sub
 
@@ -93,6 +93,8 @@ Public Class Form1
         Me.VbListView1.Enabled = CheckBox7.Checked
     End Sub
 
-
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        MsgBox("テスト")
+    End Sub
 End Class
 

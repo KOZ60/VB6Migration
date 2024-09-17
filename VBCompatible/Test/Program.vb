@@ -1,11 +1,10 @@
 ﻿Imports VBCompatible
-Imports System.Numerics
-Imports System.Globalization
 
 Module Program
 
     <STAThread>
     Sub Main()
+        App.Title = "VB6 移行サンプル"
         If App.PrevInstance Then
             MsgBox("App.PrevInstance")
             Return
