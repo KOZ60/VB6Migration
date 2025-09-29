@@ -19,7 +19,7 @@ namespace Scripting
         /// <returns></returns>
         protected override Folder GetItem(string name)
         {
-            string path = fso.BuildPath(ParentFolder.DisplayFileName, name);
+            string path = fso.BuildPath(ParentFolder.Display, name);
             return new Folder(fso, path);
         }
 
@@ -30,7 +30,7 @@ namespace Scripting
         /// <returns>追加したフォルダーを示す Folder オブジェクトが返されます。</returns>
         public Folder Add(string Name)
         {
-            return fso.CreateFolder(fso.BuildPath(ParentFolder.DisplayFileName, Name));
+            return fso.CreateFolder(fso.BuildPath(ParentFolder.Display, Name));
         }
     }
 }

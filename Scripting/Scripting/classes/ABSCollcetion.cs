@@ -17,19 +17,19 @@ namespace Scripting
     public abstract class ABSCollcetion<TItem> : MarshalByRefObject, IEnumerable, IEnumerable<TItem>
         where TItem: ABSClass
     {
-        private FileNameClass m_ParentFolder;
+        private WidePath m_ParentFolder;
         private FileSystemObject m_FileSystemObject;
         private Dictionary<string, string> m_Dictionary;
         private List<string> m_List;
 
-        internal ABSCollcetion(FileSystemObject fso, FileNameClass parentFolder, FileAttribute attr)
+        internal ABSCollcetion(FileSystemObject fso, WidePath parentFolder, FileAttribute attr)
         {
             m_ParentFolder = parentFolder;
             m_FileSystemObject = fso;
             m_Dictionary = new Dictionary<string, string>();
             m_List = new List<string>();
 
-            string tempPath = fso.BuildPath(parentFolder.DisplayFileName, "*");
+            string tempPath = fso.BuildPath(parentFolder.Display, "*");
             NativeMethods.WIN32_FIND_DATA fd = new NativeMethods.WIN32_FIND_DATA();
             IntPtr handle = NativeWrapper.FindFirstFile(tempPath, ref fd);
             if (handle == (IntPtr)NativeMethods.INVALID_HANDLE_VALUE)
@@ -60,7 +60,7 @@ namespace Scripting
             get { return m_FileSystemObject; }
         }
 
-        internal FileNameClass ParentFolder
+        internal WidePath ParentFolder
         {
             get { return m_ParentFolder; }
         }

@@ -1,19 +1,30 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 
 namespace Scripting
 {
     /// <summary>
-    /// 表示用ファイル名と API に渡すファイル名を自動変換するクラスです。
+    /// ファイル名を 32000 文字対応のファイル名に変換するクラスです。
     /// </summary>
+    /// <remarks>
+    /// Extended Length Path が正しい名称のようですが、冗長なため WidePath という呼称を使います。
+    /// </remarks>
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public class FileNameClass
+    public class WidePath
     {
-        internal const string PREFIX_NARROW_UNC = "\\\\";
-        internal const string PREFIX_WIDE_FILE = "\\\\?\\";
-        internal const string PREFIX_WIDE_UNC = "\\\\?\\UNC\\";
+        // UNC パスプレフィックス
+        private const string PREFIX_UNC = @"\\";
+
+        // Win32 パスプレフィックス
+        private const string PREFIX_WIN32_PATH = @"\\?\";
+        private const string PREFIX_WIN32_PATH_UNC = @"\\?\UNC\";
+
+        // NtApi パスプレフィックス
+        private const string PREFIX_NTAPI_PATH = @"\??\";
+        private const string PREFIX_NTAPI_PATH_UNC = @"\??\UNC\";
 
         internal static readonly char DirectorySeparatorChar = System.IO.Path.DirectorySeparatorChar;        // '\'
         internal static readonly char AltDirectorySeparatorChar = System.IO.Path.AltDirectorySeparatorChar;  // '/'
@@ -21,11 +32,11 @@ namespace Scripting
         internal static readonly char[] WildChars = new char[] { '?', '*' };                                 // ワイルドカードキャラクタ
         internal static readonly char[] DirectorySeparatorChars = new char[] { DirectorySeparatorChar, AltDirectorySeparatorChar };
 
-        private readonly string m_DisplayFileName;
+        private readonly string m_Display;
 
-        private FileNameClass(string target)
+        private WidePath(string target)
         {
-            m_DisplayFileName = ToDisplayFileName(target);
+            m_Display = ToDisplay(target);
         }
 
         #region メンバ
@@ -33,35 +44,51 @@ namespace Scripting
         /// <summary>
         /// 表示用のファイル名に変換します。
         /// </summary>
-        /// <param name="target">ファイル名</param>
+        /// <param name="value">ファイル名</param>
         /// <returns>表示用のファイル名</returns>
-        public static string ToDisplayFileName(string target)
+        public static string ToDisplay(string value)
         {
-            // '/' を '\' に置換し、最後の '\' を削る
+            // "/" を "\" に置換
 
-            target = target.Replace(AltDirectorySeparatorChar, DirectorySeparatorChar);
-            target = target.TrimEnd(new char[] { DirectorySeparatorChar });
-
-            if (string.IsNullOrEmpty(target))
-                return string.Empty;
+            value = value.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
             // 先頭が  "\\?\" なら 32,000 文字対応ファイル名なので削る
+            // 先頭が  "\\?\" なら 32,000 文字対応ファイル名なので削る
 
-            if (target.IndexOf(PREFIX_WIDE_FILE) == 0)
+            if (value.StartsWith(PREFIX_WIN32_PATH))
             {
-                // 先頭が  "\\?\UNC\"
-                if (target.IndexOf(PREFIX_WIDE_UNC) == 0)
-                    target = PREFIX_NARROW_UNC + target.Substring(PREFIX_WIDE_UNC.Length);
+                // 先頭が  "\\?\UNC\" か？
+                if (value.StartsWith(PREFIX_WIN32_PATH_UNC))
+                {
+                    // 例:\\?\UNC\Server\Path → \\Server\Path
+                    value = PREFIX_UNC + value.Substring(PREFIX_WIN32_PATH_UNC.Length);
+                }
                 else
-                    target = target.Substring(PREFIX_WIDE_FILE.Length);
+                {
+                    // 例:\\?\C:\Windows → C:\Windows
+                    value = value.Substring(PREFIX_WIN32_PATH.Length);
+                }
             }
 
-            // C: → C:\
-            if (target.Length == 2 && target[1] == VolumeSeparatorChar)
-                return target + DirectorySeparatorChar;
+            // 先頭が  "\??\" なら NtApi 形式のファイル名なので削る
 
-            return BuildPath(System.IO.Directory.GetCurrentDirectory(),
-                             target);
+            if (value.StartsWith(PREFIX_NTAPI_PATH))
+            {
+                // 先頭が  "\??\UNC\" か？
+                if (value.StartsWith(PREFIX_NTAPI_PATH_UNC))
+                {
+                    // 例:\??\UNC\Server\Path → \\Server\Path
+                    value = PREFIX_UNC + value.Substring(PREFIX_NTAPI_PATH_UNC.Length);
+                }
+                else
+                {
+                    // 例:\??\C:\Windows → C:\Windows
+                    value = value.Substring(PREFIX_NTAPI_PATH.Length);
+                }
+            }
+            
+            // 相対パスにカレントディレクトリを付与
+            return BuildPath(System.IO.Directory.GetCurrentDirectory(), value);
         }
 
         /// <summary>
@@ -71,17 +98,17 @@ namespace Scripting
         /// <returns>UNC パスを含む場合は True、含まない場合は False を返します。</returns>
         public static bool IsUNC(string target)
         {
-            return target.IndexOf(PREFIX_NARROW_UNC) == 0;
+            return target.IndexOf(PREFIX_UNC) == 0;
         }
 
         /// <summary>
-        /// 指定した FileNameClass が UNC パスを含むかどうかを取得します。
+        /// 指定した WidePath が UNC パスを含むかどうかを取得します。
         /// </summary>
-        /// <param name="target">UNC パスを含むかどうかを取得する FileNameClass を指定します。</param>
+        /// <param name="target">UNC パスを含むかどうかを取得する WidePath を指定します。</param>
         /// <returns>UNC パスを含む場合は True、含まない場合は False を返します。</returns>
-        public static bool IsUNC(FileNameClass target)
+        public static bool IsUNC(WidePath target)
         {
-            return IsUNC(target.DisplayFileName);
+            return IsUNC(target.Display);
         }
 
         /// <summary>
@@ -90,33 +117,53 @@ namespace Scripting
         /// <returns>表示用ファイル名。</returns>
         public override string ToString()
         {
-            return DisplayFileName;
+            return Display;
         }
 
         /// <summary>
         /// 表示名
         /// </summary>
-        public string DisplayFileName
+        public string Display
         {
-            get { return m_DisplayFileName; }
+            get { return m_Display; }
         }
 
         /// <summary>
         /// API に引き渡す、32,000 文字対応ファイル名を取得します。
         /// </summary>
-        public string Win32FileName
+        public string Win32
         {
             get
             {
-                if (IsUNC(DisplayFileName))
+                if (IsUNC(Display))
                 {
                     // UNC
-                    return PREFIX_WIDE_UNC + DisplayFileName.Substring(PREFIX_NARROW_UNC.Length);
+                    return PREFIX_WIN32_PATH_UNC + Display.Substring(PREFIX_UNC.Length);
                 }
                 else
                 {
                     // ローカルファイル
-                    return PREFIX_WIDE_FILE + DisplayFileName;
+                    return PREFIX_WIN32_PATH + Display;
+                }
+            }
+        }
+
+        /// <summary>
+        /// NtCreateFile 等の NT API に引き渡す 32,000 文字対応ファイル名を取得します。
+        /// </summary>
+        public string NtApi
+        {
+            get
+            {
+                if (Display.StartsWith(PREFIX_UNC))
+                {
+                    // UNC
+                    return PREFIX_NTAPI_PATH_UNC + Display.Substring(PREFIX_UNC.Length);
+                }
+                else
+                {
+                    // ローカルファイル
+                    return PREFIX_NTAPI_PATH + Display;
                 }
             }
         }
@@ -134,10 +181,10 @@ namespace Scripting
             {
                 using (StringBuilderCache sb = new StringBuilderCache())
                 {
-                    uint ret = NativeMethods.GetShortPathName(Win32FileName, sb, (uint)sb.Capacity);
+                    uint ret = NativeMethods.GetShortPathName(Win32, sb, (uint)sb.Capacity);
                     if (ret == 0)
                         return string.Empty;
-                    return ToDisplayFileName(sb.ToString());
+                    return ToDisplay(sb.ToString());
                 }
             }
         }
@@ -151,10 +198,10 @@ namespace Scripting
             {
                 using (StringBuilderCache sb = new StringBuilderCache())
                 {
-                    uint ret = NativeMethods.GetLongPathName(Win32FileName, sb, (uint)sb.Capacity);
+                    uint ret = NativeMethods.GetLongPathName(Win32, sb, (uint)sb.Capacity);
                     if (ret == 0)
                         return string.Empty;
-                    return ToDisplayFileName(sb.ToString());
+                    return ToDisplay(sb.ToString());
                 }
             }
         }
@@ -170,12 +217,12 @@ namespace Scripting
         {
             get
             {
-                int nLen = GetRootLength(DisplayFileName);
+                int nLen = GetRootLength(Display);
                 if (nLen == 2)   // C: 
-                    return DisplayFileName.Substring(0, nLen) + DirectorySeparatorChar;
+                    return Display.Substring(0, nLen) + DirectorySeparatorChar;
                 else
                     // UNC or C:\
-                    return DisplayFileName.Substring(0, nLen);
+                    return Display.Substring(0, nLen);
             }
         }
 
@@ -186,13 +233,13 @@ namespace Scripting
         {
             get
             {
-                int nLen = GetRootLength(DisplayFileName);
+                int nLen = GetRootLength(Display);
                 if (nLen == 2 || nLen == 3) // C: or C:\
                     // C:
-                    return DisplayFileName.Substring(0, 2);
+                    return Display.Substring(0, 2);
                 else
                     // UNC
-                    return DisplayFileName.Substring(0, nLen);
+                    return Display.Substring(0, nLen);
             }
         }
 
@@ -278,13 +325,13 @@ namespace Scripting
         #region 暗黙の型変換
 
         /// <summary>
-        /// 指定したファイル名から FileNameClass を作成します。
+        /// 指定したファイル名から WidePath を作成します。
         /// </summary>
-        /// <param name="value">ファイル名</param>
-        /// <returns>FileNameClass</returns>
-        public static implicit operator FileNameClass(string value)
+        /// <param name="value">ファイル名。</param>
+        /// <returns>WidePath クラスのインスタンス。</returns>
+        public static implicit operator WidePath(string value)
         {
-            return new FileNameClass(value);
+            return new WidePath(value);
         }
 
         #endregion
@@ -297,7 +344,7 @@ namespace Scripting
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static bool operator ==(FileNameClass a, FileNameClass b)
+        public static bool operator ==(WidePath a, WidePath b)
         {
             return IsEqualInternal(a, b);
         }
@@ -305,18 +352,18 @@ namespace Scripting
         /// <summary>
         /// &lt;&gt; 演算子のオーバーロード
         /// </summary>
-        public static bool operator !=(FileNameClass a, FileNameClass b)
+        public static bool operator !=(WidePath a, WidePath b)
         {
             return !IsEqualInternal(a, b);
         }
 
-        internal static bool IsEqualInternal(FileNameClass a, FileNameClass b)
+        internal static bool IsEqualInternal(WidePath a, WidePath b)
         {
             if (object.ReferenceEquals((object)a, (object)b))
                 return true;
 
             if ((object)a == null || (object)b == null) return false;
-            return string.Compare(a.DisplayFileName, b.DisplayFileName, true) == 0;
+            return string.Compare(a.Display, b.Display, true) == 0;
         }
 
         /// <summary>
@@ -325,7 +372,7 @@ namespace Scripting
         /// <returns>ハッシュ値</returns>
         public override int GetHashCode()
         {
-            return DisplayFileName.GetHashCode();
+            return Display.GetHashCode();
         }
 
         /// <summary>
@@ -336,8 +383,8 @@ namespace Scripting
         public override bool Equals(object obj)
         {
             if (obj == null)
-                return string.IsNullOrEmpty(DisplayFileName);
-            return string.Compare(DisplayFileName, obj.ToString(), true) == 0;
+                return string.IsNullOrEmpty(Display);
+            return string.Compare(Display, obj.ToString(), true) == 0;
         }
 
         #endregion

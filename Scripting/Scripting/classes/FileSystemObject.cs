@@ -33,7 +33,7 @@ namespace Scripting
         /// <remarks>BuildPath メソッドは、必要な場合だけ、既存パスと指定した名前の間にパスの区切り文字を挿入します。</remarks>
         public string BuildPath(string basePath, string relativePath)
         {
-            return FileNameClass.BuildPath(basePath, relativePath);
+            return WidePath.BuildPath(basePath, relativePath);
         }
 
         internal void RemoveReadOnlyAttribute(ABSClass target, bool Force)
@@ -58,14 +58,14 @@ namespace Scripting
         public void CopyFile(string Source, string Destination, bool OverWriteFiles = false)
         {
             // Source の最後の文字が \ なら CopyFolder を実行する
-            if (FileNameClass.LastCharIsDirectorySeparatorChar(Source)) {
+            if (WidePath.LastCharIsDirectorySeparatorChar(Source)) {
 
                 CopyFolder(Source, Destination, OverWriteFiles);
 
             } else {
                 
                 // Source にワイルドカードが含まれるなら、ファイルを列挙してコピーする
-                if (FileNameClass.ContainsWildChars(Source)) {
+                if (WidePath.ContainsWildChars(Source)) {
                     Folder folder = this.GetFolder(GetParentFolderName(Source));
                     foreach (File f in folder.Files) {
                         if (LikeOperator.LikeString(f.Path, Source, Microsoft.VisualBasic.CompareMethod.Text)) {
@@ -82,8 +82,8 @@ namespace Scripting
         internal void CopyFileInternal(string Source, string Destination, bool OverWriteFiles = false)
         {
             // Destination の最後の文字が \ ならディレクトリとして Source からファイル名を取り出し、コピー先とする
-            if (FileNameClass.LastCharIsDirectorySeparatorChar(Destination)) {
-                Destination = FileNameClass.BuildPath(Destination, FileNameClass.GetFileName(Source));
+            if (WidePath.LastCharIsDirectorySeparatorChar(Destination)) {
+                Destination = WidePath.BuildPath(Destination, WidePath.GetFileName(Source));
             }
             if (FileExists(Destination))
             {
@@ -106,8 +106,8 @@ namespace Scripting
         /// <param name="OverWriteFiles">既存フォルダを上書きするかどうかを示すブール値を指定します。真 (True) を指定すると既存フォルダ内のファイルを上書きし、偽 (False) を指定すると上書きしません。既定値は、偽 (False)です。</param>
         public void CopyFolder(string Source, string Destination, bool OverWriteFiles = false)
         {
-            Source = FileNameClass.TrimDirectorySeparator(Source);
-            Destination = FileNameClass.TrimDirectorySeparator(Destination);
+            Source = WidePath.TrimDirectorySeparator(Source);
+            Destination = WidePath.TrimDirectorySeparator(Destination);
             CopyFolderInternal(new Folder(this, Source), Destination, OverWriteFiles);
         }
 
@@ -236,7 +236,7 @@ namespace Scripting
             return ExistsInternal(FolderSpec, FileAttribute.Directory);
         }
 
-        internal static bool ExistsInternal(FileNameClass path, FileAttribute attr)
+        internal static bool ExistsInternal(WidePath path, FileAttribute attr)
         {
             NativeMethods.WIN32_FILE_ATTRIBUTE_DATA data = new NativeMethods.WIN32_FILE_ATTRIBUTE_DATA();
             int dataInitialised = NativeWrapper.FillAttributeInfo(path, ref data, false, true);
@@ -254,8 +254,8 @@ namespace Scripting
         /// </returns>
         public string GetAbsolutePathName(string Path)
         {
-            FileNameClass f = Path;
-            return f.DisplayFileName;
+            WidePath f = Path;
+            return f.Display;
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace Scripting
         /// <returns>定されたパスのベース名を表す文字列。</returns>
         public string GetBaseName(string Path)
         {
-            return FileNameClass.GetFileNameWithoutExtension(Path);
+            return WidePath.GetFileNameWithoutExtension(Path);
         }
 
         /// <summary>
@@ -279,12 +279,12 @@ namespace Scripting
         /// <returns>指定されたパスに含まれるドライブに対応する Drive オブジェクト。</returns>
         public Drive GetDrive(string DriveSpec)
         {
-            if (!FileNameClass.IsUNC(DriveSpec))
+            if (!WidePath.IsUNC(DriveSpec))
                 DriveSpec = new string(
                                 new char[] { 
                                     DriveSpec[0],
-                                    FileNameClass.VolumeSeparatorChar,
-                                    FileNameClass.DirectorySeparatorChar
+                                    WidePath.VolumeSeparatorChar,
+                                    WidePath.DirectorySeparatorChar
                                 }
                             );
 
@@ -298,7 +298,7 @@ namespace Scripting
         /// <returns>ドライブ名。</returns>
         public string GetDriveName(string Path)
         {
-            FileNameClass f = Path;
+            WidePath f = Path;
             return f.DriveName;
         }
 
@@ -309,7 +309,7 @@ namespace Scripting
         /// <returns>指定されたパスの拡張子を表す文字列。</returns>
         public string GetExtensionName(string Path)
         {
-            return FileNameClass.GetExtensionName(Path);
+            return WidePath.GetExtensionName(Path);
         }
 
         /// <summary>
@@ -329,7 +329,7 @@ namespace Scripting
         /// <returns>指定されたパスの最後の構成要素。</returns>
         public string GetFileName(string Path)
         {
-            return FileNameClass.GetFileName(Path);
+            return WidePath.GetFileName(Path);
         }
 
         /// <summary>
@@ -349,7 +349,7 @@ namespace Scripting
         /// <returns>親フォルダの名前。</returns>
         public string GetParentFolderName(string Path)
         {
-            return FileNameClass.GetParentFolderName(Path);
+            return WidePath.GetParentFolderName(Path);
         }
 
         /// <summary>

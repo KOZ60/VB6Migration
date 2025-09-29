@@ -12,7 +12,7 @@ namespace Scripting
     public class Drive : MarshalByRefObject
     {
         private FileSystemObject m_FileSystemObject;
-        private FileNameClass m_RootPathName;
+        private WidePath m_RootPathName;
 
         internal class Information
         {
@@ -24,7 +24,7 @@ namespace Scripting
             public long FreeSpace = 0;
         }
 
-        internal Drive(FileSystemObject fso, FileNameClass fileName)
+        internal Drive(FileSystemObject fso, WidePath fileName)
         {
             m_FileSystemObject = fso;
             m_RootPathName = fileName.RootPathName;
@@ -75,10 +75,10 @@ namespace Scripting
         {
             get 
             {
-                if (FileNameClass.IsUNC(m_RootPathName))
+                if (WidePath.IsUNC(m_RootPathName))
                     return string.Empty;
                 else
-                    return m_RootPathName.DisplayFileName[0].ToString();
+                    return m_RootPathName.Display[0].ToString();
             }
         }
 
@@ -162,7 +162,7 @@ namespace Scripting
         public string Path
         {
             // \ ÇäOÇµÇΩèÛë‘
-            get { return m_RootPathName.RootPathName.TrimEnd(FileNameClass.DirectorySeparatorChar); }
+            get { return m_RootPathName.RootPathName.TrimEnd(WidePath.DirectorySeparatorChar); }
         }
 
         /// <summary>
@@ -201,10 +201,10 @@ namespace Scripting
                     case DriveTypeConst.Remote:
 
                         // UNC ÇÃèÍçáÇÕÅAï\é¶ñºÇï‘Ç∑
-                        if (this.RootPathName[0] == FileNameClass.DirectorySeparatorChar)
-                            return m_RootPathName.DisplayFileName;
+                        if (this.RootPathName[0] == WidePath.DirectorySeparatorChar)
+                            return m_RootPathName.Display;
 
-                        return NativeWrapper.WNetGetConnection(this.Path).DisplayFileName;
+                        return NativeWrapper.WNetGetConnection(this.Path).Display;
                 }
                 return string.Empty;
             }

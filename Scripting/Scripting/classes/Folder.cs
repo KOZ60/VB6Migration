@@ -10,7 +10,7 @@ namespace Scripting
     /// </summary>
 	public class Folder : ABSClass
 	{
-        internal Folder(FileSystemObject fso, FileNameClass fileName)
+        internal Folder(FileSystemObject fso, WidePath fileName)
             : base(fso, fileName, FileAttribute.Directory)
         {
             Drive drv = new Drive(fso, fileName);
@@ -24,7 +24,7 @@ namespace Scripting
         /// <value>Files コレクション</value>
         public Files Files
         {
-            get { return new Files(fso, info.DisplayFileName); }
+            get { return new Files(fso, info.Display); }
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Scripting
         /// <value>指定されたフォルダがルート フォルダの場合は、真 (True) を返します。ルート フォルダでなければ、偽 (False) を返します。</value>
         public bool IsRootFolder
         {
-            get { return FileNameClass.IsRootFolder(info.DisplayFileName); }
+            get { return WidePath.IsRootFolder(info.Display); }
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Scripting
         /// <value>フォルダの合計サイズ。</value>
         public override long Size
         {
-            get { return NativeWrapper.EnumFolderSize(info.DisplayFileName); }
+            get { return NativeWrapper.EnumFolderSize(info.Display); }
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Scripting
         /// <value>Folder コレクション</value>
         public Folders SubFolders
         {
-            get { return new Folders(fso, info.DisplayFileName); }
+            get { return new Folders(fso, info.Display); }
         }
 
         /// <summary>

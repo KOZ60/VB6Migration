@@ -9,7 +9,7 @@ namespace Scripting
     /// </summary>
 	public class File : ABSClass
 	{
-        internal File(FileSystemObject fso, FileNameClass fileName)
+        internal File(FileSystemObject fso, WidePath fileName)
             : base(fso, fileName, FileAttribute.Normal)
         {
         }
@@ -33,7 +33,7 @@ namespace Scripting
         /// <param name="OverWriteFiles">既存ファイルや既存フォルダを上書きする場合は、既定値の真 (True) を指定します。上書きしない場合は、偽 (False) を指定します。</param>
         public override void Copy(string Destination, bool OverWriteFiles = false)
         {
-            fso.CopyFileInternal(info.DisplayFileName, Destination, OverWriteFiles);
+            fso.CopyFileInternal(info.Display, Destination, OverWriteFiles);
         }
 
         /// <summary>

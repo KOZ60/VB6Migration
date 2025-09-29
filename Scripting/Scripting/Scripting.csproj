@@ -59,7 +59,7 @@
     <Compile Include="constants\IOMode.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="core\FileNameClass.cs" />
+    <Compile Include="core\WidePath.cs" />
     <Compile Include="core\NativeMethods.cs" />
     <Compile Include="core\NativeWrapper.cs">
       <SubType>Code</SubType>

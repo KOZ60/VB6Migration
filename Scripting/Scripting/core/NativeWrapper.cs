@@ -29,13 +29,13 @@ namespace Scripting
         }
 
 
-        public static FileNameClass GetShortPathName(FileNameClass fullPathName)
+        public static WidePath GetShortPathName(WidePath fullPathName)
         {
             using (StringBuilderCache sb = new StringBuilderCache())
             {
                 using (ErrorMode mode = new ErrorMode())
                 {
-                    uint ret = NativeMethods.GetShortPathName(fullPathName.Win32FileName, sb, (uint)sb.Capacity);
+                    uint ret = NativeMethods.GetShortPathName(fullPathName.Win32, sb, (uint)sb.Capacity);
                     if (ret == 0)
                         return string.Empty;
                     else
@@ -44,13 +44,13 @@ namespace Scripting
             }
         }
 
-        public static FileNameClass GetLongPathName(FileNameClass fullPathName)
+        public static WidePath GetLongPathName(WidePath fullPathName)
         {
             using (StringBuilderCache sb = new StringBuilderCache())
             {
                 using (ErrorMode mode = new ErrorMode())
                 {
-                    uint ret = NativeMethods.GetLongPathName(fullPathName.Win32FileName, sb, (uint)sb.Capacity);
+                    uint ret = NativeMethods.GetLongPathName(fullPathName.Win32, sb, (uint)sb.Capacity);
                     if (ret == 0)
                         return string.Empty;
                     else
@@ -70,7 +70,7 @@ namespace Scripting
             internal VolumeInformation() {}
         }
 
-        public static bool GetVolumeInformation(FileNameClass drive, out VolumeInformation volumeInfo)
+        public static bool GetVolumeInformation(WidePath drive, out VolumeInformation volumeInfo)
         {
             using (StringBuilderCache volumeName = new StringBuilderCache())
             {
@@ -110,11 +110,11 @@ namespace Scripting
             }
         }
 
-        public static bool SetVolumeLabel(FileNameClass driveLetter, string volumeName)
+        public static bool SetVolumeLabel(WidePath driveLetter, string volumeName)
         {
             using (ErrorMode mode = new ErrorMode())
             {
-                bool r = NativeMethods.SetVolumeLabel(driveLetter.DisplayFileName, volumeName);
+                bool r = NativeMethods.SetVolumeLabel(driveLetter.Display, volumeName);
                 if (!r)
                 {
                     int errorCode = Marshal.GetLastWin32Error();
@@ -124,14 +124,14 @@ namespace Scripting
             }
         }
 
-        public static FileNameClass WNetGetConnection(FileNameClass lpLocalName)
+        public static WidePath WNetGetConnection(WidePath lpLocalName)
         {
             using (ErrorMode mode = new ErrorMode())
             {
                 using (StringBuilderCache shareName = new StringBuilderCache())
                 {
                     int nSize = shareName.Capacity;
-                    int errorCode = NativeMethods.WNetGetConnection(lpLocalName.DisplayFileName, shareName, ref nSize);
+                    int errorCode = NativeMethods.WNetGetConnection(lpLocalName.Display, shareName, ref nSize);
                     if (errorCode != 0)
                         return string.Empty;
                     else
@@ -141,7 +141,7 @@ namespace Scripting
         }
 
         public static bool GetDiskFreeSpaceEx(
-            FileNameClass directoryName,
+            WidePath directoryName,
             out long freeBytesAvailable,
             out long TotalNumberOfBytes,
             out long TotalNumberOfFreeBytes
@@ -150,7 +150,7 @@ namespace Scripting
             using (ErrorMode mode = new ErrorMode())
             {
                 return NativeMethods.GetDiskFreeSpaceEx(
-                    directoryName.Win32FileName,
+                    directoryName.Win32,
                     out freeBytesAvailable,
                     out TotalNumberOfBytes,
                     out TotalNumberOfFreeBytes
@@ -158,7 +158,7 @@ namespace Scripting
             }
         }
 
-        public static DriveType GetDriveType(FileNameClass drive)
+        public static DriveType GetDriveType(WidePath drive)
         {
             using (ErrorMode mode = new ErrorMode())
             {
@@ -185,13 +185,13 @@ namespace Scripting
         }
 
         public static IntPtr FindFirstFile(
-                    FileNameClass fileName,
+                    WidePath fileName,
                     ref NativeMethods.WIN32_FIND_DATA data)
         {
             using (ErrorMode mode = new ErrorMode())
             {
                 return NativeMethods.FindFirstFile(
-                    fileName.Win32FileName,
+                    fileName.Win32,
                     ref data);
             }
         }
@@ -214,14 +214,14 @@ namespace Scripting
             }
         }
 
-        public static long EnumFolderSize(FileNameClass folderName)
+        public static long EnumFolderSize(WidePath folderName)
         {
             using (ErrorMode mode = new ErrorMode())
             {
                 long nSize = 0;
                 NativeMethods.WIN32_FIND_DATA fd = new NativeMethods.WIN32_FIND_DATA();
 
-                IntPtr handle = NativeWrapper.FindFirstFile(FileNameClass.BuildPath(folderName.DisplayFileName, "*"), ref fd);
+                IntPtr handle = NativeWrapper.FindFirstFile(WidePath.BuildPath(folderName.Display, "*"), ref fd);
                 if (handle == (IntPtr)NativeMethods.INVALID_HANDLE_VALUE)
                     return 0;
 
@@ -244,7 +244,7 @@ namespace Scripting
 
                 foreach (string subFolder in subFolders)
                 {
-                    nSize += EnumFolderSize(FileNameClass.BuildPath(folderName.DisplayFileName, subFolder));
+                    nSize += EnumFolderSize(WidePath.BuildPath(folderName.Display, subFolder));
                 }
                 return nSize;
             }
@@ -260,15 +260,15 @@ namespace Scripting
             return (target & mask) == mask;
         }
 
-        public static void CopyFile(FileNameClass source, FileNameClass destination, bool overWrite)
+        public static void CopyFile(WidePath source, WidePath destination, bool overWrite)
         {
             using (ErrorMode mode = new ErrorMode())
             {
                 using (RenameFileForDuplication ren = new RenameFileForDuplication(destination))
                 {
                     bool r = NativeMethods.CopyFile(
-                                    source.Win32FileName,
-                                    destination.Win32FileName,
+                                    source.Win32,
+                                    destination.Win32,
                                     !overWrite);
                     if (!r)
                     {
@@ -283,19 +283,19 @@ namespace Scripting
 
         private class RenameFileForDuplication : IDisposable
         {
-            FileNameClass tempFile = null;
-            FileNameClass restoreFileName = null;
+            WidePath tempFile = null;
+            WidePath restoreFileName = null;
 
-            public RenameFileForDuplication(FileNameClass destination)
+            public RenameFileForDuplication(WidePath destination)
             {
                 // コピー先に短いファイル名が存在し、
                 // 短いファイル名と長いファイル名が違う場合
                 // 上書きしないようコピー先のファイルをリネーム
 
 
-                string fileName = FileNameClass.GetFileName(destination.DisplayFileName);
-                string shortFileName = FileNameClass.GetFileName(destination.ShortPathName);
-                string longFileName = FileNameClass.GetFileName(destination.LongPathName);
+                string fileName = WidePath.GetFileName(destination.Display);
+                string shortFileName = WidePath.GetFileName(destination.ShortPathName);
+                string longFileName = WidePath.GetFileName(destination.LongPathName);
 
                 if (string.Compare(fileName, shortFileName, true) == 0 &&
                     string.Compare(longFileName, shortFileName, true) != 0)
@@ -305,17 +305,17 @@ namespace Scripting
                 }
             }
 
-            private static FileNameClass RenameToTempFile(FileNameClass target)
+            private static WidePath RenameToTempFile(WidePath target)
             {
                 while (true)
                 {
                     // 一時ファイル名を作成
-                    FileNameClass tempFileName = CreateTempFileName(target);
+                    WidePath tempFileName = CreateTempFileName(target);
 
                     // 作成された一時ファイル名に変更
                     bool r = NativeMethods.MoveFileEx(
-                                        target.Win32FileName,
-                                        tempFileName.Win32FileName,
+                                        target.Win32,
+                                        tempFileName.Win32,
                                         0);
 
                     // 成功したらテンポラリの名前を返す
@@ -333,10 +333,10 @@ namespace Scripting
 
             // 一時ファイル名を作成
 
-            private static FileNameClass CreateTempFileName(FileNameClass target)
+            private static WidePath CreateTempFileName(WidePath target)
             {
-                FileNameClass targetPath = FileNameClass.GetParentFolderName(target.DisplayFileName);
-                FileNameClass tempFileName;
+                WidePath targetPath = WidePath.GetParentFolderName(target.Display);
+                WidePath tempFileName;
                 uint uniqueId = 0;
                 do
                 {
@@ -344,7 +344,7 @@ namespace Scripting
                     {
                         uniqueId++;
                         uint result = NativeMethods.GetTempFileName(
-                                            targetPath.Win32FileName,
+                                            targetPath.Win32,
                                             "_",
                                             uniqueId,
                                             sb);
@@ -357,7 +357,7 @@ namespace Scripting
                     }
 
                 } while (string.IsNullOrEmpty(tempFileName.LongPathName)
-                            && tempFileName.Win32FileName == target.Win32FileName);
+                            && tempFileName.Win32 == target.Win32);
 
                 return tempFileName;
             }
@@ -367,8 +367,8 @@ namespace Scripting
                 if (tempFile != null)
                 {
                     bool r = NativeMethods.MoveFileEx(
-                                        tempFile.Win32FileName,
-                                        restoreFileName.Win32FileName, 0);
+                                        tempFile.Win32,
+                                        restoreFileName.Win32, 0);
                     if (!r)
                     {
                         int errorCode = Marshal.GetLastWin32Error();
@@ -381,11 +381,11 @@ namespace Scripting
 
         // ファイル名の変更
 
-        public static void RenameFile(FileNameClass source, FileNameClass destination)
+        public static void RenameFile(WidePath source, WidePath destination)
         {
             using (ErrorMode mode = new ErrorMode())
             {
-                bool r = NativeMethods.MoveFileEx(source.Win32FileName, destination.Win32FileName, 0);
+                bool r = NativeMethods.MoveFileEx(source.Win32, destination.Win32, 0);
                 if (!r)
                 {
                     int errorCode = Marshal.GetLastWin32Error();
@@ -396,13 +396,13 @@ namespace Scripting
 
         // ファイル移動
 
-        public static void MoveFileEx(FileNameClass source, FileNameClass destination)
+        public static void MoveFileEx(WidePath source, WidePath destination)
         {
             using (ErrorMode mode = new ErrorMode())
             {
                 bool r = NativeMethods.MoveFileEx(
-                                        source.Win32FileName,
-                                        destination.Win32FileName,
+                                        source.Win32,
+                                        destination.Win32,
                                         NativeMethods.MOVEFILE_COPY_ALLOWED);
                 if (!r)
                 {
@@ -413,7 +413,7 @@ namespace Scripting
         }
 
         public static bool GetFileAttributesEx(
-            FileNameClass fileName, 
+            WidePath fileName, 
             ref NativeMethods.WIN32_FILE_ATTRIBUTE_DATA data
         )
         {
@@ -424,7 +424,7 @@ namespace Scripting
                 using (ErrorMode mode = new ErrorMode())
                 {
                     bool r = NativeMethods.GetFileAttributesEx(
-                                fileName.Win32FileName,
+                                fileName.Win32,
                                 NativeMethods.GET_FILEEX_INFO_LEVELS.GetFileExInfoStandard,
                                 new HandleRef(new object(), pointer)
                             );
@@ -451,13 +451,13 @@ namespace Scripting
 
 
         public static bool SetFileAttributes(
-            FileNameClass fileName,
+            WidePath fileName,
             FileAttribute dwAttributes
         )
         {
             using (ErrorMode mode = new ErrorMode())
             {
-                bool r = NativeMethods.SetFileAttributes(fileName.Win32FileName, (int)dwAttributes);
+                bool r = NativeMethods.SetFileAttributes(fileName.Win32, (int)dwAttributes);
                 if (!r)
                 {
                     int errorCode = Marshal.GetLastWin32Error();
@@ -468,12 +468,12 @@ namespace Scripting
         }
 
         public static bool CreateDirectory(
-            FileNameClass fileName
+            WidePath fileName
         )
         {
             using (ErrorMode mode = new ErrorMode())
             {
-                bool r = NativeMethods.CreateDirectory(fileName.Win32FileName, IntPtr.Zero);
+                bool r = NativeMethods.CreateDirectory(fileName.Win32, IntPtr.Zero);
                 if (!r)
                 {
                     int errorCode = Marshal.GetLastWin32Error();
@@ -484,12 +484,12 @@ namespace Scripting
         }
 
         public static bool RemoveDirectory(
-            FileNameClass fileName
+            WidePath fileName
         )
         {
             using (ErrorMode mode = new ErrorMode())
             {
-                bool r = NativeMethods.RemoveDirectory(fileName.Win32FileName);
+                bool r = NativeMethods.RemoveDirectory(fileName.Win32);
                 if (!r)
                 {
                     int errorCode = Marshal.GetLastWin32Error();
@@ -500,12 +500,12 @@ namespace Scripting
         }
 
         public static bool DeleteFile(
-            FileNameClass fileName
+            WidePath fileName
         )
         {
             using (ErrorMode mode = new ErrorMode())
             {
-                bool r = NativeMethods.DeleteFile(fileName.Win32FileName);
+                bool r = NativeMethods.DeleteFile(fileName.Win32);
                 if (!r)
                 {
                     int errorCode = Marshal.GetLastWin32Error();
@@ -537,7 +537,7 @@ namespace Scripting
             }
         }
 
-        internal static int FillAttributeInfo(FileNameClass path, ref NativeMethods.WIN32_FILE_ATTRIBUTE_DATA data, bool tryagain, bool returnErrorOnNotFound)
+        internal static int FillAttributeInfo(WidePath path, ref NativeMethods.WIN32_FILE_ATTRIBUTE_DATA data, bool tryagain, bool returnErrorOnNotFound)
         {
             int dataInitialised = 0;
             if (tryagain) 
@@ -547,7 +547,7 @@ namespace Scripting
 
                 using (ErrorMode mode = new ErrorMode())
                 {
-                    IntPtr handle = NativeMethods.FindFirstFile(path.Win32FileName, ref findData);
+                    IntPtr handle = NativeMethods.FindFirstFile(path.Win32, ref findData);
                     if (handle == (IntPtr)NativeMethods.INVALID_HANDLE_VALUE)
                     {
                         dataInitialised = Marshal.GetLastWin32Error();
@@ -587,7 +587,7 @@ namespace Scripting
                     using (ErrorMode mode = new ErrorMode())
                     {
                         bool r = NativeMethods.GetFileAttributesEx(
-                                    path.Win32FileName,
+                                    path.Win32,
                                     NativeMethods.GET_FILEEX_INFO_LEVELS.GetFileExInfoStandard,
                                     new HandleRef(new object(), pointer)
                                 );
@@ -625,10 +625,10 @@ namespace Scripting
             }
             return dataInitialised;
         }
-        public static string GetTypeName(FileNameClass name)
+        public static string GetTypeName(WidePath name)
         {
             NativeMethods.SHFILEINFO shfi = new NativeMethods.SHFILEINFO();
-            IntPtr hSuccess = NativeMethods.SHGetFileInfo(name.DisplayFileName, 0, ref shfi,
+            IntPtr hSuccess = NativeMethods.SHGetFileInfo(name.Display, 0, ref shfi,
                 (uint)Marshal.SizeOf(shfi), NativeMethods.SHGFI_TYPENAME);
 
             if (hSuccess == IntPtr.Zero)
@@ -639,7 +639,7 @@ namespace Scripting
             return shfi.szTypeName;
         }
 
-        public static SafeFileHandle CreateFile(FileNameClass fileName, IOMode IOMode, bool OverWrite)
+        public static SafeFileHandle CreateFile(WidePath fileName, IOMode IOMode, bool OverWrite)
         {
             uint desiredAccess;
             uint creationDisposition;
@@ -670,7 +670,7 @@ namespace Scripting
             using (ErrorMode mode = new ErrorMode())
             {
                 IntPtr handle = NativeMethods.CreateFile(
-                                                fileName.Win32FileName,
+                                                fileName.Win32,
                                                 desiredAccess,
                                                 NativeMethods.FILE_SHARE_READ | NativeMethods.FILE_SHARE_WRITE,
                                                 IntPtr.Zero,

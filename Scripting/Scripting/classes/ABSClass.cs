@@ -13,11 +13,11 @@ namespace Scripting
     public abstract class ABSClass : MarshalByRefObject
     {
         private FileSystemObject m_FileSystemObject;
-        private FileNameClass m_FileNameClass;
+        private WidePath m_FileNameClass;
         private FileAttribute m_FileAttribute;  // Directory or Normal
         private NativeMethods.WIN32_FILE_ATTRIBUTE_DATA m_Data;
 
-        internal ABSClass(FileSystemObject fso, FileNameClass fileName, FileAttribute fileAttribute)
+        internal ABSClass(FileSystemObject fso, WidePath fileName, FileAttribute fileAttribute)
         {
             m_FileSystemObject = fso;
             m_FileNameClass = fileName;
@@ -31,7 +31,7 @@ namespace Scripting
         /// <returns>現在のオブジェクトを表す文字列。</returns>
         public override string ToString()
         {
-            return info.DisplayFileName;
+            return info.Display;
         }
 
         internal void Refresh()
@@ -54,7 +54,7 @@ namespace Scripting
             get { return m_FileSystemObject; }
         }
 
-        internal FileNameClass info
+        internal WidePath info
         {
             get { return m_FileNameClass; }
             set { m_FileNameClass = value; }
@@ -78,7 +78,7 @@ namespace Scripting
             get { return data.dwFileAttributes; }
             set
             {
-                NativeWrapper.SetFileAttributes(info.Win32FileName, value);
+                NativeWrapper.SetFileAttributes(info.Win32, value);
             }
         }
 
@@ -123,10 +123,10 @@ namespace Scripting
         /// <value>指定されたファイルまたはフォルダの名前</value>
         public string Name
         {
-            get { return FileNameClass.GetFileName(info.DisplayFileName); }
+            get { return WidePath.GetFileName(info.Display); }
             set
             {
-                string newFileName = fso.BuildPath(FileNameClass.GetParentFolderName(info.DisplayFileName), value);
+                string newFileName = fso.BuildPath(WidePath.GetParentFolderName(info.Display), value);
                 NativeWrapper.RenameFile(info, newFileName);
                 info = newFileName;
             }
@@ -140,7 +140,7 @@ namespace Scripting
         {
             get 
             { 
-                string parentFolderName = FileNameClass.GetParentFolderName(info.DisplayFileName);
+                string parentFolderName = WidePath.GetParentFolderName(info.Display);
                 if (string.IsNullOrEmpty(parentFolderName))
                     return null;
                 else
@@ -162,7 +162,7 @@ namespace Scripting
         /// </summary>
         public string Path
         {
-            get { return info.DisplayFileName; }
+            get { return info.Display; }
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Scripting
         /// </summary>
         public string ShortName
         {
-            get { return FileNameClass.GetFileName(info.ShortPathName); }
+            get { return WidePath.GetFileName(info.ShortPathName); }
         }
 
         /// <summary>

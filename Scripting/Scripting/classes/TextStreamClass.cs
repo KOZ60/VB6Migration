@@ -39,7 +39,7 @@ namespace Scripting
             }
         }
 
-        internal TextStreamClass(FileNameClass fileName, IOMode IOMode, bool OverWrite, Tristate Format)
+        internal TextStreamClass(WidePath fileName, IOMode IOMode, bool OverWrite, Tristate Format)
         {
             m_UnDispose = false;
             Encoding enc;

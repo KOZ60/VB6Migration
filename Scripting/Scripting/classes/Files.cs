@@ -8,7 +8,7 @@ namespace Scripting
     /// </summary>
     public class Files : ABSCollcetion<File>
 	{
-        internal Files(FileSystemObject fso, FileNameClass fileName)
+        internal Files(FileSystemObject fso, WidePath fileName)
             : base(fso, fileName, FileAttribute.Normal)
         {
         }
@@ -29,7 +29,7 @@ namespace Scripting
         /// <returns>File オブジェクト</returns>
         protected override File GetItem(string name)
         {
-            string path = fso.BuildPath(ParentFolder.DisplayFileName, name);
+            string path = fso.BuildPath(ParentFolder.Display, name);
             return new File(fso, path);
         }
     }
